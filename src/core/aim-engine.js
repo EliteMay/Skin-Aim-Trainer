@@ -4,7 +4,7 @@ export const PROTOTYPE_MOUSE_RADIANS_PER_PIXEL = 0.0022;
 const PITCH_LIMIT = degreesToRadians(89);
 
 export class AimEngine {
-  constructor(} {
+  constructor() {
     this.yaw = 0;
     this.pitch = 0;
   }
