@@ -306,9 +306,9 @@ Sensitivity / Crosshair / Hit Detection rule / Score rule / 60秒SessionはDiffi
 
 ### Validation State
 
-- Godot Import / Cold Start: pending CI
-- Linux Core Smoke: pending CI
-- Windows Direct Smoke: pending CI
-- Legacy Best compatibility: pending CI
+- Godot Import / Cold Start: PASS — GitHub Actions run 36599258512
+- Linux Core Smoke: PASS — GitHub Actions run 36599258512
+- Windows Direct Smoke: PASS — GitHub Actions run 36599258512
+- Legacy Best compatibility: PASS — GitHub Actions run 36599258512
 - Windows Actual Playtest: NOT_RUN
 - Final visual review: NOT_RUN — Start画面の追加Selectorは実機確認Taskで確認する
