@@ -271,9 +271,13 @@ func _ready() -> void:
 	assert(not instance.get_node("UI/ResultOverlay").visible)
 
 	instance._show_ready_state()
+	var sensitivity_before_difficulty: float = instance.valorant_sensitivity
+	var crosshair_before_difficulty: Dictionary = instance.crosshair_profile.duplicate(true)
 	difficulty_select.select(instance.DifficultyLevel.EASY)
 	difficulty_select.item_selected.emit(instance.DifficultyLevel.EASY)
 	assert(instance.selected_difficulty == instance.DifficultyLevel.EASY)
+	assert(is_equal_approx(instance.valorant_sensitivity, sensitivity_before_difficulty))
+	assert(instance.crosshair_profile == crosshair_before_difficulty)
 	assert(instance.personal_best_score == 0)
 	assert(start_best_label.text == "かんたん BEST  0")
 	assert(is_equal_approx(difficulty_sphere.radius, 0.82))
@@ -335,6 +339,12 @@ func _ready() -> void:
 	assert(instance.personal_best_score == 0)
 	assert(start_best_label.text == "むずかしい BEST  0")
 	assert(is_equal_approx(difficulty_sphere.radius, 0.46))
+	assert(is_equal_approx(instance.valorant_sensitivity, sensitivity_before_difficulty))
+	assert(instance.crosshair_profile == crosshair_before_difficulty)
+	instance.start_training()
+	assert(is_equal_approx(instance.session_remaining_seconds, 60.0))
+	assert(instance.score == 0)
+	instance._show_ready_state()
 	target_position = instance.target_body.position
 	assert(target_position.x >= -6.2 and target_position.x <= 6.2)
 	assert(target_position.y >= -0.1 and target_position.y <= 5.0)
