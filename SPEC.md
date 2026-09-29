@@ -88,10 +88,18 @@ DPIは計算・表示・保存に使用する。ApplicationからMouse Hardware 
 
 - 1個だけ表示する
 - Camera前方の固定距離Plane上へRandom spawn
-- X / Y範囲を限定し、極端な画面端へ出さない
+- X / Y範囲をDifficulty Profileから取得する
 - Hit後だけ次位置へ移動する
 
-Targetは`StaticBody3D + SphereShape3D`でPhysics collisionを持つ。
+Targetは`StaticBody3D + SphereShape3D`でPhysics collisionを持つ。Mesh radiusとCollision radiusは同じDifficulty valueを使用し、VisualとHit判定を一致させる。
+
+Difficulty Profile:
+
+| Difficulty | Radius | X range | Y range |
+|---|---:|---:|---:|
+| かんたん | 0.82 | -4.2〜4.2 | 0.6〜4.2 |
+| 標準 | 0.62 | -5.2〜5.2 | 0.2〜4.6 |
+| むずかしい | 0.46 | -6.2〜6.2 | -0.1〜5.0 |
 
 ## Shooting / Hit Detection
 
@@ -125,7 +133,8 @@ First Viewで以下だけを強く見せる。
 - Product名
 - 「やることは3つだけ」
 - 3Step操作説明
-- 大きい「練習を開始」
+- 小さいDifficulty selector
+- 大きい「60秒の練習を開始」
 
 未実装のMode / SkinはMain flowへ出さない。
 
@@ -204,9 +213,30 @@ Result表示:
 - Retry
 - Startへ戻る
 
-Personal Bestは`user://settings.cfg`の`training_records/default_best_score`へ保存する。
+Personal BestはDifficulty別に`user://settings.cfg`へ保存する。
 
-Current defaultは1つのTrainingだけなのでRecord keyも1つ。Stage Library導入時はStage ID単位のRecordへ移行する。
+```text
+[training]
+difficulty="easy|normal|hard"
+
+[training_records]
+best_easy_score=<int>
+best_normal_score=<int>
+best_hard_score=<int>
+```
+
+旧`training_records/default_best_score`があり、`best_normal_score`が無い場合は旧値をNormal Bestとして読み込む。旧Keyは削除しない。
+
+Stage Library導入時はStage ID + Difficulty単位のRecordへ拡張する。
+
+### Difficulty
+
+- Start画面のOptionButtonで3段階から選択
+- 変更はREADY Stateでのみ受け付ける
+- 選択時にTarget Mesh / Collision / spawn rangeを同じProfileから更新する
+- Difficulty変更はSensitivity / Crosshair / Session duration / Score ruleへ影響させない
+- ResultへDifficulty名を表示する
+- Start画面のBESTは選択DifficultyのRecordだけを表示する
 
 ### Future Home / Stage Library
 
@@ -249,6 +279,10 @@ Automated:
 - Timer 0 → Result transition
 - Result statistics
 - Personal Best persistence
+- Difficulty selector contract
+- Difficulty target radius / spawn range
+- Difficulty別Best分離
+- Legacy default_best_score → Normal Best compatibility
 
 Actual Playtest:
 
