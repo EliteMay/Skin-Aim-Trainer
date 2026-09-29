@@ -355,6 +355,13 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 19
 text = "最初からやり直す"
 
+[node name="MainMenuButton" type="Button" parent="UI/PauseOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "メインメニューへ戻る"
+tooltip_text = "途中のSessionは記録されません"
+
 [node name="SettingsOverlay" type="Control" parent="UI"]
 visible = false
 layout_mode = 3
