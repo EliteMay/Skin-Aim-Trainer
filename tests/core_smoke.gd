@@ -103,7 +103,25 @@ func _ready() -> void:
 	assert(start_crosshair_button.visible)
 	assert(not start_crosshair_button.disabled)
 
-	start_crosshair_button.emit_signal("pressed")
+	var button_center := (
+		start_crosshair_button.global_position
+		+ start_crosshair_button.size * 0.5
+	)
+
+	var mouse_down := InputEventMouseButton.new()
+	mouse_down.button_index = MOUSE_BUTTON_LEFT
+	mouse_down.position = button_center
+	mouse_down.global_position = button_center
+	mouse_down.pressed = true
+	Input.parse_input_event(mouse_down)
+	await get_tree().process_frame
+
+	var mouse_up := InputEventMouseButton.new()
+	mouse_up.button_index = MOUSE_BUTTON_LEFT
+	mouse_up.position = button_center
+	mouse_up.global_position = button_center
+	mouse_up.pressed = false
+	Input.parse_input_event(mouse_up)
 	await get_tree().process_frame
 
 	assert(not instance.get_node("UI/StartOverlay").visible)
