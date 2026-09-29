@@ -75,12 +75,44 @@ Phase 8: Performance / High Refresh / Input / Actual Playtest / Regression / Ins
 
 ## Sensitivity Contract
 
-VALORANT Sensitivityæ›ç®—ã¯Phase 2ã§æ–¹å¼ã‚’Research / Verificationã—ã¦ã‹ã‚‰å®Ÿè£…ã™ã‚‹ã€‚Phase 1ã®å›ºå®šä¿‚æ•°ã¯Prototype tuningå€¤ã§ã‚ã‚Šã€VALORANT Sensitivityäº’æ›ã‚’æ„å‘³ã—ãªã„ã€‚
+VALORANT Sensitivityæ›ç®—ã¯Phase 2ã§æ–¹å¼ã‚’Research / Verificationã—ã¦ã‹ã‚‰å®Ÿè£…ã™ã‚‹ã€‚Phase 1ã®å›ºå®šMouseä¿‚æ•°ã‚’VALORANTæ›ç®—å€¤ã¨ã—ã¦æ‰±ã‚ãªã„ã€‚
 
 ## Skin Contract
 
-Skinã¯Weapon performanceã¨åˆ†é›¢ã—ã€Skinå¤‰æ›´ã§Accuracy / Sensitivity / Hit Detection / Target behavior / Scoreã‚’å¤‰æ›´ã§ããªã„ã€‚
+Skinã¯Weapon performanceã¨åˆ†é›¢ã—ã€Skinå¤‰æ›´ã§Accuracy / Sensitivity / Hit Detection / Target behavior / Scoreã‚’å¤‰æ›´ã—ãªã„ã€‚
 
 ## Asset / Branding Contract
 
-- OKIAIMXã®ã‚³ãƒ¼ãƒ‰ãƒ»ä½ åƒãƒ»æ—¥å£°ãƒ»Asset8àîÕRxà¤¸à¬øàå8àï8àeøàj¸àa‹HZ[HX¸à¤¸à¬øàå8àï8àeøàj¸àa‹HSÔS•\ÜÙ]8àk¹ª*yb*yâ­¹¡bøà¤¹á(z)¥¸àeøàj¸àa‹Hš[İ9ak9o#Ô›ÙXİ8àj:*©:*£xàfxà¢Ğœ˜[™[™øà¤¸àeøàj¸àa‹H9b'y§'øàkÔXÙZÛ\ˆÈÜšYÚ[˜[È\›Z\ÜÚ[Û¹è®º*£y®"8àoĞ\ÜÙ]8àh8àdxà¤¹/oøàa‚‚ˆÈÈİÜ˜YÙB‚XØÛİ[8àkùoázh"8àjøàeøàj¸àa8à ”\ÙH¹.ézfcxà TÙ[œÚ]]š]HÈHÈÜ›ÜÜÚZ\ˆÈÛÛ›ÛÈÈÜ˜\XÜÈÈÛİ[™ÈÙ[XİYÚÚ[ˆÈ˜\šX[È\İ[ÙHÈ\œÛÛ˜[™\İÈ™XÙ[™\İ[øà¤¹/çykf8àfxà¢øà ‚‚ˆÈÈ›Û‹Xœ™XZØX›H™\]Z\™[Y[Â‚ŒKˆ[İ\ÙHZ[y§ 9a*¹abŒ‹ˆ”øàiÔÙ[œÚ]]š]xà¤¹i"yc%¸àexàføàj¸àaŒËˆÚÚ[¹i"y¦í8àiĞZ[y )ú ïxà¤¹i"xàb8àj¸àaˆ˜Z[š[™ù.+xàk’[œ]][˜Şxà¤¹h¥øà¡8àexàj¸àaKˆÙÚ[¸àj¸àeøàiù..ú) U˜Z[š[™øà¤¹b*yå*9cëú ïB‹ˆÚÚ[º`n9¢§¸à¤¹/çykfËˆÙ[œÚ]]š]xà¤¹/çykfˆÜ›ÜÜÚZ\¸à¤¹/çykfKˆZ[yå.úgh¸à¤•Rxàiú`ªºke8àeøàj¸àaŒLˆÚÚ[º/ïyb¨8àiÑØ[YHÙÚXøà¤¹¦î8àcy£æøàb8àj¸àaŒLKˆSÔS•\ÜÙ]8àk¹ª*yb*yâ­¹¡bøà¤¹á(z)¥¸àeøàj¸àaŒL‹ˆÒÒPRSV8à¤¸à¬øàå8àï8àeøàj¸àaŒLËˆZ[HX¸à¤¸à¬øàå8àï8àeøàj¸àaŒMˆU”9bcxàjù.#z) yªgú ïxà¤¹h¥øà¡8àexàj¸àaŒMKˆØ[YH]ˆX¸àiĞXİX[^]\İ9cëú ïxàj¹â­¹¡bøà¤¹§ 9í`¹æ¡8àjùí«y£ xàfxà¢Â‚ˆÈÈİ\œ™[›ØÚÚ[™È[YÜ˜][Ûˆ\ÜİYB‚ŒŒ‹LKLxàk‘Ø[YH]ˆXˆŒŒKŒøàkÔ›Ú™Xİ[Ù[8àiØ[™Ú[™HOOH™ÛÙİ˜8à¤¹¢ä¹d)¸àfxà¢øàgøà xà y§+›Ú™Xİ8àk•ÙX‹Ñ[Xİ›Ûˆ\˜Ú]Xİ\™xà¤¹æí9£©yænúc,¸àiøàcxàj¸àa8à ‚‚”›Ú™Xİ\˜Ú]Xİ\™xà¤‘ÛÙİ8àn9i"xàb8à¢ùfçº`oøàkøàeøàj¸àa8à ’X¹`m8àjÕÙX‹Ñ[Xİ›Ûˆ›Ú™Xİİ\Ü8à¤º/ïyb¨8àfxà¢øàbøà ykï¹oç9k£9.¡¸ào¸àiù§+™\ÜÚ]Üycf9/døàiÕÙXˆÛÜ™xà¤¹©':*/8àfxà¢øà ‚
+- OKIAIMXã®ã‚³ãƒ¼ãƒ‰ãƒ»ç”»åƒãƒ»éŸ³å£°ãƒ»Assetãƒ»UIã‚’ã‚³ãƒ”ãƒ¼ã—ãªã„
+- Aim Labã‚’ã‚³ãƒ”ãƒ¼ã—ãªã„
+- VALORANT Assetã®æ¨©åˆ©çŠ¶æ…‹ã‚’ç„¡è¦–ã—ãªã„
+- Riotå…¬å¼Productã¨èª¤èªã™ã‚‹Brandingã‚’ã—ãªã„
+- åˆæœŸã¯Placeholder / Original / Permissionç¢ºèªæ¸ˆã¿Assetã ã‘ã‚’ä½¿ã†
+
+## Storage
+
+Accountã¯å¿…é ˆã«ã—ãªã„ã€‚Phase 2ä»¥é™ã€Sensitivity / DPI / Crosshair / Controls / Graphics / Sound / Selected Skin / Variant / Last Mode / Personal Best / Recent Resultsã‚’ä¿å­˜ã™ã‚‹ã€‚
+
+## Non-breakable Requirements
+
+1. Mouse Aimæœ€å„ªå…ˆ
+2. FPSã§Sensitivityã‚’å¤‰åŒ–ã•ã›ãªã„
+3. Skinå¤‰æ›´ã§Aimæ€§èƒ½ã‚’å¤‰ãˆãªã„
+4. Trainingä¸­ã®Input latencyã‚’å¢—ã‚„ã•ãªã„
+5. Loginãªã—ã§ä¸»è¦Trainingã‚’åˆ©ç”¨å¯èƒ½
+6. Skiné¸æŠã‚’ä¿å­˜
+7. Sensitivityã‚’ä¿å­˜
+8. Crosshairã‚’ä¿å­˜
+9. Aimç”»é¢ã‚’UIã§é‚ªé­”ã—ãªã„
+10. Skinè¿½åŠ ã§Game Logicã‚’æ›¸ãæ›ãˆãªã„
+11. VALORANT Assetã®æ¨©åˆ©çŠ¶æ…‹ã‚’ç„¡è¦–ã—ãªã„
+12. OKIAIMXã‚’ã‚³ãƒ”ãƒ¼ã—ãªã„
+13. Aim Labã‚’ã‚³ãƒ”ãƒ¼ã—ãªã„
+14. MVPå‰ã«ä¸è¦æ©Ÿèƒ½ã‚’å¢—ã‚„ã•ãªã„
+15. Game Dev Hubã§Actual Playtestå¯èƒ½ãªçŠ¶æ…‹ã‚’æœ€çµ‚çš„ã«ç¶­æŒã™ã‚‹
+
+## Current Blocking Integration Issue
+
+2026-09-29ã®Game Dev Hub v0.1.27ã¯Project modelã§`engine !== "godot"`ã‚’æ‹’å¦ã™ã‚‹ãŸã‚ã€æœ¬Projectã®Web/Electron architectureã‚’ç›´æ¥ç™»éŒ²ã§ããªã„ã€‚
+
+Project architectureã‚’Godotã¸å¤‰ãˆã‚‹å›é¿ã¯ã—ãªã„ã€‚Hubå´ã«Web/Electron Project supportã‚’è¿½åŠ ã™ã‚‹ã‹ã€å¯¾å¿œå®Œäº†ã¾ã§æœ¬Repositoryå˜ä½“ã§Web Coreã‚’æ¤œè¨¼ã™ã‚‹ã€‚
