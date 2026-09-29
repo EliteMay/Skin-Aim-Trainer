@@ -28,8 +28,18 @@ Skin Aim TrainerのPhase 1 Core Aim Prototypeを作成。
 - Windows real-device: 未確認
 - High Refresh Rate: 未確認
 
-## Known Integration Issue
+## Game Dev Hub Integration
 
-Game Dev Hub v0.1.27はGodot ProjectだけをProject Registryへ許可するため、Web/Electron projectの直接登録が現状Blocking。
+- Game Dev Hub v0.1.28: Web / Electron Project supportをRelease済み
+- Registry: `godot / web` 対応
+- Existing Repository import: `project.godot / package.json` を判定
+- Web launch: Main Processから固定の `npm run dev`
+- `game-dev-hub.json`: loopback開発URLだけを許可
+- Game Dev Hub CI / Security / Release: PASS
 
-ゲーム本体をGodotへ変更する回避は行わない。
+## Remaining Verification
+
+- Game Dev Hub v0.1.28から本RepositoryをWindows実機で登録・Clone / Syncできること
+- Hubの「ゲームを起動」からdev serverとBrowserを起動できること
+- Pointer Lock / Mouse Aim / Hit-Miss / RestartのActual Playtest
+- 120Hz / 144Hz以上を含む高Refresh環境でAim体感を確認すること
