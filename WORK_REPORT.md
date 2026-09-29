@@ -74,16 +74,15 @@ After:
 ### Validation
 
 - Repository implementation: complete on rewrite branch
-- Godot CI: pending
+- Godot CI: PASS — GitHub Actions run 36545307524
 - Windows Actual Playtest: NOT_RUN
 - High Refresh Rate: NOT_RUN
 - Visual / usability final confirmation: NOT_RUN
 
 ### Remaining
 
-1. CIを通す
-2. mainへmerge
-3. Game Dev HubでGodotとして再登録
-4. Windows実機で起動
-5. 「何をすればいいか分かるか」を最初に確認
-6. Aim / Hit / Miss / Pause / Restartを確認
+1. mainへmerge
+2. Game Dev HubでGodotとして再登録
+3. Windows実機で起動
+4. 「何をすればいいか分かるか」を最初に確認
+5. Aim / Hit / Miss / Pause / Restartを確認
