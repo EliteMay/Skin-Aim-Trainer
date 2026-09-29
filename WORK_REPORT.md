@@ -75,14 +75,25 @@ After:
 
 - Repository implementation: complete on rewrite branch
 - Godot CI: PASS — GitHub Actions run 36545307524
-- Windows Actual Playtest: NOT_RUN
+- Windows Actual Playtest: PASS
 - High Refresh Rate: NOT_RUN
-- Visual / usability final confirmation: NOT_RUN
+- Visual / usability final confirmation: PASS — 起動導線を含むPhase 1 User verification
+
+### Phase 1 Windows Evidence
+
+Game Dev Hub共有Packで、Repository commit `5ac74e18` / Godot `4.7.2.stable` を対象に以下を確認。
+
+- Godot版をGame Dev Hubから起動: PASS
+- 操作が迷わないか: PASS
+- Aim / Shoot: PASS
+- Pause / Restart: PASS
+
+Phase 1のCompletion Criteriaを満たしたため、RoadmapのUser確認Taskを完了へ更新した。
 
 ### Remaining
 
-1. mainへmerge
-2. Game Dev HubでGodotとして再登録
-3. Windows実機で起動
-4. 「何をすればいいか分かるか」を最初に確認
-5. Aim / Hit / Miss / Pause / Restartを確認
+1. Phase 2 — Sensitivity / DPI / eDPIのResearchと設定
+2. Crosshair設定
+3. Timer / Result / Personal Best
+4. Difficulty
+5. Gridshot
