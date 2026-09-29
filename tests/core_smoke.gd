@@ -113,7 +113,7 @@ func _ready() -> void:
 	mouse_down.position = button_center
 	mouse_down.global_position = button_center
 	mouse_down.pressed = true
-	Input.parse_input_event(mouse_down)
+	instance.get_viewport().push_input(mouse_down, true)
 	await get_tree().process_frame
 
 	var mouse_up := InputEventMouseButton.new()
@@ -121,7 +121,7 @@ func _ready() -> void:
 	mouse_up.position = button_center
 	mouse_up.global_position = button_center
 	mouse_up.pressed = false
-	Input.parse_input_event(mouse_up)
+	instance.get_viewport().push_input(mouse_up, true)
 	await get_tree().process_frame
 
 	assert(not instance.get_node("UI/StartOverlay").visible)
