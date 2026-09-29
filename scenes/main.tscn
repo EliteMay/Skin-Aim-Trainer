@@ -479,6 +479,31 @@ offset_bottom = 48.0
 mouse_filter = 2
 script = ExtResource("2")
 
+[node name="CodeLabel" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "VALORANT クロスヘアコード"
+
+[node name="CodeInput" type="LineEdit" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+placeholder_text = "例: 0;P;c;5;h;0;0t;1;0l;3;0o;2;0a;1;1b;0"
+clear_button_enabled = true
+
+[node name="ImportCodeButton" type="Button" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "コードを読み込む"
+
+[node name="ImportStatus" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.72, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "Primary Crosshair (P) を読み込みます。ADS / Sniperは現在対象外です。"
+horizontal_alignment = 1
+autowrap_mode = 2
+
 [node name="Fields" type="GridContainer" parent="UI/CrosshairSettingsOverlay/Center/Content"]
 layout_mode = 2
 columns = 2
