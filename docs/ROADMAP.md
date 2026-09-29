@@ -26,6 +26,14 @@
   - 担当: ChatGPT
   - Projection / Mouse delta / Hit DetectionをNode Testで確認する
 
+- [ ] Game Dev Hub v0.1.28でProjectを登録・起動する
+  - 担当: あなた
+  - Game Dev Hubをv0.1.28へ更新する
+  - 「ゲームを追加」でProject種類を「Web / Electron」にする
+  - Repositoryに `https://github.com/EliteMay/Skin-Aim-Trainer` を指定して追加する
+  - 「開発を開始」でLocal Repositoryを準備する
+  - 「ゲームを起動」で開発ServerとBrowserが開くことを確認する
+
 - [ ] Aim Test — マウス操作を実機確認する
   - 担当: あなた
   - ゲーム画面をクリックしてMouseを左右・上下へ動かす
