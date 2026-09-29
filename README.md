@@ -10,7 +10,7 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 
 ## 起動後にやること
 
-1. **練習を開始** を押す
+1. **60秒の練習を開始** を押す
 2. マウスで赤いTargetを狙う
 3. 左クリックで撃つ
 
@@ -54,6 +54,9 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - Crosshair設定
 - VALORANT Crosshair Profile Code Import
 - Inner / Outer Lines対応Crosshair renderer
+- 60秒Session Timer
+- Result画面
+- Local Personal Best保存
 
 ## 将来のUI方向
 
@@ -66,7 +69,6 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - Skin
 - Reload / Inspect
 - Audio / Animation
-- Result / Personal Best
 - Windows Installer
 
 ## 開発環境
