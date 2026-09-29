@@ -32,16 +32,18 @@ Main (Node3D)
    ├─ StartOverlay
    ├─ PauseOverlay
    ├─ SettingsOverlay
-   └─ CrosshairSettingsOverlay
+   ├─ CrosshairSettingsOverlay
+   └─ ResultOverlay
 ```
 
 ## Run State
 
-3状態だけを持つ。
+4状態を持つ。
 
 - `READY` — 開始画面。Cursor visible。
-- `PLAYING` — Mouse captured。Aim / Shoot受付。
-- `PAUSED` — Pause画面。Cursor visible。
+- `PLAYING` — Mouse captured。Aim / Shoot / Countdown受付。
+- `PAUSED` — Pause画面。Cursor visible。Countdown停止。
+- `RESULT` — Session終了結果。Cursor visible。Shoot停止。
 
 遷移:
 
@@ -49,6 +51,9 @@ Main (Node3D)
 READY --開始--> PLAYING
 PLAYING --ESC--> PAUSED
 PAUSED --ESC / 練習に戻る--> PLAYING
+PLAYING --Timer 0--> RESULT
+RESULT --もう一度 / R--> PLAYING(reset)
+RESULT --開始画面へ戻る / ESC--> READY
 PLAYING / PAUSED --R / やり直す--> PLAYING(reset)
 ```
 
@@ -134,6 +139,7 @@ Training中のPrimary Visual:
 補助表示:
 
 - Score / Hit / Miss / 命中率
+- 60秒Countdown Timer
 - `ESC メニュー / R やり直し`
 
 ### Pause
@@ -178,6 +184,30 @@ Movement / Firing Error関連tokenはParse時に検出するが、動的変形�
 
 ImportしたProfileは元Codeも保存する。Import後に手動調整した場合は、現在の簡易Crosshair設定へ切り替える。
 
+### Session / Result / Personal Best
+
+Current default Sessionは60秒。
+
+- `_process(delta)`で`PLAYING`中だけ残り時間を減らす
+- `PAUSED` / Settings / Result中はCountdownしない
+- HUD中央上に`MM:SS`で表示
+- 0秒到達時にRESULTへ遷移
+- Target / Crosshair / HUDを隠し、MouseをVisibleへ戻す
+
+Result表示:
+
+- Score
+- Accuracy
+- Hit / Miss
+- Personal Best
+- New Best表示
+- Retry
+- Startへ戻る
+
+Personal Bestは`user://settings.cfg`の`training_records/default_best_score`へ保存する。
+
+Current defaultは1つのTrainingだけなのでRecord keyも1つ。Stage Library導入時はStage ID単位のRecordへ移行する。
+
 ### Future Home / Stage Library
 
 将来は単一Start画面から、Home / Scenario Library中心の構造へ移行する。
@@ -214,6 +244,11 @@ Automated:
 - Accuracy calculation
 - Scene contract
 - Start UI default state
+- Timer countdown
+- Pause中Timer停止
+- Timer 0 → Result transition
+- Result statistics
+- Personal Best persistence
 
 Actual Playtest:
 
