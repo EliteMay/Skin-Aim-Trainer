@@ -85,9 +85,10 @@ jobs:
             "--scene", "res://tests/core_smoke.tscn"
           ) -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
 
-          if (-not $process.WaitForExit(30000)) {
+          $timedOut = -not $process.WaitForExit(30000)
+          if ($timedOut) {
             $process.Kill()
-            throw "Windows core smoke test timed out."
+            $process.WaitForExit()
           }
 
           $log = ""
@@ -98,6 +99,10 @@ jobs:
             $log += (Get-Content $stderr -Raw)
           }
           Write-Host $log
+
+          if ($timedOut) {
+            throw "Windows core smoke test timed out."
+          }
 
           if ($log -match "SCRIPT ERROR|(^|\s)ERROR:") {
             throw "Windows core smoke contains an error."
