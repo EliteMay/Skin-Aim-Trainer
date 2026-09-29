@@ -1,86 +1,126 @@
 # ROADMAP
 
+## Phase 0 — Web → Godot Rewrite
+
+- [x] Product RuntimeをGodotへ変更する
+  - 担当: ChatGPT
+  - Browser / Electron前提をCurrent仕様から外す
+  - Godot 4.7.2 + GDScript + WindowsをCurrent Runtimeにする
+
+- [x] 旧Web prototypeをGodot 3D prototypeへ置き換える
+  - 担当: ChatGPT
+  - project.godot / Main Scene / GDScript / Godot CIを追加
+  - package.json / Browser server / Web rendererをCurrent runtimeから削除
+
+- [x] 操作導線を作り直す
+  - 担当: ChatGPT
+  - 起動直後に「練習を開始」
+  - 操作を3Stepで表示
+  - Training中はCrosshair / Target / Score中心
+  - ESC Pause / R Restartを常時Hint
+
 ## Phase 1 — Core Aim Prototype
 
-- [x] Web Coreの最小構造を作成する
+- [x] Mouse Aimを実装する
   - 担当: ChatGPT
-  - Aim / Input / Target / Rendererを分離する
-  - 外部AssetとElectronをまだ入れない
+  - Godot Mouse Capture
+  - Mouse deltaを角度へ変換
+  - Frame deltaをSensitivityへ掛けない
 
-- [x] Pointer LockとMouse Aimを実装する
+- [x] Target / Shoot / Hit Detectionを実装する
   - 担当: ChatGPT
-  - Mouse movementX / movementYでCamera角度を更新する
-  - Frame deltaでSensitivityを変えない
+  - 赤いTargetを1個表示
+  - Camera中央RaycastでHit判定
+  - Hit後は次位置へ移動
 
-- [x] Target / Shoot / Hit Detection / Scoreを実装する
+- [x] Score / Hit / Miss / Accuracyを実装する
   - 担当: ChatGPT
-  - TargetにCrosshairが合った時だけScoreが増える
-  - Hit後は次Targetへ切り替わる
 
-- [x] Pause / Restartを実装する
+- [x] Pause / Resume / Restartを実装する
   - 担当: ChatGPT
-  - ESCでPointer Lock解除時にPauseを表示する
-  - RestartでScore / Camera / Targetを初期化する
 
-- [x] Static Validationを実装する
+- [x] Godot Headless Smoke Testを追加する
   - 担当: ChatGPT
-  - Projection / Mouse delta / Hit DetectionをNode Testで確認する
+  - Import / Cold Start / Core SmokeをCIで確認
 
-- [ ] Game Dev Hub v0.1.28でProjectを登録・起動する
+- [ ] Godot版をGame Dev Hubから起動する
   - 担当: あなた
-  - Game Dev Hubをv0.1.28へ更新する
-  - 「ゲームを追加」でProject種類を「Web / Electron」にする
-  - Repositoryに `https://github.com/EliteMay/Skin-Aim-Trainer` を指定して追加する
-  - 「開発を開始」でLocal Repositoryを準備する
-  - 「ゲームを起動」で開発ServerとBrowserが開くことを確認する
+  - Game Dev Hubの旧Skin Aim Trainer登録を解除する
+  - Fileは削除しない
+  - RepositoryをGodot Projectとして再登録する
+  - 「開発を開始」→「ゲームを起動」
 
-- [ ] Aim Test — マウス操作を実機確認する
+- [ ] 操作が迷わないか確認する
   - 担当: あなた
-  - ゲーム画面をクリックしてMouseを左右・上下へ動かす
-  - Crosshairは中央のままTarget / 視界が相対移動する
-  - Cursorが画面外へ出ない
-  - ESCで一時停止し、Aimへ安全に戻れる
+  - 起動直後に何を押すか分かる
+  - 「練習を開始」を押せる
+  - マウスで赤いTargetを狙える
+  - 左クリックで撃てる
 
-- [ ] Shooting Test — Hit / Missを実機確認する
+- [ ] Aim / Shootを実機確認する
   - 担当: あなた
-  - TargetへCrosshairを合わせて5回撃つ
-  - Hitした時だけScoreが1ずつ増える
-  - Target外を撃ってScoreが増えないことを確認する
+  - Targetを5回Hitする
+  - 空振りを数回行う
+  - SCORE / HIT / MISS / 命中率が正しく変わる
+  - Aimが引っ掛からない
 
-- [ ] Restart Test — 初期化を実機確認する
+- [ ] Pause / Restartを実機確認する
   - 担当: あなた
-  - Scoreを増やした後Pause画面から「最初からやり直す」を押す
-  - Scoreが0へ戻る
-  - Aim方向とTargetが初期状態へ戻る
+  - ESCで一時停止
+  - ESCまたは「練習に戻る」で再開
+  - Rまたは「最初からやり直す」でScoreが0へ戻る
 
-完了条件: Mouse Aim → Targetを狙う → 撃つ → Hit判定 → Score のLoopをActual Playtestし、Blockingな入力問題がない。
+完了条件: 起動 → 開始 → Aim → Shoot → Hit/Miss → Score → Pause/Resume/RestartをWindows Actual Playtestし、操作方法が分からないBlockingがない。
 
 ## Phase 2 — Training Foundation
 
-- [ ] Timer / Accuracy / Miss / Result / Personal Bestを実装する
-- [ ] Difficulty / Settings / Sensitivity / Crosshairを実装する
-- [ ] Gridshotを完成させる
+- [ ] Sensitivity / DPI / eDPIのResearchと設定
+- [ ] Crosshair設定
+- [ ] Timer / Result / Personal Best
+- [ ] Difficulty
+- [ ] Gridshot
 
 ## Phase 3 — Training Modes
 
-- [ ] Hold Angle / Microshot / Flick / Skin Test Rangeを実装する
+- [ ] Hold Angle / Pre-Aim
+- [ ] Microshot
+- [ ] Flick
+- [ ] Skin Test Range
 
 ## Phase 4 — Weapon
 
-- [ ] Primary Rifle 1種類のWeapon Rendering / Ammo / Reload / Equip / Inspect / Fire feedbackを実装する
+- [ ] Primary Rifle 1種類
+- [ ] Ammo
+- [ ] Reload
+- [ ] Equip
+- [ ] Inspect
+- [ ] Fire feedback
 
 ## Phase 5 — Skin System
 
-- [ ] Data-driven Skin model / Library / Variant / Asset loading / Cacheを実装する
+- [ ] Data-driven Skin model
+- [ ] Skin Library
+- [ ] Variant
+- [ ] Asset loading / Cache
+- [ ] Skin選択保存
 
 ## Phase 6 — Audio / Animation
 
-- [ ] Fire / Reload / Hit soundとInspect / Skin-specific animationを実装する
+- [ ] Fire / Reload / Hit sound
+- [ ] Weapon / Inspect animation
 
-## Phase 7 — Electron
+## Phase 7 — Windows Distribution
 
-- [ ] Aim Core安定後にElectron shell / Installer / Auto Update / Icon / Releases / Logs / Diagnosticsを実装する
+- [ ] Windows Export
+- [ ] Installer
+- [ ] App Icon
+- [ ] Release
+- [ ] Update strategy
+- [ ] Logs / Diagnostics
 
 ## Phase 8 — Quality
 
-- [ ] Performance / High Refresh / Input / Playtest / Regression / Installer / Updateを検証する
+- [ ] High Refresh / Input latency
+- [ ] Long-session stability
+- [ ] Actual Playtest regression
+- [ ] Windows build / installer regression

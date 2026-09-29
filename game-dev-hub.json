@@ -1,7 +1,0 @@
-{
-  "schemaVersion": 1,
-  "engine": "web",
-  "development": {
-    "url": "http://127.0.0.1:4173"
-  }
-}

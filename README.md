@@ -1,91 +1,73 @@
 # Skin Aim Trainer
 
-OKIAIMXの「すぐ撃てる・FPS視点・Skinを使う楽しさ」と、Aim Trainerの本格的な練習設計を参考にしつつ、コード・Asset・UIをコピーせず独自実装するWindows向けAim Trainerです。
+OKIAIMXの「すぐ練習を始められる短い導線」を参考にしつつ、コード・Asset・UIをコピーせず独自実装するWindows向けAim Trainerです。
 
-## 現在の状態
+## 現在の方針
 
-**Phase 1 — Core Aim Prototype**
+**Browser / Electron版は終了し、Godot 4.7.2 + GDScriptでWindowsゲームとして開発します。**
 
-実装済み:
+今はPhase 1の操作確認版です。最優先は「何をすればいいか一目で分かる」「マウスAimが素直に動く」ことです。
 
-- Pointer Lock
-- Mouse movement based aiming
-- Crosshair固定 / Camera角度更新
-- Target表示
-- 左クリック射撃
-- Hit Detection
-- Score
-- ESC Pause / Pointer Lock復帰
-- Restart
-- Node標準機能だけで起動するLocal dev server
-- Aim math / Hit detectionの自動Test
+## 起動後にやること
 
-未実装（意図的）:
-
-- VALORANT Sensitivity換算
-- DPI / eDPI
-- Gridshot等のTraining Mode
-- Weapon / Skin / Audio / Animation
-- Electron
-- VALORANT Asset
-
-Phase 1では「Mouse Aim → Targetを狙う → 撃つ → Hit判定 → Score」の安定性を先に確認します。
-
-## 起動
-
-Node.js 20以上で:
-
-```bash
-npm run dev
-```
-
-表示された `http://127.0.0.1:4173` をChrome / Edgeで開きます。
+1. **練習を開始** を押す
+2. マウスで赤いTargetを狙う
+3. 左クリックで撃つ
 
 操作:
 
-- 画面クリック: Pointer Lock / Aim開始
 - マウス移動: Aim
 - 左クリック: Shoot
-- ESC: Pause
-- Pause画面の「最初からやり直す」: Restart
-- F2: 開発中の即時Restart
+- ESC: 一時停止 / 再開
+- R: 最初からやり直す
 
-## Test
+Phase 1では移動、武器モデル、Skin、モード選択、細かい設定はまだ入れません。
 
-```bash
-npm run validate
-```
+## Phase 1で実装済み
 
-自動TestはMath / Projection / Mouse delta処理 / Hit Detectionを確認します。Pointer Lockの体感・入力遅延・高Refresh Rateでの操作感は自動Testだけでは完了扱いにしません。
+- Godot 3D Training Scene
+- 起動直後の大きい開始画面
+- 日本語の操作説明
+- Mouse Capture
+- Mouse Aim
+- 中央Crosshair
+- 赤いTarget
+- 左クリック射撃
+- Raycast Hit Detection
+- Score / Hit / Miss / 命中率
+- HIT / MISS Feedback
+- ESC Pause / Resume
+- R Restart
+- Godot Headless Smoke Test
+- GitHub Actions CI
 
-## Architecture
+## まだ入れていないもの
 
-```text
-Web Core
-├─ AimEngine
-├─ InputController
-├─ TargetSystem
-├─ Renderer
-└─ Game Flow
+- VALORANT Sensitivity換算
+- DPI / eDPI
+- Gridshot / Microshot / Hold Angle / Flick
+- 武器モデル
+- Skin
+- Reload / Inspect
+- Audio / Animation
+- Result / Personal Best
+- Windows Installer
 
-Later
-├─ Training Modes
-├─ Weapon System
-├─ Skin System
-├─ Results / Storage
-└─ Electron Shell
-```
+## 開発環境
 
-Aim CoreへElectron固有処理を直接混ぜません。
+- Engine: Godot 4.7.2 stable
+- Language: GDScript
+- Primary target: Windows
+- Main Scene: `res://scenes/main.tscn`
 
 ## Game Dev Hub
 
-`docs/ROADMAP.md` はGame Dev Hubのやることリストで読める形式です。
+このRepositoryはGodot Projectです。
 
-Game Dev Hub **v0.1.28以降**はWeb / Electron Project対応済みです。Project種類に **Web / Electron** を選び、このRepositoryを登録できます。
+以前Web / Electronとして登録したSkin Aim TrainerがGame Dev Hubに残っている場合は、**登録だけ解除してGodot Projectとして再登録**します。PC上のRepository Fileを削除する必要はありません。
 
-`game-dev-hub.json` はHubが開発Server起動後に開くloopback URLだけを保持します。任意Commandは持たせません。
+HubからはGodot Editor起動 / Game起動 / Roadmap確認を使います。
 
 ## Asset Policy
 
-Phase 1は外部Assetを使用しません。VALORANTの実Skin画像・3D Model・Texture・Animation・Sound等を、権利状態が不明なままRepositoryへ追加しません。
+実VALORANT Skin、3D Model、Texture、Animation、Sound等は、利用条件を確認せずRepositoryへ追加しません。初期はOriginal / Placeholder / 利用許可を確認できるAssetだけを使用します。

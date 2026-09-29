@@ -1,45 +1,88 @@
-# WORK REPORT — 2026-09-29 Phase 1
+# WORK REPORT
 
-## Scope
+## 2026-09-29 — Godot Rewrite
 
-Skin Aim TrainerのPhase 1 Core Aim Prototypeを作成。
+### User Evidence
 
-## Implemented
+旧Browser prototypeについて次のFeedbackを受けた。
 
+- ChromeではなくGodotで作りたい
+- ゲームが何をすればいいか分からない
+- 操作しにくい
+
+### Decision
+
+Current Product ArchitectureをWeb / ElectronからGodotへ変更する。
+
+- Godot 4.7.2 stable
+- GDScript
+- Windows-first
+- BrowserをPrimary Runtimeにしない
+- Electronを本ゲームShellにしない
+
+旧Web実装はGit履歴へ残すがCurrent Runtimeから削除する。
+
+### Usability Direction
+
+起動後の導線を最小化。
+
+```text
+起動
+→ 練習を開始
+→ マウスでTargetを狙う
+→ 左クリック
+```
+
+Training中に必要のないMode / Skin / SettingsはPhase 1画面へ出さない。
+
+### Implemented
+
+- Godot project
+- 3D arena
+- Mouse capture
+- Mouse aim
+- Center crosshair
+- Single target
+- Physics raycast shooting
+- Score / Hit / Miss / Accuracy
+- Hit / Miss feedback
+- Start overlay
+- Japanese 3-step instructions
+- Pause overlay
+- Resume / Restart
+- R restart
+- Godot Headless CI / Core Smoke
+
+### Architecture Change
+
+Before:
+
+- Browser
+- Canvas
 - Pointer Lock
-- Mouse Aim
-- Target projection
-- Shoot / Hit Detection
-- Score
-- Pause / Resume
-- Restart
-- Static validator
-- Node tests
-- Game Dev Hub向けROADMAP
+- Node dev server
+- Later Electron
 
-## Validation
+After:
 
-- Static validation: PASS（required files 12/12）
-- Node tests: PASS（6/6）
-- GitHub Actions CI: PASS（`npm run validate`）
-- Local HTTP smoke: PASS（index.html / src/main.js 配信確認）
-- Browser runtime / Pointer Lock: 未確認
-- Actual Playtest: 未確認
-- Windows real-device: 未確認
-- High Refresh Rate: 未確認
+- Godot 4.7.2
+- Node3D / Camera3D
+- Godot Mouse Capture
+- Physics Raycast
+- Windows Desktop target
 
-## Game Dev Hub Integration
+### Validation
 
-- Game Dev Hub v0.1.28: Web / Electron Project supportをRelease済み
-- Registry: `godot / web` 対応
-- Existing Repository import: `project.godot / package.json` を判定
-- Web launch: Main Processから固定の `npm run dev`
-- `game-dev-hub.json`: loopback開発URLだけを許可
-- Game Dev Hub CI / Security / Release: PASS
+- Repository implementation: complete on rewrite branch
+- Godot CI: PASS — GitHub Actions run 36545307524
+- Windows Actual Playtest: NOT_RUN
+- High Refresh Rate: NOT_RUN
+- Visual / usability final confirmation: NOT_RUN
 
-## Remaining Verification
+### Remaining
 
-- Game Dev Hub v0.1.28から本RepositoryをWindows実機で登録・Clone / Syncできること
-- Hubの「ゲームを起動」からdev serverとBrowserを起動できること
-- Pointer Lock / Mouse Aim / Hit-Miss / RestartのActual Playtest
-- 120Hz / 144Hz以上を含む高Refresh環境でAim体感を確認すること
+1. mainへmerge
+2. Game Dev HubでGodotとして再登録
+3. Windows実機で起動
+4. 「何をすればいいか分かるか」を最初に確認
+5. Aim / Hit / Miss / Pause / Restartを確認
