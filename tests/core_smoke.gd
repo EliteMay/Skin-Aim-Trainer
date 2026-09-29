@@ -223,7 +223,6 @@ func _ready() -> void:
 	)
 
 	instance.start_training()
-	await get_tree().process_frame
 	assert(instance.run_state == instance.RunState.PLAYING)
 	assert(instance.score == 0)
 	assert(is_equal_approx(instance.session_remaining_seconds, 60.0))
