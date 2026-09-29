@@ -51,9 +51,17 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - Sensitivity保存
 - Resolution scaleの影響を避けるGodot `screen_relative` Mouse Aim
 - Mouse input accumulation無効化
+- Crosshair設定
+- VALORANT Crosshair Profile Code Import
+- Inner / Outer Lines対応Crosshair renderer
+
+## 将来のUI方向
+
+現在はCore Trainingの検証を優先していますが、将来は **Home → Stage選択 → Play → Result** のAim Lab / Kovaak's系Training Platform構成へ拡張します。
 
 ## まだ入れていないもの
-- Gridshot / Microshot / Hold Angle / Flick
+- Home / Stage Library
+- Gridshot / Microshot / Hold Angle / Flick / Tracking
 - 武器モデル
 - Skin
 - Reload / Inspect
