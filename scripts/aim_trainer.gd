@@ -10,16 +10,39 @@ enum RunState {
 	RESULT,
 }
 
+enum DifficultyLevel {
+	EASY,
+	NORMAL,
+	HARD,
+}
+
 const TARGET_DISTANCE := 14.0
-const TARGET_RADIUS := 0.62
-const TARGET_X_RANGE := Vector2(-5.2, 5.2)
-const TARGET_Y_RANGE := Vector2(0.2, 4.6)
+const DIFFICULTY_KEYS := ["easy", "normal", "hard"]
+const DIFFICULTY_LABELS := ["かんたん", "標準", "むずかしい"]
+const DIFFICULTY_DESCRIPTIONS := [
+	"Target: 大きい  /  出現範囲: 狭い",
+	"Target: 標準  /  出現範囲: 標準",
+	"Target: 小さい  /  出現範囲: 広い",
+]
+const DIFFICULTY_TARGET_RADII := [0.82, 0.62, 0.46]
+const DIFFICULTY_X_RANGES := [
+	Vector2(-4.2, 4.2),
+	Vector2(-5.2, 5.2),
+	Vector2(-6.2, 6.2),
+]
+const DIFFICULTY_Y_RANGES := [
+	Vector2(0.6, 4.2),
+	Vector2(0.2, 4.6),
+	Vector2(-0.1, 5.0),
+]
+const DEFAULT_DIFFICULTY := DifficultyLevel.NORMAL
 const PITCH_LIMIT_DEGREES := 72.0
 const SESSION_DURATION_SECONDS := 60.0
 
 const SETTINGS_PATH := "user://settings.cfg"
 const SETTINGS_SECTION := "aim"
 const CROSSHAIR_SETTINGS_SECTION := "crosshair"
+const TRAINING_SETTINGS_SECTION := "training"
 const RECORDS_SECTION := "training_records"
 const DEFAULT_DPI := 1600.0
 const DEFAULT_VALORANT_SENSITIVITY := 0.1
@@ -62,6 +85,12 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 	$UI/StartOverlay/Center/Content/CrosshairButton
 )
 @onready var start_best_label: Label = $UI/StartOverlay/Center/Content/BestScore
+@onready var difficulty_select: OptionButton = (
+	$UI/StartOverlay/Center/Content/DifficultyRow/DifficultySelect
+)
+@onready var difficulty_description: Label = (
+	$UI/StartOverlay/Center/Content/DifficultyDescription
+)
 
 @onready var pause_overlay: Control = $UI/PauseOverlay
 @onready var resume_button: Button = $UI/PauseOverlay/Center/Content/ResumeButton
@@ -143,6 +172,7 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 	$UI/ResultOverlay/Center/Content/HitsMisses
 )
 @onready var result_best_label: Label = $UI/ResultOverlay/Center/Content/Best
+@onready var result_mode_label: Label = $UI/ResultOverlay/Center/Content/Duration
 @onready var retry_button: Button = $UI/ResultOverlay/Center/Content/RetryButton
 @onready var result_back_button: Button = (
 	$UI/ResultOverlay/Center/Content/BackButton
@@ -158,6 +188,12 @@ var shots := 0
 var hits := 0
 var misses := 0
 var session_remaining_seconds := SESSION_DURATION_SECONDS
+var selected_difficulty := DEFAULT_DIFFICULTY
+var personal_best_scores: Dictionary = {
+	"easy": 0,
+	"normal": 0,
+	"hard": 0,
+}
 var personal_best_score := 0
 var last_session_new_best := false
 
@@ -191,6 +227,7 @@ var previous_accumulated_input := true
 
 var target_body: StaticBody3D
 var target_mesh: MeshInstance3D
+var target_collision: CollisionShape3D
 var rng := RandomNumberGenerator.new()
 
 
@@ -199,6 +236,9 @@ func _ready() -> void:
 
 	previous_accumulated_input = Input.use_accumulated_input
 	Input.use_accumulated_input = false
+
+	_populate_difficulty_options()
+	difficulty_select.item_selected.connect(_on_difficulty_selected)
 
 	start_button.pressed.connect(start_training)
 	start_settings_button.pressed.connect(
@@ -242,6 +282,7 @@ func _ready() -> void:
 	_sync_settings_controls()
 	_sync_crosshair_controls()
 	_create_target()
+	_sync_difficulty_ui()
 	_show_ready_state()
 	_update_hud()
 	_update_sensitivity_labels()
@@ -432,6 +473,7 @@ func _finish_session() -> void:
 	last_session_new_best = score > personal_best_score
 	if last_session_new_best:
 		personal_best_score = score
+		personal_best_scores[_current_difficulty_key()] = personal_best_score
 		_save_personal_best()
 
 	hud.visible = false
@@ -450,7 +492,11 @@ func _finish_session() -> void:
 	result_score_label.text = "SCORE  %d" % score
 	result_accuracy_label.text = "命中率  %d%%" % int(round(accuracy))
 	result_hits_misses_label.text = "HIT  %d    MISS  %d" % [hits, misses]
-	result_best_label.text = "BEST  %d" % personal_best_score
+	result_best_label.text = "%s BEST  %d" % [
+		_current_difficulty_label(),
+		personal_best_score,
+	]
+	result_mode_label.text = "%s / 60秒 Session" % _current_difficulty_label()
 	_update_best_labels()
 	retry_button.grab_focus()
 
@@ -485,8 +531,6 @@ func _create_target() -> void:
 	target_mesh = MeshInstance3D.new()
 	target_mesh.name = "Mesh"
 	var sphere := SphereMesh.new()
-	sphere.radius = TARGET_RADIUS
-	sphere.height = TARGET_RADIUS * 2.0
 	target_mesh.mesh = sphere
 
 	var target_material := StandardMaterial3D.new()
@@ -497,13 +541,13 @@ func _create_target() -> void:
 	target_mesh.material_override = target_material
 	target_body.add_child(target_mesh)
 
-	var collision := CollisionShape3D.new()
-	collision.name = "Collision"
+	target_collision = CollisionShape3D.new()
+	target_collision.name = "Collision"
 	var shape := SphereShape3D.new()
-	shape.radius = TARGET_RADIUS
-	collision.shape = shape
-	target_body.add_child(collision)
+	target_collision.shape = shape
+	target_body.add_child(target_collision)
 
+	_apply_difficulty_to_target()
 	_move_target()
 
 
@@ -511,11 +555,28 @@ func _move_target() -> void:
 	if target_body == null:
 		return
 
+	var x_range: Vector2 = DIFFICULTY_X_RANGES[selected_difficulty]
+	var y_range: Vector2 = DIFFICULTY_Y_RANGES[selected_difficulty]
 	target_body.position = Vector3(
-		rng.randf_range(TARGET_X_RANGE.x, TARGET_X_RANGE.y),
-		rng.randf_range(TARGET_Y_RANGE.x, TARGET_Y_RANGE.y),
+		rng.randf_range(x_range.x, x_range.y),
+		rng.randf_range(y_range.x, y_range.y),
 		-TARGET_DISTANCE
 	)
+
+
+func _apply_difficulty_to_target() -> void:
+	if target_mesh == null or target_collision == null:
+		return
+
+	var radius: float = DIFFICULTY_TARGET_RADII[selected_difficulty]
+	var sphere := target_mesh.mesh as SphereMesh
+	if sphere != null:
+		sphere.radius = radius
+		sphere.height = radius * 2.0
+
+	var shape := target_collision.shape as SphereShape3D
+	if shape != null:
+		shape.radius = radius
 
 
 func _update_hud() -> void:
@@ -533,14 +594,88 @@ func _update_timer_label() -> void:
 	timer_label.text = "%02d:%02d" % [minutes, seconds]
 
 
+func _populate_difficulty_options() -> void:
+	difficulty_select.clear()
+	for label in DIFFICULTY_LABELS:
+		difficulty_select.add_item(label)
+
+
+func _current_difficulty_key() -> String:
+	return DIFFICULTY_KEYS[selected_difficulty]
+
+
+func _current_difficulty_label() -> String:
+	return DIFFICULTY_LABELS[selected_difficulty]
+
+
+func _difficulty_from_key(key: String) -> int:
+	var index := DIFFICULTY_KEYS.find(key)
+	if index < 0:
+		return DEFAULT_DIFFICULTY
+	return index
+
+
+func _sync_current_personal_best() -> void:
+	personal_best_score = maxi(
+		int(personal_best_scores.get(_current_difficulty_key(), 0)),
+		0
+	)
+
+
+func _sync_difficulty_ui() -> void:
+	difficulty_select.select(selected_difficulty)
+	difficulty_description.text = DIFFICULTY_DESCRIPTIONS[selected_difficulty]
+	_sync_current_personal_best()
+	_update_best_labels()
+
+
+func _on_difficulty_selected(index: int) -> void:
+	if index < 0 or index >= DIFFICULTY_KEYS.size():
+		return
+	if run_state != RunState.READY:
+		_sync_difficulty_ui()
+		return
+
+	selected_difficulty = index
+	_sync_current_personal_best()
+	_apply_difficulty_to_target()
+	_move_target()
+	_update_best_labels()
+	difficulty_description.text = DIFFICULTY_DESCRIPTIONS[selected_difficulty]
+
+	var save_error := _save_training_settings()
+	if save_error != OK:
+		difficulty_description.text = (
+			"難易度を保存できませんでした。Error: %d" % save_error
+		)
+
+
 func _update_best_labels() -> void:
-	start_best_label.text = "BEST  %d" % personal_best_score
+	start_best_label.text = "%s BEST  %d" % [
+		_current_difficulty_label(),
+		personal_best_score,
+	]
+
+
+func _save_training_settings() -> Error:
+	var config := ConfigFile.new()
+	config.load(SETTINGS_PATH)
+	config.set_value(
+		TRAINING_SETTINGS_SECTION,
+		"difficulty",
+		_current_difficulty_key()
+	)
+	return config.save(SETTINGS_PATH)
 
 
 func _save_personal_best() -> Error:
 	var config := ConfigFile.new()
 	config.load(SETTINGS_PATH)
-	config.set_value(RECORDS_SECTION, "default_best_score", personal_best_score)
+	config.set_value(
+		RECORDS_SECTION,
+		"best_%s_score" % _current_difficulty_key(),
+		personal_best_score
+	)
 	return config.save(SETTINGS_PATH)
 
 
@@ -560,6 +695,8 @@ func _load_settings() -> void:
 		crosshair_dot_size = DEFAULT_CROSSHAIR_DOT_SIZE
 		crosshair_imported_code = ""
 		crosshair_profile = _manual_crosshair_profile()
+		selected_difficulty = DEFAULT_DIFFICULTY
+		_sync_current_personal_best()
 		return
 
 	mouse_dpi = clampf(
@@ -664,10 +801,39 @@ func _load_settings() -> void:
 	else:
 		crosshair_profile = _manual_crosshair_profile()
 
-	personal_best_score = maxi(
+	selected_difficulty = _difficulty_from_key(
+		str(
+			config.get_value(
+				TRAINING_SETTINGS_SECTION,
+				"difficulty",
+				DIFFICULTY_KEYS[DEFAULT_DIFFICULTY]
+			)
+		)
+	)
+
+	var legacy_normal_best := maxi(
 		int(config.get_value(RECORDS_SECTION, "default_best_score", 0)),
 		0
 	)
+	personal_best_scores["easy"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_easy_score", 0)),
+		0
+	)
+	personal_best_scores["normal"] = maxi(
+		int(
+			config.get_value(
+				RECORDS_SECTION,
+				"best_normal_score",
+				legacy_normal_best
+			)
+		),
+		0
+	)
+	personal_best_scores["hard"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_hard_score", 0)),
+		0
+	)
+	_sync_current_personal_best()
 
 
 func _save_settings() -> Error:
