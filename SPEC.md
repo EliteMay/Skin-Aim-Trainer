@@ -31,7 +31,8 @@ Main (Node3D)
    ├─ Feedback
    ├─ StartOverlay
    ├─ PauseOverlay
-   └─ SettingsOverlay
+   ├─ SettingsOverlay
+   └─ CrosshairSettingsOverlay
 ```
 
 ## Run State
@@ -121,7 +122,7 @@ First Viewで以下だけを強く見せる。
 - 3Step操作説明
 - 大きい「練習を開始」
 
-未実装のMode / Skin / SettingsはMain flowへ出さない。
+未実装のMode / SkinはMain flowへ出さない。
 
 ### Training
 
@@ -151,6 +152,45 @@ Training中のPrimary Visual:
 - Save / Cancel
 
 Start画面では「練習を開始」をPrimary Actionとして維持し、感度設定はSecondary Actionにする。
+
+### Crosshair Settings
+
+- Custom ControlでCrosshairを描画する
+- 色
+- Inner line length / thickness / offset
+- Outline
+- Center Dot
+- Preview
+- Save / Cancel
+- VALORANT Crosshair Profile Code Import
+
+VALORANT Code ImportはPrimary `P` Sectionを対象にする。
+
+対応する静的項目:
+
+- preset / custom color (`c`, `u`)
+- outline (`h`, `o`, `t`)
+- center dot (`d`, `a`, `z`)
+- inner lines (`0b/0a/0l/0v/0g/0t/0o`)
+- outer lines (`1b/1a/1l/1v/1g/1t/1o`)
+
+Movement / Firing Error関連tokenはParse時に検出するが、動的変形は再現しない。ADS `A` / Sniper `S` Sectionも現在は対象外。
+
+ImportしたProfileは元Codeも保存する。Import後に手動調整した場合は、現在の簡易Crosshair設定へ切り替える。
+
+### Future Home / Stage Library
+
+将来は単一Start画面から、Home / Scenario Library中心の構造へ移行する。
+
+```text
+Home
+→ Stage Library
+→ Training
+→ Result
+→ Retry / Next
+```
+
+Stage定義はData-driven化し、Mode追加でMain Sceneへ巨大な分岐を追加しない。
 
 ## Performance
 
