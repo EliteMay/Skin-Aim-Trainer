@@ -19,6 +19,7 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - マウス移動: Aim
 - 左クリック: Shoot
 - ESC: 一時停止 / 再開
+- Pause中の「メインメニューへ戻る」: 途中Sessionを破棄して開始画面へ戻る
 - R: 最初からやり直す
 
 移動、武器モデル、Skin、モード選択はまだ入れていません。Phase 2では感度・Crosshair・Difficultyを設定できます。
@@ -60,6 +61,7 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - 3段階Difficulty（かんたん / 標準 / むずかしい）
 - Difficulty別Personal Best
 - 既存BESTを失わないNormal互換読み込み
+- Pause中からメインメニューへ即時復帰
 
 ## 将来のUI方向
 
