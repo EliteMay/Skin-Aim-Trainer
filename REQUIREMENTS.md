@@ -111,8 +111,14 @@ Accountは必須にしない。Phase 2以降、Sensitivity / DPI / Crosshair / C
 14. MVP前に不要機能を増やさない
 15. Game Dev HubでActual Playtest可能な状態を最終的に維持する
 
-## Current Blocking Integration Issue
+## Game Dev Hub Integration
 
-2026-09-29のGame Dev Hub v0.1.27はProject modelで`engine !== "godot"`を拒否するため、本ProjectのWeb/Electron architectureを直接登録できない。
+2026-09-29時点でGame Dev Hub v0.1.28はWeb / Electron Project登録へ対応済み。
 
-Project architectureをGodotへ変える回避はしない。Hub側にWeb/Electron Project supportを追加するか、対応完了まで本Repository単体でWeb Coreを検証する。
+- Project種類: `Web / Electron`
+- Project marker: `package.json`
+- Hubからの起動: 固定の `npm run dev`
+- Browser自動Open: `game-dev-hub.json` に記録したloopback URLのみ
+- Godot Game Foundationは本Projectへ適用しない
+
+Phase 1の残りBlockingはHub対応ではなく、Windows実機でPointer Lock / Mouse Aim / Hit-Miss / RestartをActual PlaytestしてCore Loopを確認すること。
