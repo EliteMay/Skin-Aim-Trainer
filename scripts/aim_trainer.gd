@@ -41,7 +41,7 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 @onready var hit_label: Label = $UI/HUD/Stats/Hits
 @onready var miss_label: Label = $UI/HUD/Stats/Misses
 @onready var accuracy_label: Label = $UI/HUD/Stats/Accuracy
-@onready var crosshair: AimCrosshair = $UI/Crosshair
+@onready var crosshair: Control = $UI/Crosshair
 @onready var controls_hint: Label = $UI/ControlsHint
 @onready var feedback_label: Label = $UI/Feedback
 @onready var feedback_timer: Timer = $FeedbackTimer
@@ -85,7 +85,7 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 )
 
 @onready var crosshair_settings_overlay: Control = $UI/CrosshairSettingsOverlay
-@onready var crosshair_preview: AimCrosshair = (
+@onready var crosshair_preview: Control = (
 	$UI/CrosshairSettingsOverlay/Center/Content/PreviewArea/PreviewCrosshair
 )
 @onready var crosshair_color_input: ColorPickerButton = (
@@ -181,7 +181,7 @@ func _ready() -> void:
 	start_settings_button.pressed.connect(
 		func() -> void: _open_settings(RunState.READY)
 	)
-	start_crosshair_button.button_down.connect(
+	start_crosshair_button.pressed.connect(
 		func() -> void: _open_crosshair_settings(RunState.READY)
 	)
 	resume_button.pressed.connect(resume_training)
@@ -189,7 +189,7 @@ func _ready() -> void:
 	pause_settings_button.pressed.connect(
 		func() -> void: _open_settings(RunState.PAUSED)
 	)
-	pause_crosshair_button.button_down.connect(
+	pause_crosshair_button.pressed.connect(
 		func() -> void: _open_crosshair_settings(RunState.PAUSED)
 	)
 	save_settings_button.pressed.connect(_save_settings_and_close)
