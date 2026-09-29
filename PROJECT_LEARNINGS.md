@@ -81,3 +81,12 @@
 - Context: VALORANT Crosshair Codeのtoken mappingは公開ParserとCommunity analysisで一致するが、Riotの完全なFormat specificationは確認できていない。
 - Decision: Import compatibilityとして実装するが、Riot公式完全互換と断定しない。
 - Prevention: 未対応token / 新Formatが出た場合はParser Testを追加し、既知範囲を明示する。
+
+
+## PL-011 — 新しいclass_nameをDirect Launchの必須型にしない
+
+- Date: 2026-09-29
+- Status: Adopted
+- Context: 新規`class_name` scriptはGodotのglobal class cache更新前にWindows Direct Launchされると、別Scriptの型注釈から解決できない場合がある。
+- Decision: Game Dev Hubから更新直後に直接起動されるMain Runtimeでは、新規custom classを必須型注釈として参照しない。必要ならexplicit preloadまたはbuilt-in base typeを使う。
+- Prevention: Windows CIでは事前Editor importに依存しないDirect Launch Smokeを維持する。

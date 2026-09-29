@@ -96,6 +96,54 @@ func _ready() -> void:
 		) is Button
 	)
 
+	var start_crosshair_button := instance.get_node(
+		"UI/StartOverlay/Center/Content/CrosshairButton"
+	) as Button
+	assert(start_crosshair_button != null)
+	assert(start_crosshair_button.visible)
+	assert(not start_crosshair_button.disabled)
+
+	var button_center := (
+		start_crosshair_button.global_position
+		+ start_crosshair_button.size * 0.5
+	)
+
+	var mouse_down := InputEventMouseButton.new()
+	mouse_down.button_index = MOUSE_BUTTON_LEFT
+	mouse_down.position = button_center
+	mouse_down.global_position = button_center
+	mouse_down.pressed = true
+	instance.get_viewport().push_input(mouse_down, true)
+	await get_tree().process_frame
+
+	var mouse_up := InputEventMouseButton.new()
+	mouse_up.button_index = MOUSE_BUTTON_LEFT
+	mouse_up.position = button_center
+	mouse_up.global_position = button_center
+	mouse_up.pressed = false
+	instance.get_viewport().push_input(mouse_up, true)
+	await get_tree().process_frame
+
+	assert(not instance.get_node("UI/StartOverlay").visible)
+	assert(instance.get_node("UI/CrosshairSettingsOverlay").visible)
+	assert(
+		instance.get_node(
+			"UI/CrosshairSettingsOverlay/Center/Content/CodeInput"
+		).has_focus()
+	)
+
+	var crosshair_content := instance.get_node(
+		"UI/CrosshairSettingsOverlay/Center/Content"
+	) as Control
+	var viewport_size := instance.get_viewport().get_visible_rect().size
+	print(
+		"CROSSHAIR_LAYOUT: viewport=",
+		viewport_size,
+		" content_rect=",
+		crosshair_content.get_global_rect()
+	)
+	assert(crosshair_content.size.y <= viewport_size.y)
+
 	var dpi_input := instance.get_node(
 		"UI/SettingsOverlay/Center/Content/Fields/DpiInput"
 	) as SpinBox

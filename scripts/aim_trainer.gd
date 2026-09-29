@@ -41,7 +41,7 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 @onready var hit_label: Label = $UI/HUD/Stats/Hits
 @onready var miss_label: Label = $UI/HUD/Stats/Misses
 @onready var accuracy_label: Label = $UI/HUD/Stats/Accuracy
-@onready var crosshair: AimCrosshair = $UI/Crosshair
+@onready var crosshair: Control = $UI/Crosshair
 @onready var controls_hint: Label = $UI/ControlsHint
 @onready var feedback_label: Label = $UI/Feedback
 @onready var feedback_timer: Timer = $FeedbackTimer
@@ -85,7 +85,7 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 )
 
 @onready var crosshair_settings_overlay: Control = $UI/CrosshairSettingsOverlay
-@onready var crosshair_preview: AimCrosshair = (
+@onready var crosshair_preview: Control = (
 	$UI/CrosshairSettingsOverlay/Center/Content/PreviewArea/PreviewCrosshair
 )
 @onready var crosshair_color_input: ColorPickerButton = (

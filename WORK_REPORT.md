@@ -178,3 +178,46 @@ Userから、将来はAim Lab / Kovaak'sのようにHomeから複数Stageを選�
 - Godot import / cold start: PASS — GitHub Actions run 36552007274
 - Windows VALORANT code import: NOT_RUN
 - Windows persistence: NOT_RUN
+
+
+## 2026-09-29 — Crosshair Settings Button Windows Fix
+
+### User Evidence
+
+Windows実機で「クロスヘアを設定」を押しても画面が変わらないと報告。
+
+### Reproduction
+
+既存Linux CIは事前にGodot `--import` を実行していたため再現しなかった。
+
+Windows Direct Launch相当のCIを追加し、import cacheなしでCore Smokeを起動したところ次を再現:
+
+```text
+Parse Error: Could not find type "AimCrosshair" in the current scope.
+```
+
+### Root Cause
+
+`aim_trainer.gd` が、新規追加した `crosshair.gd` の `class_name AimCrosshair` を型注釈として参照していた。
+
+Godot Editor / import scan後はglobal class cacheに登録されるため正常だが、Game Dev HubからRepository更新直後にWindowsで直接起動すると、新classがcacheへ登録される前にMain Scriptをparseする場合がある。
+
+その結果、Windows Direct LaunchでMain Script parseが失敗し、新しく追加したCrosshair UI処理が正常に初期化されない状態になった。
+
+### Fix
+
+- `AimCrosshair` のglobal class型注釈依存を削除
+- SceneへattachされたCrosshair scriptを `Control` として参照
+- Crosshair APIはattached scriptのmethodとして呼び出す
+- Crosshair buttonは通常の `pressed` semanticsを維持
+- Runtime Smoke Testで実マウスdown/upを通してCrosshair Settings遷移を確認
+- Windows Godot 4.7.2 Direct Launch SmokeをCIへ追加
+- Crosshair Settings contentが1600x900 viewport内に収まることも確認
+
+### Validation
+
+- Linux Godot CI: PASS
+- Windows Godot 4.7.2 direct smoke: PASS
+- Crosshair button GUI click transition: PASS
+- Crosshair Settings layout: PASS — 620x843 within 1600x900
+- User Windows actual retest: NOT_RUN

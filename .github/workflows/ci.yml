@@ -57,3 +57,56 @@ jobs:
             exit 1
           fi
           grep -q "SKIN_AIM_CORE_SMOKE: PASS" core-smoke.log
+
+  validate-windows:
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Godot 4.7.2
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip" -OutFile "godot.zip"
+          Expand-Archive -Path "godot.zip" -DestinationPath "." -Force
+
+      - name: Windows core smoke test
+        shell: pwsh
+        run: |
+          $exe = Join-Path $PWD "Godot_v4.7.2-stable_win64.exe"
+          $stdout = Join-Path $PWD "core-smoke-win.out.log"
+          $stderr = Join-Path $PWD "core-smoke-win.err.log"
+
+          $process = Start-Process -FilePath $exe -ArgumentList @(
+            "--headless",
+            "--path", ".",
+            "--scene", "res://tests/core_smoke.tscn"
+          ) -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+
+          $timedOut = -not $process.WaitForExit(30000)
+          if ($timedOut) {
+            $process.Kill()
+            $process.WaitForExit()
+          }
+
+          $log = ""
+          if (Test-Path $stdout) {
+            $log += (Get-Content $stdout -Raw)
+          }
+          if (Test-Path $stderr) {
+            $log += (Get-Content $stderr -Raw)
+          }
+          Write-Host $log
+
+          if ($timedOut) {
+            throw "Windows core smoke test timed out."
+          }
+
+          if ($log -match "SCRIPT ERROR|(^|\s)ERROR:") {
+            throw "Windows core smoke contains an error."
+          }
+          if ($log -notmatch "SKIN_AIM_CORE_SMOKE: PASS") {
+            throw "Windows core smoke did not complete."
+          }
