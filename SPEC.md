@@ -51,6 +51,7 @@ Main (Node3D)
 READY --開始--> PLAYING
 PLAYING --ESC--> PAUSED
 PAUSED --ESC / 練習に戻る--> PLAYING
+PAUSED --メインメニューへ戻る--> READY
 PLAYING --Timer 0--> RESULT
 RESULT --もう一度 / R--> PLAYING(reset)
 RESULT --開始画面へ戻る / ESC--> READY
@@ -155,7 +156,11 @@ Training中のPrimary Visual:
 
 - 練習に戻る
 - 感度を設定
+- クロスヘアを設定
 - 最初からやり直す
+- メインメニューへ戻る
+
+「メインメニューへ戻る」は現在の途中Sessionを破棄してREADYへ戻す。途中ScoreはPersonal Bestへ保存しない。確認Dialogは出さず、Difficulty等を繰り返し検証しやすい短い導線を優先する。
 
 ### Sensitivity Settings
 
@@ -276,6 +281,8 @@ Automated:
 - Start UI default state
 - Timer countdown
 - Pause中Timer停止
+- Pause → メインメニュー遷移
+- 途中Session破棄時にPersonal Bestを更新しない
 - Timer 0 → Result transition
 - Result statistics
 - Personal Best persistence
