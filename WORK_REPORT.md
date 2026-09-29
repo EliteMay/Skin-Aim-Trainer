@@ -332,6 +332,6 @@ Difficulty等のWindows実機確認中、60秒Sessionの途中からStartへ戻�
 
 ### Validation State
 
-- Linux Godot CI: pending
-- Windows Direct Smoke: pending
+- Linux Godot CI: PASS — GitHub Actions run 36609240253
+- Windows Direct Smoke: PASS — GitHub Actions run 36609240253
 - Windows Actual Playtest: NOT_RUN
