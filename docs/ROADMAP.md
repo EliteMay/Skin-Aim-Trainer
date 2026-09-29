@@ -93,19 +93,43 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - user://settings.cfgへ保存
   - 計算とUI ContractをGodot Smoke Testへ追加
 
-- [ ] Sensitivity / DPI / eDPIを実機確認する
+- [x] Sensitivity / DPI / eDPIを実機確認する
   - 担当: あなた
   - Start画面の「感度を設定」を開く
   - 実際のMouse DPIとVALORANT Sensitivityを入力して保存する
   - eDPI / cm360が表示される
   - 感度を上げるとAimが速く、下げると遅くなる
   - Gameを閉じて再起動しても値が残る
-- [ ] Crosshair設定
+  - 2026-09-29 Game Dev Hub共有Packで5/5 PASS
+
+- [x] Crosshair設定
+  - 担当: ChatGPT
+  - Godot描画のCrosshair rendererへ置換
+  - 色 / 長さ / 太さ / Gap / Outline / Center Dotを手動調整
+  - VALORANT Crosshair Profile CodeのPrimary (P) SectionをImport
+  - Inner / Outer Lines、横/縦長さ、Opacity、Outline、Center Dotを反映
+  - ConfigFileへ保存
+  - Parser / UI ContractをGodot Smoke Testへ追加
+
+- [ ] Crosshair設定を実機確認する
+  - 担当: あなた
+  - Start画面の「クロスヘアを設定」を開く
+  - VALORANTのCrosshair Codeを貼り付けて「コードを読み込む」
+  - Previewが変わる
+  - 「保存して戻る」後のTraining Crosshairへ反映される
+  - Gameを閉じて再起動してもCrosshairが残る
+  - 手動の色 / 長さ / 太さ / Gap / Outline / Center Dotも変更できる
 - [ ] Timer / Result / Personal Best
 - [ ] Difficulty
 - [ ] Gridshot
 
-## Phase 3 — Training Modes
+## Phase 3 — Training Modes / Scenario Library
+
+- [ ] Home / Stage Library基盤
+  - 将来要件。現在は実装しない
+  - Aim Lab / Kovaak's系の「Home → Stage選択 → Play → Result」を参考にする
+  - Training Modeを追加してもMain Sceneへ条件分岐を詰め込まない
+  - Stage metadata / category / difficulty / best scoreをData-driven化する
 
 - [ ] Hold Angle / Pre-Aim
 - [ ] Microshot

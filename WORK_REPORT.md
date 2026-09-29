@@ -135,6 +135,46 @@ cm/360 = 360 / (0.07 × sensitivity × DPI) × 2.54
 ### Validation State
 
 - Automated Godot CI: PASS — GitHub Actions run 36550215111
-- Windows Settings UI / persistence: NOT_RUN
-- Windows Aim feel: NOT_RUN
+- Windows Settings UI / persistence: PASS — Game Dev Hub共有Pack 2026-09-29
+- Windows Aim feel direction check: PASS — 感度を上げる/下げるで速度変化を確認
 - Exact physical VALORANT parity calibration: NOT_RUN
+
+
+## 2026-09-29 — Phase 2 Crosshair Settings
+
+### User Requirement
+
+VALORANTのCrosshair Codeをそのまま読み込めるようにする。
+
+### Implemented
+
+- Custom Godot Crosshair renderer
+- Manual color / length / thickness / gap / outline / center dot
+- Live preview
+- VALORANT Crosshair Profile Code input
+- Primary `P` section parser
+- Preset / custom color
+- Outline opacity / thickness
+- Center dot opacity / size
+- Inner lines
+- Outer lines
+- Independent vertical line length
+- Imported code persistence
+- Manual settings persistence
+
+### Compatibility Boundary
+
+Movement / Firing Errorによる動的なCrosshair expansionは現段階では固定形状として扱う。ADS / Sniper sectionは未対応。
+
+Crosshair Code token mapはCommunity reverse engineering / public parser sourcesで照合したものであり、Riot公式の完全Format仕様とは扱わない。
+
+### Deferred Product Direction
+
+Userから、将来はAim Lab / Kovaak'sのようにHomeから複数Stageを選択できるTraining Platformへしたいという要望あり。今回は実装せずRequirements / RoadmapへFuture Directionとして記録。
+
+### Validation State
+
+- Parser unit/smoke coverage: PASS — GitHub Actions run 36552007274
+- Godot import / cold start: PASS — GitHub Actions run 36552007274
+- Windows VALORANT code import: NOT_RUN
+- Windows persistence: NOT_RUN

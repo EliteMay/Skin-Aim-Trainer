@@ -64,3 +64,20 @@
 - Context: DPIはMouse Hardware / Driver側の設定で、Game側Sensitivityとは別の入力要因。
 - Decision: ApplicationはDPIを変更せず、eDPI / cm360計算用のUser inputとして保存する。
 - Prevention: DPI inputをHardware DPI変更機能のように表示しない。
+
+
+## PL-009 — VALORANT Crosshair CodeはParser境界を分離する
+
+- Date: 2026-09-29
+- Status: Adopted
+- Context: Crosshair Codeは短縮tokenと省略Defaultを持ち、UIコードへ直接Parse処理を混ぜると保守しにくい。
+- Decision: `valorant_crosshair_code.gd`へParserを分離し、Rendererは正規化済みProfile Dictionaryだけを受け取る。
+- Prevention: 新しいtoken対応をMain Scene / UI Event Handlerへ直接追加しない。
+
+## PL-010 — Community reverse-engineered formatを公式仕様と呼ばない
+
+- Date: 2026-09-29
+- Status: Adopted
+- Context: VALORANT Crosshair Codeのtoken mappingは公開ParserとCommunity analysisで一致するが、Riotの完全なFormat specificationは確認できていない。
+- Decision: Import compatibilityとして実装するが、Riot公式完全互換と断定しない。
+- Prevention: 未対応token / 新Formatが出た場合はParser Testを追加し、既知範囲を明示する。

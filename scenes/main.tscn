@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/aim_trainer.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/crosshair.gd" id="2"]
 
 [sub_resource type="BoxMesh" id="FloorMesh"]
 size = Vector3(18, 0.2, 30)
@@ -97,26 +98,19 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "命中率  0%"
 
-[node name="Crosshair" type="Label" parent="UI"]
+[node name="Crosshair" type="Control" parent="UI"]
 visible = false
 layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -24.0
-offset_top = -30.0
-offset_right = 24.0
-offset_bottom = 30.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 34
-text = "+"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -48.0
+offset_top = -48.0
+offset_right = 48.0
+offset_bottom = 48.0
 mouse_filter = 2
+script = ExtResource("2")
 
 [node name="ControlsHint" type="Label" parent="UI"]
 visible = false
@@ -222,6 +216,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "感度を設定"
 
+[node name="CrosshairButton" type="Button" parent="UI/StartOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "クロスヘアを設定"
+
 [node name="Keys" type="Label" parent="UI/StartOverlay/Center/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.66, 0.72, 1)
@@ -293,6 +293,12 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 19
 text = "感度を設定"
+
+[node name="CrosshairButton" type="Button" parent="UI/PauseOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "クロスヘアを設定"
 
 [node name="RestartButton" type="Button" parent="UI/PauseOverlay/Center/Content"]
 custom_minimum_size = Vector2(0, 50)
@@ -408,4 +414,190 @@ text = "保存して戻る"
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
+text = "変更せず戻る"
+
+
+[node name="CrosshairSettingsOverlay" type="Control" parent="UI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="UI/CrosshairSettingsOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.025, 0.032, 0.045, 0.97)
+
+[node name="Center" type="CenterContainer" parent="UI/CrosshairSettingsOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="UI/CrosshairSettingsOverlay/Center"]
+custom_minimum_size = Vector2(620, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "クロスヘア設定"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.84, 1)
+theme_override_font_sizes/font_size = 16
+text = "変更はプレビューへすぐ反映されます"
+horizontal_alignment = 1
+
+[node name="PreviewArea" type="Panel" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 130)
+layout_mode = 2
+
+[node name="PreviewCrosshair" type="Control" parent="UI/CrosshairSettingsOverlay/Center/Content/PreviewArea"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -48.0
+offset_right = 48.0
+offset_bottom = 48.0
+mouse_filter = 2
+script = ExtResource("2")
+
+[node name="CodeLabel" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "VALORANT クロスヘアコード"
+
+[node name="CodeInput" type="LineEdit" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+placeholder_text = "例: 0;P;c;5;h;0;0t;1;0l;3;0o;2;0a;1;1b;0"
+clear_button_enabled = true
+
+[node name="ImportCodeButton" type="Button" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "コードを読み込む"
+
+[node name="ImportStatus" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.72, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "Primary Crosshair (P) を読み込みます。ADS / Sniperは現在対象外です。"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Fields" type="GridContainer" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+layout_mode = 2
+columns = 2
+
+[node name="ColorLabel" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "色"
+
+[node name="ColorInput" type="ColorPickerButton" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+custom_minimum_size = Vector2(250, 42)
+layout_mode = 2
+color = Color(1, 1, 1, 1)
+edit_alpha = false
+
+[node name="LengthLabel" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "線の長さ"
+
+[node name="LengthInput" type="SpinBox" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+custom_minimum_size = Vector2(250, 42)
+layout_mode = 2
+min_value = 1.0
+max_value = 20.0
+step = 1.0
+value = 5.0
+
+[node name="ThicknessLabel" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "太さ"
+
+[node name="ThicknessInput" type="SpinBox" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+custom_minimum_size = Vector2(250, 42)
+layout_mode = 2
+min_value = 1.0
+max_value = 8.0
+step = 1.0
+value = 2.0
+
+[node name="GapLabel" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "中央の隙間"
+
+[node name="GapInput" type="SpinBox" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+custom_minimum_size = Vector2(250, 42)
+layout_mode = 2
+min_value = 0.0
+max_value = 20.0
+step = 1.0
+value = 4.0
+
+[node name="OutlineLabel" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Outline"
+
+[node name="OutlineInput" type="CheckButton" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+button_pressed = true
+text = "使用する"
+
+[node name="CenterDotLabel" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Center Dot"
+
+[node name="CenterDotInput" type="CheckButton" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+text = "使用する"
+
+[node name="DotSizeLabel" type="Label" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Dot Size"
+
+[node name="DotSizeInput" type="SpinBox" parent="UI/CrosshairSettingsOverlay/Center/Content/Fields"]
+custom_minimum_size = Vector2(250, 42)
+layout_mode = 2
+min_value = 1.0
+max_value = 8.0
+step = 1.0
+value = 2.0
+
+[node name="SaveButton" type="Button" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "保存して戻る"
+
+[node name="CancelButton" type="Button" parent="UI/CrosshairSettingsOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
 text = "変更せず戻る"

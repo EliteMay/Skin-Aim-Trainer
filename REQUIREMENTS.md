@@ -95,6 +95,35 @@ Phase 2でSensitivity Researchを実施し、次をCurrent Contractとする。
 
 0.07は今回確認できたRiot公式公開仕様ではないため、「Riot公式保証値」とは扱わない。Research根拠と残るVerificationは `docs/SENSITIVITY_RESEARCH.md` をSource of Truthとする。
 
+## Crosshair Contract
+
+Phase 2ではCrosshairをTrainingの表示設定として扱う。
+
+- Start / PauseからCrosshair Settingsを開ける
+- 色 / 長さ / 太さ / Gap / Outline / Center Dotを手動調整できる
+- VALORANTのCrosshair Profile Codeを貼り付けてPrimary Crosshair (P)を読み込める
+- Inner / Outer Lines、horizontal / vertical length、opacity、outline、center dotを静的形状として反映する
+- Movement Error / Firing Errorによる動的Crosshair変形は現段階では再現しない
+- ADS (A) / Sniper (S) Sectionは現段階では読み込まない
+- 読み込んだCodeまたは手動設定はLocal Settingsへ保存する
+- Crosshair設定はSensitivity / Hit Detection / Scoreへ影響させない
+
+VALORANT Crosshair Codeのtoken構造は公開Parser / Community reverse engineeringを根拠にする。Riot公式の完全Format仕様として断定しない。
+
+## Future Home / Stage Library Direction
+
+現在は実装しないが、最終的にAim Lab / Kovaak's系のTraining Platform構成へ拡張する。
+
+想定Flow:
+
+`Home → Stage / Training選択 → Play → Result → 再挑戦 / 次のStage`
+
+- Homeを追加する
+- Gridshot / Flick / Micro / Tracking / Hold Angle等を複数Stageとして管理する
+- StageはData-drivenに追加できる構成にする
+- Stageごとに説明 / 難易度 / Score / Personal Bestを持てるようにする
+- 現在の単一Training画面を巨大な条件分岐へ育てない
+
 ## Skin Contract
 
 SkinはWeapon performanceと分離する。
