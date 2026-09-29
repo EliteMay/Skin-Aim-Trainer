@@ -7,6 +7,7 @@ enum RunState {
 	READY,
 	PLAYING,
 	PAUSED,
+	RESULT,
 }
 
 const TARGET_DISTANCE := 14.0
@@ -14,10 +15,12 @@ const TARGET_RADIUS := 0.62
 const TARGET_X_RANGE := Vector2(-5.2, 5.2)
 const TARGET_Y_RANGE := Vector2(0.2, 4.6)
 const PITCH_LIMIT_DEGREES := 72.0
+const SESSION_DURATION_SECONDS := 60.0
 
 const SETTINGS_PATH := "user://settings.cfg"
 const SETTINGS_SECTION := "aim"
 const CROSSHAIR_SETTINGS_SECTION := "crosshair"
+const RECORDS_SECTION := "training_records"
 const DEFAULT_DPI := 1600.0
 const DEFAULT_VALORANT_SENSITIVITY := 0.1
 const MIN_DPI := 100.0
@@ -41,6 +44,7 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 @onready var hit_label: Label = $UI/HUD/Stats/Hits
 @onready var miss_label: Label = $UI/HUD/Stats/Misses
 @onready var accuracy_label: Label = $UI/HUD/Stats/Accuracy
+@onready var timer_label: Label = $UI/HUD/Timer
 @onready var crosshair: Control = $UI/Crosshair
 @onready var controls_hint: Label = $UI/ControlsHint
 @onready var feedback_label: Label = $UI/Feedback
@@ -57,6 +61,7 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 @onready var start_crosshair_button: Button = (
 	$UI/StartOverlay/Center/Content/CrosshairButton
 )
+@onready var start_best_label: Label = $UI/StartOverlay/Center/Content/BestScore
 
 @onready var pause_overlay: Control = $UI/PauseOverlay
 @onready var resume_button: Button = $UI/PauseOverlay/Center/Content/ResumeButton
@@ -128,6 +133,21 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 	$UI/CrosshairSettingsOverlay/Center/Content/ImportStatus
 )
 
+@onready var result_overlay: Control = $UI/ResultOverlay
+@onready var result_title: Label = $UI/ResultOverlay/Center/Content/Title
+@onready var result_score_label: Label = $UI/ResultOverlay/Center/Content/Score
+@onready var result_accuracy_label: Label = (
+	$UI/ResultOverlay/Center/Content/Accuracy
+)
+@onready var result_hits_misses_label: Label = (
+	$UI/ResultOverlay/Center/Content/HitsMisses
+)
+@onready var result_best_label: Label = $UI/ResultOverlay/Center/Content/Best
+@onready var retry_button: Button = $UI/ResultOverlay/Center/Content/RetryButton
+@onready var result_back_button: Button = (
+	$UI/ResultOverlay/Center/Content/BackButton
+)
+
 var run_state := RunState.READY
 var settings_return_state := RunState.READY
 var crosshair_return_state := RunState.READY
@@ -137,6 +157,9 @@ var score := 0
 var shots := 0
 var hits := 0
 var misses := 0
+var session_remaining_seconds := SESSION_DURATION_SECONDS
+var personal_best_score := 0
+var last_session_new_best := false
 
 var mouse_dpi := DEFAULT_DPI
 var valorant_sensitivity := DEFAULT_VALORANT_SENSITIVITY
@@ -210,6 +233,9 @@ func _ready() -> void:
 	crosshair_center_dot_input.toggled.connect(_on_crosshair_control_changed)
 	crosshair_dot_size_input.value_changed.connect(_on_crosshair_control_changed)
 
+	retry_button.pressed.connect(start_training)
+	result_back_button.pressed.connect(_show_ready_state)
+
 	feedback_timer.timeout.connect(_hide_feedback)
 
 	_load_settings()
@@ -219,6 +245,21 @@ func _ready() -> void:
 	_show_ready_state()
 	_update_hud()
 	_update_sensitivity_labels()
+	_update_best_labels()
+
+
+func _process(delta: float) -> void:
+	if run_state != RunState.PLAYING:
+		return
+
+	session_remaining_seconds = maxf(
+		session_remaining_seconds - delta,
+		0.0
+	)
+	_update_timer_label()
+
+	if session_remaining_seconds <= 0.0:
+		_finish_session()
 
 
 func _exit_tree() -> void:
@@ -247,6 +288,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				pause_training()
 			elif run_state == RunState.PAUSED:
 				resume_training()
+			elif run_state == RunState.RESULT:
+				_show_ready_state()
 			get_viewport().set_input_as_handled()
 			return
 
@@ -291,6 +334,7 @@ func start_training() -> void:
 	pause_overlay.visible = false
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = false
+	result_overlay.visible = false
 	hud.visible = true
 	crosshair.visible = true
 	controls_hint.visible = true
@@ -306,6 +350,7 @@ func pause_training() -> void:
 	pause_overlay.visible = true
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = false
+	result_overlay.visible = false
 	crosshair.visible = false
 	controls_hint.visible = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -321,6 +366,7 @@ func resume_training() -> void:
 	pause_overlay.visible = false
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = false
+	result_overlay.visible = false
 	crosshair.visible = true
 	controls_hint.visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -333,6 +379,7 @@ func restart_training() -> void:
 	pause_overlay.visible = false
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = false
+	result_overlay.visible = false
 	hud.visible = true
 	crosshair.visible = true
 	controls_hint.visible = true
@@ -347,6 +394,7 @@ func _show_ready_state() -> void:
 	pause_overlay.visible = false
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = false
+	result_overlay.visible = false
 	hud.visible = false
 	crosshair.visible = false
 	controls_hint.visible = false
@@ -354,6 +402,7 @@ func _show_ready_state() -> void:
 	target_mesh.visible = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_update_sensitivity_labels()
+	_update_best_labels()
 	start_button.grab_focus()
 
 
@@ -362,11 +411,48 @@ func _reset_round() -> void:
 	shots = 0
 	hits = 0
 	misses = 0
+	session_remaining_seconds = SESSION_DURATION_SECONDS
+	last_session_new_best = false
 	yaw_degrees = 0.0
 	pitch_degrees = 0.0
 	camera.rotation_degrees = Vector3.ZERO
 	_move_target()
 	_update_hud()
+	_update_timer_label()
+
+
+func _finish_session() -> void:
+	if run_state != RunState.PLAYING:
+		return
+
+	run_state = RunState.RESULT
+	session_remaining_seconds = 0.0
+	_update_timer_label()
+
+	last_session_new_best = score > personal_best_score
+	if last_session_new_best:
+		personal_best_score = score
+		_save_personal_best()
+
+	hud.visible = false
+	crosshair.visible = false
+	controls_hint.visible = false
+	feedback_label.visible = false
+	target_mesh.visible = false
+	pause_overlay.visible = false
+	settings_overlay.visible = false
+	crosshair_settings_overlay.visible = false
+	result_overlay.visible = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+	var accuracy := AimMath.accuracy_percent(hits, shots)
+	result_title.text = "NEW BEST!" if last_session_new_best else "RESULT"
+	result_score_label.text = "SCORE  %d" % score
+	result_accuracy_label.text = "命中率  %d%%" % int(round(accuracy))
+	result_hits_misses_label.text = "HIT  %d    MISS  %d" % [hits, misses]
+	result_best_label.text = "BEST  %d" % personal_best_score
+	_update_best_labels()
+	retry_button.grab_focus()
 
 
 func _shoot() -> void:
@@ -438,6 +524,29 @@ func _update_hud() -> void:
 	miss_label.text = "MISS  %d" % misses
 	var accuracy := AimMath.accuracy_percent(hits, shots)
 	accuracy_label.text = "命中率  %d%%" % int(round(accuracy))
+
+
+func _update_timer_label() -> void:
+	var total_seconds := int(ceil(session_remaining_seconds))
+	var minutes := total_seconds / 60
+	var seconds := total_seconds % 60
+	timer_label.text = "%02d:%02d" % [minutes, seconds]
+
+
+func _format_session_time(seconds_value: float) -> String:
+	var total_seconds := maxi(int(ceil(seconds_value)), 0)
+	return "%02d:%02d" % [total_seconds / 60, total_seconds % 60]
+
+
+func _update_best_labels() -> void:
+	start_best_label.text = "BEST  %d" % personal_best_score
+
+
+func _save_personal_best() -> Error:
+	var config := ConfigFile.new()
+	config.load(SETTINGS_PATH)
+	config.set_value(RECORDS_SECTION, "default_best_score", personal_best_score)
+	return config.save(SETTINGS_PATH)
 
 
 func _load_settings() -> void:
@@ -559,6 +668,11 @@ func _load_settings() -> void:
 			crosshair_profile = _manual_crosshair_profile()
 	else:
 		crosshair_profile = _manual_crosshair_profile()
+
+	personal_best_score = maxi(
+		int(config.get_value(RECORDS_SECTION, "default_best_score", 0)),
+		0
+	)
 
 
 func _save_settings() -> Error:
