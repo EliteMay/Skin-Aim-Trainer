@@ -84,7 +84,22 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
 
 ## Phase 2 — Training Foundation
 
-- [ ] Sensitivity / DPI / eDPIのResearchと設定
+- [x] Sensitivity / DPI / eDPIのResearchと設定
+  - 担当: ChatGPT
+  - Godot Mouse Aimをscreen_relativeへ変更
+  - Mouse input accumulationを無効化
+  - VALORANT-style yaw 0.07 modelをResearchして実装
+  - DPI / Sensitivity / eDPI / cm360を設定画面へ追加
+  - user://settings.cfgへ保存
+  - 計算とUI ContractをGodot Smoke Testへ追加
+
+- [ ] Sensitivity / DPI / eDPIを実機確認する
+  - 担当: あなた
+  - Start画面の「感度を設定」を開く
+  - 実際のMouse DPIとVALORANT Sensitivityを入力して保存する
+  - eDPI / cm360が表示される
+  - 感度を上げるとAimが速く、下げると遅くなる
+  - Gameを閉じて再起動しても値が残る
 - [ ] Crosshair設定
 - [ ] Timer / Result / Personal Best
 - [ ] Difficulty

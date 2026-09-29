@@ -181,7 +181,7 @@ grow_vertical = 2
 [node name="Content" type="VBoxContainer" parent="UI/StartOverlay/Center"]
 custom_minimum_size = Vector2(620, 0)
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 16
 alignment = 1
 
 [node name="Title" type="Label" parent="UI/StartOverlay/Center/Content"]
@@ -194,7 +194,7 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.75, 0.78, 0.84, 1)
 theme_override_font_sizes/font_size = 20
-text = "まずは操作確認。やることは3つだけです。"
+text = "やることは3つだけです。"
 horizontal_alignment = 1
 
 [node name="HowTo" type="Label" parent="UI/StartOverlay/Center/Content"]
@@ -209,11 +209,24 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 25
 text = "練習を開始"
 
+[node name="CurrentSensitivity" type="Label" parent="UI/StartOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
+theme_override_font_sizes/font_size = 17
+text = "1600 DPI  /  VALORANT 0.100  /  160 eDPI"
+horizontal_alignment = 1
+
+[node name="SettingsButton" type="Button" parent="UI/StartOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "感度を設定"
+
 [node name="Keys" type="Label" parent="UI/StartOverlay/Center/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.66, 0.72, 1)
 theme_override_font_sizes/font_size = 16
-text = "ESC: メニュー　　R: やり直し\n※ Phase 1では移動・武器Skin・モード選択はまだありません"
+text = "ESC: メニュー　　R: やり直し\nDPIはマウス本体と同じ値を入力してください"
 horizontal_alignment = 1
 
 [node name="PauseOverlay" type="Control" parent="UI"]
@@ -246,7 +259,7 @@ grow_vertical = 2
 [node name="Content" type="VBoxContainer" parent="UI/PauseOverlay/Center"]
 custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 14
 alignment = 1
 
 [node name="Title" type="Label" parent="UI/PauseOverlay/Center/Content"]
@@ -262,14 +275,137 @@ theme_override_font_sizes/font_size = 18
 text = "ESCでもすぐ再開できます"
 horizontal_alignment = 1
 
+[node name="SensitivitySummary" type="Label" parent="UI/PauseOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
+theme_override_font_sizes/font_size = 16
+text = "1600 DPI  /  VALORANT 0.100  /  160 eDPI"
+horizontal_alignment = 1
+
 [node name="ResumeButton" type="Button" parent="UI/PauseOverlay/Center/Content"]
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "練習に戻る"
 
-[node name="RestartButton" type="Button" parent="UI/PauseOverlay/Center/Content"]
-custom_minimum_size = Vector2(0, 54)
+[node name="SettingsButton" type="Button" parent="UI/PauseOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 19
+text = "感度を設定"
+
+[node name="RestartButton" type="Button" parent="UI/PauseOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
 text = "最初からやり直す"
+
+[node name="SettingsOverlay" type="Control" parent="UI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="UI/SettingsOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.025, 0.032, 0.045, 0.97)
+
+[node name="Center" type="CenterContainer" parent="UI/SettingsOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="UI/SettingsOverlay/Center"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/SettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "感度設定"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="UI/SettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.78, 0.84, 1)
+theme_override_font_sizes/font_size = 17
+text = "VALORANTの「感度: 照準」と、マウス本体のDPIを入力"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Fields" type="GridContainer" parent="UI/SettingsOverlay/Center/Content"]
+layout_mode = 2
+columns = 2
+
+[node name="DpiLabel" type="Label" parent="UI/SettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "マウス DPI"
+
+[node name="DpiInput" type="SpinBox" parent="UI/SettingsOverlay/Center/Content/Fields"]
+custom_minimum_size = Vector2(260, 46)
+layout_mode = 2
+min_value = 100.0
+max_value = 32000.0
+step = 100.0
+value = 1600.0
+allow_greater = false
+allow_lesser = false
+update_on_text_changed = true
+suffix = " DPI"
+
+[node name="SensitivityLabel" type="Label" parent="UI/SettingsOverlay/Center/Content/Fields"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "VALORANT 感度"
+
+[node name="SensitivityInput" type="SpinBox" parent="UI/SettingsOverlay/Center/Content/Fields"]
+custom_minimum_size = Vector2(260, 46)
+layout_mode = 2
+min_value = 0.001
+max_value = 10.0
+step = 0.001
+value = 0.1
+allow_greater = false
+allow_lesser = false
+update_on_text_changed = true
+
+[node name="Metrics" type="Label" parent="UI/SettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.88, 0.95, 1)
+theme_override_font_sizes/font_size = 19
+text = "eDPI: 160.0\ncm / 360°: 81.64 cm\n回転係数: 0.00700° / input count"
+horizontal_alignment = 1
+
+[node name="ResearchNote" type="Label" parent="UI/SettingsOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.66, 0.72, 1)
+theme_override_font_sizes/font_size = 15
+text = "換算はVALORANT yaw 0.07°/countの公開測定値を使用。\nDPIはソフト側で変更せず、マウス設定と同じ値を記録します。"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="SaveButton" type="Button" parent="UI/SettingsOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_font_sizes/font_size = 21
+text = "保存して戻る"
+
+[node name="CancelButton" type="Button" parent="UI/SettingsOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "変更せず戻る"

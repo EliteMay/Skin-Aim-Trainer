@@ -97,3 +97,44 @@ Phase 1のCompletion Criteriaを満たしたため、RoadmapのUser確認Taskを
 3. Timer / Result / Personal Best
 4. Difficulty
 5. Gridshot
+
+
+## 2026-09-29 — Phase 2 Sensitivity / DPI / eDPI
+
+### Research
+
+Godot 4.7 Docsを確認し、Mouse Aimを `relative` から `screen_relative` へ変更する方針を採用した。`relative` はcontent scaleでScaleされるため、Resolution / Stretch条件でSensitivityが変わり得る。
+
+高精度入力向けに `Input.use_accumulated_input = false` も採用。
+
+VALORANT yawは複数の独立したSensitivity referenceで `0.07° / count at sensitivity 1.0` が一致した。ただし今回確認できたRiot公式公開仕様ではないため、Community measurementとして明示する。
+
+### Implemented
+
+- VALORANT Sensitivity input
+- Mouse DPI input
+- eDPI calculation
+- cm/360 calculation
+- Current sensitivity summary
+- Start / Pauseから開けるSensitivity Settings
+- `user://settings.cfg` persistence
+- `screen_relative` Aim input
+- accumulated input disabled during runtime
+- Sensitivity math regression tests
+- Sensitivity UI contract smoke test
+- Research document
+
+### Formulas
+
+```text
+degrees/count = 0.07 × sensitivity
+eDPI = DPI × sensitivity
+cm/360 = 360 / (0.07 × sensitivity × DPI) × 2.54
+```
+
+### Validation State
+
+- Automated Godot CI: PASS — GitHub Actions run 36550215111
+- Windows Settings UI / persistence: NOT_RUN
+- Windows Aim feel: NOT_RUN
+- Exact physical VALORANT parity calibration: NOT_RUN

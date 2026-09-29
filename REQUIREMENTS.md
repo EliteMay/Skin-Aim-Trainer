@@ -81,7 +81,19 @@ Phase 1では移動を入れない。まずAimとShootの品質だけを確認�
 
 ## Sensitivity Contract
 
-VALORANT Sensitivity換算は後続PhaseでResearch / Verificationしてから実装する。Phase 1の固定Mouse係数をVALORANT互換値として扱わない。
+Phase 2でSensitivity Researchを実施し、次をCurrent Contractとする。
+
+- Godot Mouse Aimは `InputEventMouseMotion.screen_relative` を使用する
+- Mouse AimへFrame deltaを掛けない
+- Training中は `Input.use_accumulated_input = false` を使用する
+- VALORANT-style rotation modelはCommunityで広く使用されている yaw `0.07°/count at sensitivity 1.0` を採用する
+- `degrees_per_count = 0.07 × sensitivity`
+- `eDPI = DPI × sensitivity`
+- `cm/360 = 360 / (0.07 × sensitivity × DPI) × 2.54`
+- DPIはApplicationが変更せず、Mouse Hardware / Driver側の実値をUserが入力する
+- Sensitivity / DPIはLocal Settingsへ保存する
+
+0.07は今回確認できたRiot公式公開仕様ではないため、「Riot公式保証値」とは扱わない。Research根拠と残るVerificationは `docs/SENSITIVITY_RESEARCH.md` をSource of Truthとする。
 
 ## Skin Contract
 
