@@ -176,8 +176,9 @@ Userから、将来はAim Lab / Kovaak'sのようにHomeから複数Stageを選�
 
 - Parser unit/smoke coverage: PASS — GitHub Actions run 36552007274
 - Godot import / cold start: PASS — GitHub Actions run 36552007274
-- Windows VALORANT code import: NOT_RUN
-- Windows persistence: NOT_RUN
+- Windows VALORANT code import: PASS — Game Dev Hub共有Pack 2026-09-30
+- Windows persistence: PASS — Game Dev Hub共有Pack 2026-09-30
+- Windows manual controls: PASS — Game Dev Hub共有Pack 2026-09-30
 
 
 ## 2026-09-29 — Crosshair Settings Button Windows Fix
@@ -220,4 +221,55 @@ Godot Editor / import scan後はglobal class cacheに登録されるため正常
 - Windows Godot 4.7.2 direct smoke: PASS
 - Crosshair button GUI click transition: PASS
 - Crosshair Settings layout: PASS — 620x843 within 1600x900
-- User Windows actual retest: NOT_RUN
+- User Windows actual retest: PASS — Game Dev Hub共有Pack 2026-09-30
+
+
+## 2026-09-30 — Phase 2 Timer / Result / Personal Best
+
+### Crosshair Evidence Closure
+
+Game Dev Hub共有PackでCrosshair実機確認6/6 PASSを確認し、RoadmapのCrosshair実機確認Taskを完了へ更新した。
+
+確認済み:
+
+- Crosshair Settingsが開く
+- VALORANT Crosshair Code import
+- Preview更新
+- Training反映
+- 再起動後Persistence
+- 手動調整
+
+### Implemented
+
+- 60秒Default Session
+- HUD Timer
+- PLAYING中のみCountdown
+- Pause中Timer停止
+- 0秒でResultへ自動遷移
+- Result Score / Hit / Miss / Accuracy
+- NEW BEST表示
+- Local Personal Best
+- Retry
+- Startへ戻る
+- Start画面BEST表示
+
+### Persistence
+
+`user://settings.cfg`:
+
+```text
+[training_records]
+default_best_score=<int>
+```
+
+### Future Compatibility
+
+現在はDefault Training 1種類なので固定60秒 / default_best_scoreを使用する。Home / Stage Library導入時は、DurationとRecord keyをStage metadata / Stage IDへ移行する。
+
+### Validation State
+
+- Godot Import / Cold Start: pending CI
+- Linux Core Smoke: pending CI
+- Windows Direct Smoke: pending CI
+- Countdown / Pause / Result / Best persistence: pending CI
+- Windows Actual Playtest: NOT_RUN
