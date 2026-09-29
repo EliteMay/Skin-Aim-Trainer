@@ -116,6 +116,14 @@ func _ready() -> void:
 	instance.get_viewport().push_input(mouse_down, true)
 	await get_tree().process_frame
 
+	var mouse_up := InputEventMouseButton.new()
+	mouse_up.button_index = MOUSE_BUTTON_LEFT
+	mouse_up.position = button_center
+	mouse_up.global_position = button_center
+	mouse_up.pressed = false
+	instance.get_viewport().push_input(mouse_up, true)
+	await get_tree().process_frame
+
 	assert(not instance.get_node("UI/StartOverlay").visible)
 	assert(instance.get_node("UI/CrosshairSettingsOverlay").visible)
 	assert(
