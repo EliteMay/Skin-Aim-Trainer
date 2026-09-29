@@ -98,6 +98,26 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "命中率  0%"
 
+[node name="Timer" type="Label" parent="UI/HUD"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -90.0
+offset_top = 22.0
+offset_right = 90.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 32
+text = "01:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+mouse_filter = 2
+
 [node name="Crosshair" type="Control" parent="UI"]
 visible = false
 layout_mode = 0
@@ -201,7 +221,14 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "練習を開始"
+text = "60秒の練習を開始"
+
+[node name="BestScore" type="Label" parent="UI/StartOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 20
+text = "BEST  0"
+horizontal_alignment = 1
 
 [node name="CurrentSensitivity" type="Label" parent="UI/StartOverlay/Center/Content"]
 layout_mode = 2
@@ -601,3 +628,88 @@ custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 text = "変更せず戻る"
+
+
+[node name="ResultOverlay" type="Control" parent="UI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="UI/ResultOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.025, 0.032, 0.045, 0.96)
+
+[node name="Center" type="CenterContainer" parent="UI/ResultOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="UI/ResultOverlay/Center"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/ResultOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 42
+text = "RESULT"
+horizontal_alignment = 1
+
+[node name="Score" type="Label" parent="UI/ResultOverlay/Center/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "SCORE  0"
+horizontal_alignment = 1
+
+[node name="Accuracy" type="Label" parent="UI/ResultOverlay/Center/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "命中率  0%"
+horizontal_alignment = 1
+
+[node name="HitsMisses" type="Label" parent="UI/ResultOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.82, 0.88, 1)
+theme_override_font_sizes/font_size = 20
+text = "HIT  0    MISS  0"
+horizontal_alignment = 1
+
+[node name="Best" type="Label" parent="UI/ResultOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.82, 0.46, 1)
+theme_override_font_sizes/font_size = 24
+text = "BEST  0"
+horizontal_alignment = 1
+
+[node name="Duration" type="Label" parent="UI/ResultOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.66, 0.72, 1)
+theme_override_font_sizes/font_size = 16
+text = "60秒 Session"
+horizontal_alignment = 1
+
+[node name="RetryButton" type="Button" parent="UI/ResultOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "もう一度"
+
+[node name="BackButton" type="Button" parent="UI/ResultOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "開始画面へ戻る"

@@ -111,7 +111,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - ConfigFileへ保存
   - Parser / UI ContractをGodot Smoke Testへ追加
 
-- [ ] Crosshair設定を実機確認する
+- [x] Crosshair設定を実機確認する
   - 担当: あなた
   - Start画面の「クロスヘアを設定」を開く
   - VALORANTのCrosshair Codeを貼り付けて「コードを読み込む」
@@ -119,7 +119,29 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 「保存して戻る」後のTraining Crosshairへ反映される
   - Gameを閉じて再起動してもCrosshairが残る
   - 手動の色 / 長さ / 太さ / Gap / Outline / Center Dotも変更できる
-- [ ] Timer / Result / Personal Best
+  - 2026-09-30 Game Dev Hub共有Packで6/6 PASS
+
+- [x] Timer / Result / Personal Best
+  - 担当: ChatGPT
+  - Default Sessionを60秒にする
+  - Training中だけCountdownする
+  - Pause中はCountdownを止める
+  - 0秒で自動的にResultへ遷移する
+  - ResultにScore / Hit / Miss / Accuracy / Bestを表示する
+  - Best Scoreをuser://settings.cfgへ保存する
+  - Retry / 開始画面へ戻るを追加する
+  - Godot Smoke TestでCountdown / Pause / Result / Best保存を確認する
+
+- [ ] Timer / Result / Personal Bestを実機確認する
+  - 担当: あなた
+  - 「60秒の練習を開始」でTimerが01:00から減る
+  - ESCでPause中はTimerが止まる
+  - 0秒でResult画面へ移動する
+  - Score / Hit / Miss / 命中率がResultへ表示される
+  - Best Scoreが更新される
+  - Gameを閉じて再起動してもBESTが残る
+  - 「もう一度」で新しい60秒Sessionを開始できる
+  - 「開始画面へ戻る」でStartへ戻れる
 - [ ] Difficulty
 - [ ] Gridshot
 

@@ -144,6 +144,91 @@ func _ready() -> void:
 	)
 	assert(crosshair_content.size.y <= viewport_size.y)
 
+	instance._cancel_crosshair_settings()
+	await get_tree().process_frame
+	assert(instance.get_node("UI/StartOverlay").visible)
+	assert(not instance.get_node("UI/ResultOverlay").visible)
+
+	var timer_label := instance.get_node("UI/HUD/Timer") as Label
+	var start_best_label := instance.get_node(
+		"UI/StartOverlay/Center/Content/BestScore"
+	) as Label
+	assert(timer_label != null)
+	assert(start_best_label != null)
+	assert(timer_label.text == "01:00")
+
+	instance.personal_best_score = 0
+	instance.start_training()
+	assert(instance.get_node("UI/HUD").visible)
+	assert(not instance.get_node("UI/StartOverlay").visible)
+	assert(not instance.get_node("UI/ResultOverlay").visible)
+	assert(is_equal_approx(instance.session_remaining_seconds, 60.0))
+	assert(timer_label.text == "01:00")
+
+	instance._process(1.25)
+	assert(instance.session_remaining_seconds < 59.0)
+	assert(timer_label.text == "00:59")
+
+	instance.pause_training()
+	var paused_remaining: float = instance.session_remaining_seconds
+	instance._process(5.0)
+	assert(is_equal_approx(instance.session_remaining_seconds, paused_remaining))
+
+	instance.resume_training()
+	instance.score = 12
+	instance.hits = 12
+	instance.shots = 15
+	instance.misses = 3
+	instance.session_remaining_seconds = 0.01
+	instance._process(0.02)
+	await get_tree().process_frame
+
+	assert(instance.run_state == instance.RunState.RESULT)
+	assert(instance.get_node("UI/ResultOverlay").visible)
+	assert(not instance.get_node("UI/HUD").visible)
+	assert(not instance.get_node("UI/Crosshair").visible)
+	assert(instance.personal_best_score == 12)
+	assert(
+		instance.get_node("UI/ResultOverlay/Center/Content/Title").text
+		== "NEW BEST!"
+	)
+	assert(
+		instance.get_node("UI/ResultOverlay/Center/Content/Score").text
+		== "SCORE  12"
+	)
+	assert(
+		instance.get_node("UI/ResultOverlay/Center/Content/Accuracy").text
+		== "命中率  80%"
+	)
+	assert(
+		instance.get_node("UI/ResultOverlay/Center/Content/HitsMisses").text
+		== "HIT  12    MISS  3"
+	)
+	assert(
+		instance.get_node("UI/ResultOverlay/Center/Content/Best").text
+		== "BEST  12"
+	)
+	assert(start_best_label.text == "BEST  12")
+
+	var records_config := ConfigFile.new()
+	assert(records_config.load("user://settings.cfg") == OK)
+	assert(
+		int(
+			records_config.get_value(
+				"training_records",
+				"default_best_score",
+				0
+			)
+		) == 12
+	)
+
+	instance.start_training()
+	assert(instance.run_state == instance.RunState.PLAYING)
+	assert(instance.score == 0)
+	assert(is_equal_approx(instance.session_remaining_seconds, 60.0))
+	assert(timer_label.text == "01:00")
+	assert(not instance.get_node("UI/ResultOverlay").visible)
+
 	var dpi_input := instance.get_node(
 		"UI/SettingsOverlay/Center/Content/Fields/DpiInput"
 	) as SpinBox

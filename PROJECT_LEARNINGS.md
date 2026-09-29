@@ -90,3 +90,20 @@
 - Context: 新規`class_name` scriptはGodotのglobal class cache更新前にWindows Direct Launchされると、別Scriptの型注釈から解決できない場合がある。
 - Decision: Game Dev Hubから更新直後に直接起動されるMain Runtimeでは、新規custom classを必須型注釈として参照しない。必要ならexplicit preloadまたはbuilt-in base typeを使う。
 - Prevention: Windows CIでは事前Editor importに依存しないDirect Launch Smokeを維持する。
+
+
+## PL-012 — Session TimerはRun Stateに従わせる
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Aim TrainerのTimerがPauseや設定画面中にも減ると、Score比較と操作の公平性が崩れる。
+- Decision: Countdownは`PLAYING`中だけ更新し、`PAUSED` / `RESULT` / Settings中は減らさない。
+- Prevention: Timer更新をUI Timer Node任せにせず、Gameplay Run Stateと同じSource of TruthでGateする。
+
+## PL-013 — Personal Bestは完了Sessionだけで更新する
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Restart途中やPause中のScoreをBestとして保存すると、Session比較の意味が崩れる。
+- Decision: Personal BestはTimer 0でSession完了した時だけ、Current Scoreが既存Bestを超えた場合に更新する。
+- Prevention: Shoot / Restart / Pause処理からBest保存を呼ばない。将来Stage化したらStage ID単位のRecord keyへ移行する。
