@@ -95,6 +95,9 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 @onready var pause_overlay: Control = $UI/PauseOverlay
 @onready var resume_button: Button = $UI/PauseOverlay/Center/Content/ResumeButton
 @onready var restart_button: Button = $UI/PauseOverlay/Center/Content/RestartButton
+@onready var pause_main_menu_button: Button = (
+	$UI/PauseOverlay/Center/Content/MainMenuButton
+)
 @onready var pause_sensitivity_label: Label = (
 	$UI/PauseOverlay/Center/Content/SensitivitySummary
 )
@@ -249,6 +252,7 @@ func _ready() -> void:
 	)
 	resume_button.pressed.connect(resume_training)
 	restart_button.pressed.connect(restart_training)
+	pause_main_menu_button.pressed.connect(return_to_main_menu)
 	pause_settings_button.pressed.connect(
 		func() -> void: _open_settings(RunState.PAUSED)
 	)
@@ -427,6 +431,12 @@ func restart_training() -> void:
 	target_mesh.visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	_show_feedback("RESTART", Color(0.82, 0.9, 1.0))
+
+
+func return_to_main_menu() -> void:
+	if run_state != RunState.PAUSED:
+		return
+	_show_ready_state()
 
 
 func _show_ready_state() -> void:
