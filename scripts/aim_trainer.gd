@@ -181,7 +181,7 @@ func _ready() -> void:
 	start_settings_button.pressed.connect(
 		func() -> void: _open_settings(RunState.READY)
 	)
-	start_crosshair_button.pressed.connect(
+	start_crosshair_button.button_down.connect(
 		func() -> void: _open_crosshair_settings(RunState.READY)
 	)
 	resume_button.pressed.connect(resume_training)
@@ -189,7 +189,7 @@ func _ready() -> void:
 	pause_settings_button.pressed.connect(
 		func() -> void: _open_settings(RunState.PAUSED)
 	)
-	pause_crosshair_button.pressed.connect(
+	pause_crosshair_button.button_down.connect(
 		func() -> void: _open_crosshair_settings(RunState.PAUSED)
 	)
 	save_settings_button.pressed.connect(_save_settings_and_close)
