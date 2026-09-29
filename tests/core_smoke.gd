@@ -159,7 +159,6 @@ func _ready() -> void:
 
 	instance.personal_best_score = 0
 	instance.start_training()
-	await get_tree().process_frame
 	assert(instance.get_node("UI/HUD").visible)
 	assert(not instance.get_node("UI/StartOverlay").visible)
 	assert(not instance.get_node("UI/ResultOverlay").visible)
