@@ -134,7 +134,7 @@ cm/360 = 360 / (0.07 × sensitivity × DPI) × 2.54
 
 ### Validation State
 
-- Automated Godot CI: pending
+- Automated Godot CI: PASS — GitHub Actions run 36550215111
 - Windows Settings UI / persistence: NOT_RUN
 - Windows Aim feel: NOT_RUN
 - Exact physical VALORANT parity calibration: NOT_RUN
