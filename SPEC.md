@@ -1,11 +1,11 @@
-# SPEC — Godot Phase 1 Core Aim Prototype
+# SPEC — Godot Aim Trainer Core
 
 ## Runtime
 
 - Engine: Godot 4.7.2 stable
 - Language: GDScript
 - Rendering: Godot 3D / Compatibility renderer
-- Input: `InputEventMouseMotion.relative` + `Input.MOUSE_MODE_CAPTURED`
+- Input: `InputEventMouseMotion.screen_relative` + `Input.MOUSE_MODE_CAPTURED`
 - Primary target: Windows
 - Main Scene: `res://scenes/main.tscn`
 
@@ -30,7 +30,8 @@ Main (Node3D)
    ├─ ControlsHint
    ├─ Feedback
    ├─ StartOverlay
-   └─ PauseOverlay
+   ├─ PauseOverlay
+   └─ SettingsOverlay
 ```
 
 ## Run State
@@ -57,13 +58,25 @@ State:
 - yaw degrees
 - pitch degrees
 
-Mouse motionのrelative値を固定係数で角度へ変換する。
+Mouse motionは `screen_relative` を使用する。Godotのcontent scaleによるSensitivity変化を避ける。
+
+Training Runtime中は `Input.use_accumulated_input = false` とし、Mouse Motionを描画FrameごとにまとめるDefault動作を使わない。
 
 `frame delta`はSensitivity計算へ掛けない。
 
 Pitchは上下72度へClampする。
 
-Phase 1係数は操作確認用でありVALORANT Sensitivity互換を意味しない。
+Phase 2のSensitivity model:
+
+```text
+degrees_per_count = 0.07 × valorant_sensitivity
+eDPI = DPI × valorant_sensitivity
+cm/360 = 360 / (0.07 × valorant_sensitivity × DPI) × 2.54
+```
+
+DPIは計算・表示・保存に使用する。ApplicationからMouse Hardware DPIは変更しない。
+
+0.07 yawはCommunity measurementとして扱い、Riot公式公開仕様とは表現しない。
 
 ## Target
 
@@ -125,13 +138,25 @@ Training中のPrimary Visual:
 ### Pause
 
 - 練習に戻る
+- 感度を設定
 - 最初からやり直す
 
-選択肢を増やさない。
+### Sensitivity Settings
+
+- Mouse DPI
+- VALORANT Sensitivity
+- eDPI
+- cm/360
+- Rotation coefficient
+- Save / Cancel
+
+Start画面では「練習を開始」をPrimary Actionとして維持し、感度設定はSecondary Actionにする。
 
 ## Performance
 
 - AimはMouse Event driven
+- `screen_relative` を使用
+- `Input.use_accumulated_input = false`
 - Aim角度へframe deltaを掛けない
 - Training中Network Requestなし
 - Training中大量Logなし
