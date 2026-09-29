@@ -1,22 +1,22 @@
 # REQUIREMENTS — Skin Aim Trainer
 
 Updated: 2026-09-29
-Status: Phase 1 implementation-ready / actual playtest pending
+Status: Godot rewrite / Phase 1 actual playtest pending
 
 ## Product Core
 
-好きな武器Skinを使用した状態で、Aim Labのような本格的なAim Trainingを行えるWindows向けAim Trainerを作る。
+好きな武器Skinを使用した状態で、本格的なAim Trainingを行えるWindows向けAim Trainerを作る。
 
 中心体験:
 
-`Skinを選ぶ → 武器を持つ → 撃つ → Aim Training → Result`
+`起動 → すぐ練習開始 → 狙う → 撃つ → 結果を見る → Skinを変えて再練習`
 
 ## Priority
 
 1. Mouse操作の正確さ
 2. Input latencyの少なさ
-3. Aim Training品質
-4. 分かりやすさ
+3. 操作の分かりやすさ
+4. Aim Training品質
 5. 安定性
 6. Skin体験
 7. 見た目
@@ -24,62 +24,74 @@ Status: Phase 1 implementation-ready / actual playtest pending
 ## Platform / Architecture
 
 - Primary: Windows PC
-- Final distribution: Electron Windows Application
-- Aim Trainer CoreはWeb技術側へ分離する
-- Electron固有処理をAim Engineへ直接混ぜない
-- 将来Web版へ展開可能な構造を維持する
+- Engine: Godot 4.7.2 stable
+- Language: GDScript
+- Final game runtime: Godot Windows Desktop Application
+- BrowserをPrimary Runtimeにしない
+- Electronを本ゲームのShellにしない
+- Game Dev HubからGodot Projectとして管理・起動する
 
-## Phase 1 Scope
+## Phase 1 UX Contract
+
+起動直後から迷わせない。
+
+- First Viewに大きい「練習を開始」を1つ置く
+- First Viewに操作を3Stepで表示する
+- Training開始後はCrosshair / Target / Score系だけを主表示にする
+- 常時表示する操作Hintは `ESC メニュー / R やり直し` だけ
+- ESCでPause画面を表示
+- Pause画面は「練習に戻る」「最初からやり直す」の2Actionを中心にする
+- Phase 1ではモード選択、Skin選択、詳細設定を開始前導線へ混ぜない
+- User-facing UIは日本語だけで意味が分かる状態にする
+
+## Phase 1 Gameplay Scope
 
 実装対象:
 
-- Training View
-- Pointer Lock
+- 3D Training View
+- Godot Mouse Capture
 - Mouse Aim
-- Target
+- Center Crosshair
+- 1 Target at a time
 - Left Click Shoot
-- Hit Detection
+- Physics Raycast Hit Detection
 - Score
+- Hit / Miss / Accuracy
 - Restart
-- ESC Pause / safe resume
+- ESC Pause / Resume
 
-Phase 1ではWeapon Skinを実装しない。
+Phase 1では移動を入れない。まずAimとShootの品質だけを確認する。
 
 ### Phase 1 Completion
 
+- 開始方法が説明なしでも見つけられる
 - Mouse movementでAimが安定して動く
-- CursorがAim中に画面外へ出ない
-- FPSの描画deltaをSensitivity計算に掛けない
-- TargetへCrosshairを合わせて撃つとScoreが増える
-- Target外を撃ってもScoreは増えない
-- ESC Pause後、安全にPointer Lockへ復帰できる
-- RestartでScore / Aim / Target stateが初期化される
-- Static Testが通る
-- Actual PlaytestでCore Loopを確認する
-
-## Phase 2+ Summary
-
-Phase 2: Timer / Accuracy / Miss / Result / Personal Best / Difficulty / Settings / Sensitivity / Crosshair / Gridshot
-
-Phase 3: Hold Angle / Microshot / Flick / Skin Test Range
-
-Phase 4: Weapon Rendering / Ammo / Reload / Equip / Inspect / Fire feedback
-
-Phase 5: Data-driven Skin System / Library / Variant / Asset loading + cache
-
-Phase 6: Audio / Animation
-
-Phase 7: Electron / Installer / Auto Update / App Icon / Releases / Logs / Diagnostics
-
-Phase 8: Performance / High Refresh / Input / Actual Playtest / Regression / Installer / Update quality
+- Aim中にOS cursorがTrainingを邪魔しない
+- Mouse deltaへframe deltaを掛けない
+- TargetへCrosshairを合わせて撃つとHitになる
+- Target外を撃つとMissになる
+- Hit後にTargetが別位置へ移動する
+- Score / Hit / Miss / Accuracyが更新される
+- ESC Pause後に安全にAimへ戻れる
+- R RestartでScore / Aim / Targetが初期化される
+- Godot Import / Cold Start / Core Smokeが通る
+- Windows Actual PlaytestでCore Loopを確認する
 
 ## Sensitivity Contract
 
-VALORANT Sensitivity換算はPhase 2で方式をResearch / Verificationしてから実装する。Phase 1の固定Mouse係数をVALORANT換算値として扱わない。
+VALORANT Sensitivity換算は後続PhaseでResearch / Verificationしてから実装する。Phase 1の固定Mouse係数をVALORANT互換値として扱わない。
 
 ## Skin Contract
 
-SkinはWeapon performanceと分離し、Skin変更でAccuracy / Sensitivity / Hit Detection / Target behavior / Scoreを変更しない。
+SkinはWeapon performanceと分離する。
+
+Skin変更で以下を変更しない:
+
+- Sensitivity
+- Hit Detection
+- Target behavior
+- Score rule
+- Training difficulty
 
 ## Asset / Branding Contract
 
@@ -91,7 +103,20 @@ SkinはWeapon performanceと分離し、Skin変更でAccuracy / Sensitivity / Hi
 
 ## Storage
 
-Accountは必須にしない。Phase 2以降、Sensitivity / DPI / Crosshair / Controls / Graphics / Sound / Selected Skin / Variant / Last Mode / Personal Best / Recent Resultsを保存する。
+Accountは必須にしない。
+
+後続Phaseで保存候補:
+
+- Sensitivity
+- DPI
+- Crosshair
+- Controls
+- Graphics
+- Sound
+- Selected Skin / Variant
+- Last Mode
+- Personal Best
+- Recent Results
 
 ## Non-breakable Requirements
 
@@ -100,25 +125,16 @@ Accountは必須にしない。Phase 2以降、Sensitivity / DPI / Crosshair / C
 3. Skin変更でAim性能を変えない
 4. Training中のInput latencyを増やさない
 5. Loginなしで主要Trainingを利用可能
-6. Skin選択を保存
-7. Sensitivityを保存
-8. Crosshairを保存
-9. Aim画面をUIで邪魔しない
-10. Skin追加でGame Logicを書き換えない
-11. VALORANT Assetの権利状態を無視しない
-12. OKIAIMXをコピーしない
-13. Aim Labをコピーしない
-14. MVP前に不要機能を増やさない
-15. Game Dev HubでActual Playtest可能な状態を最終的に維持する
+6. Aim画面をUIで邪魔しない
+7. 最初の操作を明確にする
+8. User-facing操作説明は日本語で理解できる
+9. Skin追加でGame Logicを書き換えない
+10. VALORANT Assetの権利状態を無視しない
+11. OKIAIMXをコピーしない
+12. Aim Labをコピーしない
+13. MVP前に不要機能を増やさない
+14. Game Dev HubでActual Playtest可能な状態を維持する
 
-## Game Dev Hub Integration
+## Superseded Architecture
 
-2026-09-29時点でGame Dev Hub v0.1.28はWeb / Electron Project登録へ対応済み。
-
-- Project種類: `Web / Electron`
-- Project marker: `package.json`
-- Hubからの起動: 固定の `npm run dev`
-- Browser自動Open: `game-dev-hub.json` に記録したloopback URLのみ
-- Godot Game Foundationは本Projectへ適用しない
-
-Phase 1の残りBlockingはHub対応ではなく、Windows実機でPointer Lock / Mouse Aim / Hit-Miss / RestartをActual PlaytestしてCore Loopを確認すること。
+2026-09-29のUser指示により、旧Web Core / Browser / Electron前提は廃止する。Git履歴は残すがCurrent Product Architectureとして扱わない。
