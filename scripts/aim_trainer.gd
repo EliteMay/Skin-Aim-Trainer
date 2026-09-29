@@ -1,6 +1,7 @@
 extends Node3D
 
 const AimMath = preload("res://scripts/aim_math.gd")
+const ValorantCrosshairCode = preload("res://scripts/valorant_crosshair_code.gd")
 
 enum RunState {
 	READY,
@@ -117,6 +118,15 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 @onready var crosshair_description: Label = (
 	$UI/CrosshairSettingsOverlay/Center/Content/Description
 )
+@onready var crosshair_code_input: LineEdit = (
+	$UI/CrosshairSettingsOverlay/Center/Content/CodeInput
+)
+@onready var import_crosshair_code_button: Button = (
+	$UI/CrosshairSettingsOverlay/Center/Content/ImportCodeButton
+)
+@onready var crosshair_import_status: Label = (
+	$UI/CrosshairSettingsOverlay/Center/Content/ImportStatus
+)
 
 var run_state := RunState.READY
 var settings_return_state := RunState.READY
@@ -148,6 +158,11 @@ var crosshair_original_gap := DEFAULT_CROSSHAIR_GAP
 var crosshair_original_outline := DEFAULT_CROSSHAIR_OUTLINE
 var crosshair_original_center_dot := DEFAULT_CROSSHAIR_CENTER_DOT
 var crosshair_original_dot_size := DEFAULT_CROSSHAIR_DOT_SIZE
+var crosshair_imported_code := ""
+var crosshair_original_imported_code := ""
+var crosshair_profile: Dictionary = {}
+var crosshair_original_profile: Dictionary = {}
+var crosshair_controls_syncing := false
 
 var previous_accumulated_input := true
 
@@ -184,6 +199,9 @@ func _ready() -> void:
 
 	save_crosshair_button.pressed.connect(_save_crosshair_settings_and_close)
 	cancel_crosshair_button.pressed.connect(_cancel_crosshair_settings)
+	import_crosshair_code_button.pressed.connect(
+		_import_valorant_crosshair_code
+	)
 	crosshair_color_input.color_changed.connect(_on_crosshair_control_changed)
 	crosshair_length_input.value_changed.connect(_on_crosshair_control_changed)
 	crosshair_thickness_input.value_changed.connect(_on_crosshair_control_changed)
@@ -424,7 +442,9 @@ func _update_hud() -> void:
 
 func _load_settings() -> void:
 	var config := ConfigFile.new()
-	if config.load(SETTINGS_PATH) != OK:
+	var load_error := config.load(SETTINGS_PATH)
+
+	if load_error != OK:
 		mouse_dpi = DEFAULT_DPI
 		valorant_sensitivity = DEFAULT_VALORANT_SENSITIVITY
 		crosshair_color = DEFAULT_CROSSHAIR_COLOR
@@ -434,6 +454,8 @@ func _load_settings() -> void:
 		crosshair_outline = DEFAULT_CROSSHAIR_OUTLINE
 		crosshair_center_dot = DEFAULT_CROSSHAIR_CENTER_DOT
 		crosshair_dot_size = DEFAULT_CROSSHAIR_DOT_SIZE
+		crosshair_imported_code = ""
+		crosshair_profile = _manual_crosshair_profile()
 		return
 
 	mouse_dpi = clampf(
@@ -519,6 +541,24 @@ func _load_settings() -> void:
 		1.0,
 		8.0
 	)
+	crosshair_imported_code = str(
+		config.get_value(
+			CROSSHAIR_SETTINGS_SECTION,
+			"valorant_code",
+			""
+		)
+	).strip_edges()
+
+	if not crosshair_imported_code.is_empty():
+		var parsed := ValorantCrosshairCode.parse(crosshair_imported_code)
+		if bool(parsed.get("ok", false)):
+			crosshair_profile = parsed["profile"]
+			_profile_to_manual_values(crosshair_profile)
+		else:
+			crosshair_imported_code = ""
+			crosshair_profile = _manual_crosshair_profile()
+	else:
+		crosshair_profile = _manual_crosshair_profile()
 
 
 func _save_settings() -> Error:
@@ -646,10 +686,16 @@ func _save_crosshair_settings() -> Error:
 		crosshair_center_dot
 	)
 	config.set_value(CROSSHAIR_SETTINGS_SECTION, "dot_size", crosshair_dot_size)
+	config.set_value(
+		CROSSHAIR_SETTINGS_SECTION,
+		"valorant_code",
+		crosshair_imported_code
+	)
 	return config.save(SETTINGS_PATH)
 
 
 func _sync_crosshair_controls() -> void:
+	crosshair_controls_syncing = true
 	crosshair_color_input.color = crosshair_color
 	crosshair_length_input.set_value_no_signal(crosshair_length)
 	crosshair_thickness_input.set_value_no_signal(crosshair_thickness)
@@ -657,8 +703,20 @@ func _sync_crosshair_controls() -> void:
 	crosshair_outline_input.set_pressed_no_signal(crosshair_outline)
 	crosshair_center_dot_input.set_pressed_no_signal(crosshair_center_dot)
 	crosshair_dot_size_input.set_value_no_signal(crosshair_dot_size)
+	crosshair_code_input.text = crosshair_imported_code
+	crosshair_controls_syncing = false
+
 	crosshair_description.text = "変更はプレビューへすぐ反映されます"
-	_apply_crosshair_style()
+	if crosshair_imported_code.is_empty():
+		crosshair_import_status.text = (
+			"VALORANTのCrosshair Profile Codeを貼り付けて読み込めます。"
+		)
+	else:
+		crosshair_import_status.text = (
+			"VALORANTコード読込済み。手動項目を変更すると簡易設定へ切り替わります。"
+		)
+
+	_apply_crosshair_profile()
 
 
 func _open_crosshair_settings(return_state: int) -> void:
@@ -670,6 +728,8 @@ func _open_crosshair_settings(return_state: int) -> void:
 	crosshair_original_outline = crosshair_outline
 	crosshair_original_center_dot = crosshair_center_dot
 	crosshair_original_dot_size = crosshair_dot_size
+	crosshair_original_imported_code = crosshair_imported_code
+	crosshair_original_profile = crosshair_profile.duplicate(true)
 
 	start_overlay.visible = false
 	pause_overlay.visible = false
@@ -677,11 +737,14 @@ func _open_crosshair_settings(return_state: int) -> void:
 	crosshair_settings_overlay.visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_sync_crosshair_controls()
-	crosshair_color_input.grab_focus()
+	crosshair_code_input.grab_focus()
 
 
 func _save_crosshair_settings_and_close() -> void:
-	_read_crosshair_controls()
+	if crosshair_imported_code.is_empty():
+		_read_crosshair_controls()
+		crosshair_profile = _manual_crosshair_profile()
+
 	var save_error := _save_crosshair_settings()
 	if save_error != OK:
 		crosshair_description.text = (
@@ -689,7 +752,7 @@ func _save_crosshair_settings_and_close() -> void:
 		)
 		return
 
-	_apply_crosshair_style()
+	_apply_crosshair_profile()
 	_close_crosshair_settings()
 
 
@@ -701,6 +764,8 @@ func _cancel_crosshair_settings() -> void:
 	crosshair_outline = crosshair_original_outline
 	crosshair_center_dot = crosshair_original_center_dot
 	crosshair_dot_size = crosshair_original_dot_size
+	crosshair_imported_code = crosshair_original_imported_code
+	crosshair_profile = crosshair_original_profile.duplicate(true)
 	_sync_crosshair_controls()
 	_close_crosshair_settings()
 
@@ -718,9 +783,40 @@ func _close_crosshair_settings() -> void:
 		start_button.grab_focus()
 
 
+func _import_valorant_crosshair_code() -> void:
+	var code := crosshair_code_input.text.strip_edges()
+	var parsed := ValorantCrosshairCode.parse(code)
+	if not bool(parsed.get("ok", false)):
+		crosshair_import_status.text = str(
+			parsed.get("error", "Crosshair Codeを読み込めませんでした。")
+		)
+		return
+
+	crosshair_imported_code = code
+	crosshair_profile = parsed["profile"]
+	_profile_to_manual_values(crosshair_profile)
+	_sync_crosshair_controls()
+
+	if bool(crosshair_profile.get("ignored_dynamic_settings", false)):
+		crosshair_import_status.text = (
+			"Primary Crosshairを読み込みました。Movement / Firing Errorの動的変形は"
+			+ "Aim Trainerでは固定表示として扱います。"
+		)
+	else:
+		crosshair_import_status.text = "Primary Crosshairを読み込みました。"
+
+
 func _on_crosshair_control_changed(_value = null) -> void:
+	if crosshair_controls_syncing:
+		return
+
 	_read_crosshair_controls()
-	_apply_crosshair_style()
+	crosshair_imported_code = ""
+	crosshair_profile = _manual_crosshair_profile()
+	crosshair_import_status.text = (
+		"手動調整中。VALORANTコードをもう一度読み込むと、そのProfileへ戻せます。"
+	)
+	_apply_crosshair_profile()
 
 
 func _read_crosshair_controls() -> void:
@@ -733,25 +829,66 @@ func _read_crosshair_controls() -> void:
 	crosshair_dot_size = clampf(crosshair_dot_size_input.value, 1.0, 8.0)
 
 
-func _apply_crosshair_style() -> void:
-	crosshair.set_style(
-		crosshair_color,
-		crosshair_length,
-		crosshair_thickness,
-		crosshair_gap,
-		crosshair_outline,
-		crosshair_center_dot,
-		crosshair_dot_size
+func _manual_crosshair_profile() -> Dictionary:
+	var profile := ValorantCrosshairCode.default_profile()
+	profile["color"] = crosshair_color
+	profile["outline_enabled"] = crosshair_outline
+	profile["center_dot_enabled"] = crosshair_center_dot
+	profile["center_dot_size"] = crosshair_dot_size
+	profile["inner_enabled"] = true
+	profile["inner_opacity"] = 1.0
+	profile["inner_length_h"] = crosshair_length
+	profile["inner_length_v"] = crosshair_length
+	profile["inner_vertical_independent"] = false
+	profile["inner_thickness"] = crosshair_thickness
+	profile["inner_offset"] = crosshair_gap
+	profile["outer_enabled"] = false
+	profile["source_code"] = ""
+	profile["ignored_dynamic_settings"] = false
+	return profile
+
+
+func _profile_to_manual_values(profile: Dictionary) -> void:
+	crosshair_color = profile.get("color", DEFAULT_CROSSHAIR_COLOR)
+	crosshair_outline = bool(
+		profile.get("outline_enabled", DEFAULT_CROSSHAIR_OUTLINE)
 	)
-	crosshair_preview.set_style(
-		crosshair_color,
-		crosshair_length,
-		crosshair_thickness,
-		crosshair_gap,
-		crosshair_outline,
-		crosshair_center_dot,
-		crosshair_dot_size
+	crosshair_center_dot = bool(
+		profile.get("center_dot_enabled", DEFAULT_CROSSHAIR_CENTER_DOT)
 	)
+	crosshair_dot_size = float(
+		profile.get("center_dot_size", DEFAULT_CROSSHAIR_DOT_SIZE)
+	)
+
+	var prefix := "inner"
+	if not bool(profile.get("inner_enabled", true)) and bool(
+		profile.get("outer_enabled", false)
+	):
+		prefix = "outer"
+
+	crosshair_length = float(
+		profile.get("%s_length_h" % prefix, DEFAULT_CROSSHAIR_LENGTH)
+	)
+	crosshair_thickness = maxf(
+		float(
+			profile.get(
+				"%s_thickness" % prefix,
+				DEFAULT_CROSSHAIR_THICKNESS
+			)
+		),
+		1.0
+	)
+	crosshair_gap = float(
+		profile.get("%s_offset" % prefix, DEFAULT_CROSSHAIR_GAP)
+	)
+
+
+func _apply_crosshair_profile() -> void:
+	if crosshair_profile.is_empty():
+		crosshair_profile = _manual_crosshair_profile()
+
+	crosshair.set_profile(crosshair_profile)
+	crosshair_preview.set_profile(crosshair_profile)
 
 
 func _show_feedback(text: String, color: Color) -> void:
