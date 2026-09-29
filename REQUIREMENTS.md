@@ -110,6 +110,23 @@ Phase 2ではCrosshairをTrainingの表示設定として扱う。
 
 VALORANT Crosshair Codeのtoken構造は公開Parser / Community reverse engineeringを根拠にする。Riot公式の完全Format仕様として断定しない。
 
+## Session / Result / Personal Best Contract
+
+Phase 2のCurrent Trainingは、結果比較ができる固定Sessionとして扱う。
+
+- Default Session Durationは60秒
+- Countdownは`PLAYING`中だけ進める
+- Pause / Settings表示中はSession Timeを消費しない
+- 0秒で射撃を停止し、Mouse Captureを解除してResultへ遷移する
+- ResultにScore / Hit / Miss / Accuracy / Personal Bestを表示する
+- Personal BestはDefault TrainingのBest ScoreとしてLocalへ保存する
+- Personal BestはSession終了時にCurrent Scoreが既存Bestを上回った場合だけ更新する
+- RetryはScore / Hit / Miss / Aim / Timerを初期化して新しいSessionを開始する
+- ResultからStartへ戻れる
+- Account / Cloud Saveを必須にしない
+
+現在の60秒値はTraining FoundationのDefault。将来Home / Stage Libraryを導入したら、DurationとBest Record keyをStage metadata側へ移行できる構造を維持する。
+
 ## Future Home / Stage Library Direction
 
 現在は実装しないが、最終的にAim Lab / Kovaak's系のTraining Platform構成へ拡張する。
