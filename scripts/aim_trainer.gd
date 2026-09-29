@@ -16,12 +16,21 @@ const PITCH_LIMIT_DEGREES := 72.0
 
 const SETTINGS_PATH := "user://settings.cfg"
 const SETTINGS_SECTION := "aim"
+const CROSSHAIR_SETTINGS_SECTION := "crosshair"
 const DEFAULT_DPI := 1600.0
 const DEFAULT_VALORANT_SENSITIVITY := 0.1
 const MIN_DPI := 100.0
 const MAX_DPI := 32000.0
 const MIN_VALORANT_SENSITIVITY := 0.001
 const MAX_VALORANT_SENSITIVITY := 10.0
+
+const DEFAULT_CROSSHAIR_COLOR := Color(1.0, 1.0, 1.0, 1.0)
+const DEFAULT_CROSSHAIR_LENGTH := 5.0
+const DEFAULT_CROSSHAIR_THICKNESS := 2.0
+const DEFAULT_CROSSHAIR_GAP := 4.0
+const DEFAULT_CROSSHAIR_OUTLINE := true
+const DEFAULT_CROSSHAIR_CENTER_DOT := false
+const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 
 @onready var camera: Camera3D = $Camera3D
 @onready var target_root: Node3D = $TargetRoot
@@ -31,7 +40,7 @@ const MAX_VALORANT_SENSITIVITY := 10.0
 @onready var hit_label: Label = $UI/HUD/Stats/Hits
 @onready var miss_label: Label = $UI/HUD/Stats/Misses
 @onready var accuracy_label: Label = $UI/HUD/Stats/Accuracy
-@onready var crosshair: Label = $UI/Crosshair
+@onready var crosshair: AimCrosshair = $UI/Crosshair
 @onready var controls_hint: Label = $UI/ControlsHint
 @onready var feedback_label: Label = $UI/Feedback
 @onready var feedback_timer: Timer = $FeedbackTimer
@@ -44,6 +53,9 @@ const MAX_VALORANT_SENSITIVITY := 10.0
 @onready var start_settings_button: Button = (
 	$UI/StartOverlay/Center/Content/SettingsButton
 )
+@onready var start_crosshair_button: Button = (
+	$UI/StartOverlay/Center/Content/CrosshairButton
+)
 
 @onready var pause_overlay: Control = $UI/PauseOverlay
 @onready var resume_button: Button = $UI/PauseOverlay/Center/Content/ResumeButton
@@ -53,6 +65,9 @@ const MAX_VALORANT_SENSITIVITY := 10.0
 )
 @onready var pause_settings_button: Button = (
 	$UI/PauseOverlay/Center/Content/SettingsButton
+)
+@onready var pause_crosshair_button: Button = (
+	$UI/PauseOverlay/Center/Content/CrosshairButton
 )
 
 @onready var settings_overlay: Control = $UI/SettingsOverlay
@@ -68,8 +83,44 @@ const MAX_VALORANT_SENSITIVITY := 10.0
 	$UI/SettingsOverlay/Center/Content/CancelButton
 )
 
+@onready var crosshair_settings_overlay: Control = $UI/CrosshairSettingsOverlay
+@onready var crosshair_preview: AimCrosshair = (
+	$UI/CrosshairSettingsOverlay/Center/Content/PreviewArea/PreviewCrosshair
+)
+@onready var crosshair_color_input: ColorPickerButton = (
+	$UI/CrosshairSettingsOverlay/Center/Content/Fields/ColorInput
+)
+@onready var crosshair_length_input: SpinBox = (
+	$UI/CrosshairSettingsOverlay/Center/Content/Fields/LengthInput
+)
+@onready var crosshair_thickness_input: SpinBox = (
+	$UI/CrosshairSettingsOverlay/Center/Content/Fields/ThicknessInput
+)
+@onready var crosshair_gap_input: SpinBox = (
+	$UI/CrosshairSettingsOverlay/Center/Content/Fields/GapInput
+)
+@onready var crosshair_outline_input: CheckButton = (
+	$UI/CrosshairSettingsOverlay/Center/Content/Fields/OutlineInput
+)
+@onready var crosshair_center_dot_input: CheckButton = (
+	$UI/CrosshairSettingsOverlay/Center/Content/Fields/CenterDotInput
+)
+@onready var crosshair_dot_size_input: SpinBox = (
+	$UI/CrosshairSettingsOverlay/Center/Content/Fields/DotSizeInput
+)
+@onready var save_crosshair_button: Button = (
+	$UI/CrosshairSettingsOverlay/Center/Content/SaveButton
+)
+@onready var cancel_crosshair_button: Button = (
+	$UI/CrosshairSettingsOverlay/Center/Content/CancelButton
+)
+@onready var crosshair_description: Label = (
+	$UI/CrosshairSettingsOverlay/Center/Content/Description
+)
+
 var run_state := RunState.READY
 var settings_return_state := RunState.READY
+var crosshair_return_state := RunState.READY
 var yaw_degrees := 0.0
 var pitch_degrees := 0.0
 var score := 0
@@ -81,6 +132,23 @@ var mouse_dpi := DEFAULT_DPI
 var valorant_sensitivity := DEFAULT_VALORANT_SENSITIVITY
 var settings_original_dpi := DEFAULT_DPI
 var settings_original_sensitivity := DEFAULT_VALORANT_SENSITIVITY
+
+var crosshair_color := DEFAULT_CROSSHAIR_COLOR
+var crosshair_length := DEFAULT_CROSSHAIR_LENGTH
+var crosshair_thickness := DEFAULT_CROSSHAIR_THICKNESS
+var crosshair_gap := DEFAULT_CROSSHAIR_GAP
+var crosshair_outline := DEFAULT_CROSSHAIR_OUTLINE
+var crosshair_center_dot := DEFAULT_CROSSHAIR_CENTER_DOT
+var crosshair_dot_size := DEFAULT_CROSSHAIR_DOT_SIZE
+
+var crosshair_original_color := DEFAULT_CROSSHAIR_COLOR
+var crosshair_original_length := DEFAULT_CROSSHAIR_LENGTH
+var crosshair_original_thickness := DEFAULT_CROSSHAIR_THICKNESS
+var crosshair_original_gap := DEFAULT_CROSSHAIR_GAP
+var crosshair_original_outline := DEFAULT_CROSSHAIR_OUTLINE
+var crosshair_original_center_dot := DEFAULT_CROSSHAIR_CENTER_DOT
+var crosshair_original_dot_size := DEFAULT_CROSSHAIR_DOT_SIZE
+
 var previous_accumulated_input := true
 
 var target_body: StaticBody3D
@@ -98,19 +166,37 @@ func _ready() -> void:
 	start_settings_button.pressed.connect(
 		func() -> void: _open_settings(RunState.READY)
 	)
+	start_crosshair_button.pressed.connect(
+		func() -> void: _open_crosshair_settings(RunState.READY)
+	)
 	resume_button.pressed.connect(resume_training)
 	restart_button.pressed.connect(restart_training)
 	pause_settings_button.pressed.connect(
 		func() -> void: _open_settings(RunState.PAUSED)
 	)
+	pause_crosshair_button.pressed.connect(
+		func() -> void: _open_crosshair_settings(RunState.PAUSED)
+	)
 	save_settings_button.pressed.connect(_save_settings_and_close)
 	cancel_settings_button.pressed.connect(_cancel_settings)
 	dpi_input.value_changed.connect(_on_settings_value_changed)
 	sensitivity_input.value_changed.connect(_on_settings_value_changed)
+
+	save_crosshair_button.pressed.connect(_save_crosshair_settings_and_close)
+	cancel_crosshair_button.pressed.connect(_cancel_crosshair_settings)
+	crosshair_color_input.color_changed.connect(_on_crosshair_control_changed)
+	crosshair_length_input.value_changed.connect(_on_crosshair_control_changed)
+	crosshair_thickness_input.value_changed.connect(_on_crosshair_control_changed)
+	crosshair_gap_input.value_changed.connect(_on_crosshair_control_changed)
+	crosshair_outline_input.toggled.connect(_on_crosshair_control_changed)
+	crosshair_center_dot_input.toggled.connect(_on_crosshair_control_changed)
+	crosshair_dot_size_input.value_changed.connect(_on_crosshair_control_changed)
+
 	feedback_timer.timeout.connect(_hide_feedback)
 
 	_load_settings()
 	_sync_settings_controls()
+	_sync_crosshair_controls()
 	_create_target()
 	_show_ready_state()
 	_update_hud()
@@ -123,6 +209,13 @@ func _exit_tree() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if crosshair_settings_overlay.visible:
+		if event is InputEventKey and event.pressed and not event.echo:
+			if event.keycode == KEY_ESCAPE:
+				_cancel_crosshair_settings()
+				get_viewport().set_input_as_handled()
+		return
+
 	if settings_overlay.visible:
 		if event is InputEventKey and event.pressed and not event.echo:
 			if event.keycode == KEY_ESCAPE:
@@ -179,6 +272,7 @@ func start_training() -> void:
 	start_overlay.visible = false
 	pause_overlay.visible = false
 	settings_overlay.visible = false
+	crosshair_settings_overlay.visible = false
 	hud.visible = true
 	crosshair.visible = true
 	controls_hint.visible = true
@@ -193,6 +287,7 @@ func pause_training() -> void:
 	run_state = RunState.PAUSED
 	pause_overlay.visible = true
 	settings_overlay.visible = false
+	crosshair_settings_overlay.visible = false
 	crosshair.visible = false
 	controls_hint.visible = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -207,6 +302,7 @@ func resume_training() -> void:
 	run_state = RunState.PLAYING
 	pause_overlay.visible = false
 	settings_overlay.visible = false
+	crosshair_settings_overlay.visible = false
 	crosshair.visible = true
 	controls_hint.visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -218,6 +314,7 @@ func restart_training() -> void:
 	start_overlay.visible = false
 	pause_overlay.visible = false
 	settings_overlay.visible = false
+	crosshair_settings_overlay.visible = false
 	hud.visible = true
 	crosshair.visible = true
 	controls_hint.visible = true
@@ -231,6 +328,7 @@ func _show_ready_state() -> void:
 	start_overlay.visible = true
 	pause_overlay.visible = false
 	settings_overlay.visible = false
+	crosshair_settings_overlay.visible = false
 	hud.visible = false
 	crosshair.visible = false
 	controls_hint.visible = false
@@ -329,6 +427,13 @@ func _load_settings() -> void:
 	if config.load(SETTINGS_PATH) != OK:
 		mouse_dpi = DEFAULT_DPI
 		valorant_sensitivity = DEFAULT_VALORANT_SENSITIVITY
+		crosshair_color = DEFAULT_CROSSHAIR_COLOR
+		crosshair_length = DEFAULT_CROSSHAIR_LENGTH
+		crosshair_thickness = DEFAULT_CROSSHAIR_THICKNESS
+		crosshair_gap = DEFAULT_CROSSHAIR_GAP
+		crosshair_outline = DEFAULT_CROSSHAIR_OUTLINE
+		crosshair_center_dot = DEFAULT_CROSSHAIR_CENTER_DOT
+		crosshair_dot_size = DEFAULT_CROSSHAIR_DOT_SIZE
 		return
 
 	mouse_dpi = clampf(
@@ -348,9 +453,77 @@ func _load_settings() -> void:
 		MAX_VALORANT_SENSITIVITY
 	)
 
+	var stored_color = config.get_value(
+		CROSSHAIR_SETTINGS_SECTION,
+		"color",
+		DEFAULT_CROSSHAIR_COLOR
+	)
+	crosshair_color = (
+		stored_color if stored_color is Color else DEFAULT_CROSSHAIR_COLOR
+	)
+	crosshair_length = clampf(
+		float(
+			config.get_value(
+				CROSSHAIR_SETTINGS_SECTION,
+				"length",
+				DEFAULT_CROSSHAIR_LENGTH
+			)
+		),
+		1.0,
+		20.0
+	)
+	crosshair_thickness = clampf(
+		float(
+			config.get_value(
+				CROSSHAIR_SETTINGS_SECTION,
+				"thickness",
+				DEFAULT_CROSSHAIR_THICKNESS
+			)
+		),
+		1.0,
+		8.0
+	)
+	crosshair_gap = clampf(
+		float(
+			config.get_value(
+				CROSSHAIR_SETTINGS_SECTION,
+				"gap",
+				DEFAULT_CROSSHAIR_GAP
+			)
+		),
+		0.0,
+		20.0
+	)
+	crosshair_outline = bool(
+		config.get_value(
+			CROSSHAIR_SETTINGS_SECTION,
+			"outline",
+			DEFAULT_CROSSHAIR_OUTLINE
+		)
+	)
+	crosshair_center_dot = bool(
+		config.get_value(
+			CROSSHAIR_SETTINGS_SECTION,
+			"center_dot",
+			DEFAULT_CROSSHAIR_CENTER_DOT
+		)
+	)
+	crosshair_dot_size = clampf(
+		float(
+			config.get_value(
+				CROSSHAIR_SETTINGS_SECTION,
+				"dot_size",
+				DEFAULT_CROSSHAIR_DOT_SIZE
+			)
+		),
+		1.0,
+		8.0
+	)
+
 
 func _save_settings() -> Error:
 	var config := ConfigFile.new()
+	config.load(SETTINGS_PATH)
 	config.set_value(SETTINGS_SECTION, "dpi", mouse_dpi)
 	config.set_value(
 		SETTINGS_SECTION,
@@ -373,6 +546,7 @@ func _open_settings(return_state: int) -> void:
 
 	start_overlay.visible = false
 	pause_overlay.visible = false
+	crosshair_settings_overlay.visible = false
 	settings_overlay.visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_sync_settings_controls()
@@ -408,6 +582,7 @@ func _cancel_settings() -> void:
 
 func _close_settings() -> void:
 	settings_overlay.visible = false
+	crosshair_settings_overlay.visible = false
 
 	if settings_return_state == RunState.PAUSED:
 		run_state = RunState.PAUSED
@@ -451,6 +626,132 @@ func _update_sensitivity_labels() -> void:
 	]
 	start_sensitivity_label.text = summary
 	pause_sensitivity_label.text = summary
+
+
+func _save_crosshair_settings() -> Error:
+	var config := ConfigFile.new()
+	config.load(SETTINGS_PATH)
+	config.set_value(CROSSHAIR_SETTINGS_SECTION, "color", crosshair_color)
+	config.set_value(CROSSHAIR_SETTINGS_SECTION, "length", crosshair_length)
+	config.set_value(
+		CROSSHAIR_SETTINGS_SECTION,
+		"thickness",
+		crosshair_thickness
+	)
+	config.set_value(CROSSHAIR_SETTINGS_SECTION, "gap", crosshair_gap)
+	config.set_value(CROSSHAIR_SETTINGS_SECTION, "outline", crosshair_outline)
+	config.set_value(
+		CROSSHAIR_SETTINGS_SECTION,
+		"center_dot",
+		crosshair_center_dot
+	)
+	config.set_value(CROSSHAIR_SETTINGS_SECTION, "dot_size", crosshair_dot_size)
+	return config.save(SETTINGS_PATH)
+
+
+func _sync_crosshair_controls() -> void:
+	crosshair_color_input.color = crosshair_color
+	crosshair_length_input.set_value_no_signal(crosshair_length)
+	crosshair_thickness_input.set_value_no_signal(crosshair_thickness)
+	crosshair_gap_input.set_value_no_signal(crosshair_gap)
+	crosshair_outline_input.set_pressed_no_signal(crosshair_outline)
+	crosshair_center_dot_input.set_pressed_no_signal(crosshair_center_dot)
+	crosshair_dot_size_input.set_value_no_signal(crosshair_dot_size)
+	crosshair_description.text = "変更はプレビューへすぐ反映されます"
+	_apply_crosshair_style()
+
+
+func _open_crosshair_settings(return_state: int) -> void:
+	crosshair_return_state = return_state
+	crosshair_original_color = crosshair_color
+	crosshair_original_length = crosshair_length
+	crosshair_original_thickness = crosshair_thickness
+	crosshair_original_gap = crosshair_gap
+	crosshair_original_outline = crosshair_outline
+	crosshair_original_center_dot = crosshair_center_dot
+	crosshair_original_dot_size = crosshair_dot_size
+
+	start_overlay.visible = false
+	pause_overlay.visible = false
+	settings_overlay.visible = false
+	crosshair_settings_overlay.visible = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	_sync_crosshair_controls()
+	crosshair_color_input.grab_focus()
+
+
+func _save_crosshair_settings_and_close() -> void:
+	_read_crosshair_controls()
+	var save_error := _save_crosshair_settings()
+	if save_error != OK:
+		crosshair_description.text = (
+			"設定を保存できませんでした。Error: %d" % save_error
+		)
+		return
+
+	_apply_crosshair_style()
+	_close_crosshair_settings()
+
+
+func _cancel_crosshair_settings() -> void:
+	crosshair_color = crosshair_original_color
+	crosshair_length = crosshair_original_length
+	crosshair_thickness = crosshair_original_thickness
+	crosshair_gap = crosshair_original_gap
+	crosshair_outline = crosshair_original_outline
+	crosshair_center_dot = crosshair_original_center_dot
+	crosshair_dot_size = crosshair_original_dot_size
+	_sync_crosshair_controls()
+	_close_crosshair_settings()
+
+
+func _close_crosshair_settings() -> void:
+	crosshair_settings_overlay.visible = false
+
+	if crosshair_return_state == RunState.PAUSED:
+		run_state = RunState.PAUSED
+		pause_overlay.visible = true
+		resume_button.grab_focus()
+	else:
+		run_state = RunState.READY
+		start_overlay.visible = true
+		start_button.grab_focus()
+
+
+func _on_crosshair_control_changed(_value = null) -> void:
+	_read_crosshair_controls()
+	_apply_crosshair_style()
+
+
+func _read_crosshair_controls() -> void:
+	crosshair_color = crosshair_color_input.color
+	crosshair_length = clampf(crosshair_length_input.value, 1.0, 20.0)
+	crosshair_thickness = clampf(crosshair_thickness_input.value, 1.0, 8.0)
+	crosshair_gap = clampf(crosshair_gap_input.value, 0.0, 20.0)
+	crosshair_outline = crosshair_outline_input.button_pressed
+	crosshair_center_dot = crosshair_center_dot_input.button_pressed
+	crosshair_dot_size = clampf(crosshair_dot_size_input.value, 1.0, 8.0)
+
+
+func _apply_crosshair_style() -> void:
+	crosshair.set_style(
+		crosshair_color,
+		crosshair_length,
+		crosshair_thickness,
+		crosshair_gap,
+		crosshair_outline,
+		crosshair_center_dot,
+		crosshair_dot_size
+	)
+	crosshair_preview.set_style(
+		crosshair_color,
+		crosshair_length,
+		crosshair_thickness,
+		crosshair_gap,
+		crosshair_outline,
+		crosshair_center_dot,
+		crosshair_dot_size
+	)
 
 
 func _show_feedback(text: String, color: Color) -> void:
