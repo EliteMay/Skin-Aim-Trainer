@@ -268,8 +268,8 @@ default_best_score=<int>
 
 ### Validation State
 
-- Godot Import / Cold Start: pending CI
-- Linux Core Smoke: pending CI
-- Windows Direct Smoke: pending CI
-- Countdown / Pause / Result / Best persistence: pending CI
+- Godot Import / Cold Start: PASS — GitHub Actions run 36594652199
+- Linux Core Smoke: PASS — GitHub Actions run 36594652199
+- Windows Direct Smoke: PASS — GitHub Actions run 36594652199
+- Countdown / Pause / Result / Best persistence: PASS — GitHub Actions run 36594652199
 - Windows Actual Playtest: NOT_RUN
