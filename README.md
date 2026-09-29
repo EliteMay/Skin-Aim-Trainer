@@ -10,9 +10,9 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 
 ## 起動後にやること
 
-1. **60秒の練習を開始** を押す
-2. マウスで赤いTargetを狙う
-3. 左クリックで撃つ
+1. **難易度を選ぶ**
+2. **60秒の練習を開始** を押す
+3. マウスで赤いTargetを狙って左クリックで撃つ
 
 操作:
 
@@ -21,7 +21,7 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - ESC: 一時停止 / 再開
 - R: 最初からやり直す
 
-移動、武器モデル、Skin、モード選択はまだ入れていません。感度だけはPhase 2で設定可能になりました。
+移動、武器モデル、Skin、モード選択はまだ入れていません。Phase 2では感度・Crosshair・Difficultyを設定できます。
 
 ## Phase 1 完了
 
@@ -57,6 +57,9 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - 60秒Session Timer
 - Result画面
 - Local Personal Best保存
+- 3段階Difficulty（かんたん / 標準 / むずかしい）
+- Difficulty別Personal Best
+- 既存BESTを失わないNormal互換読み込み
 
 ## 将来のUI方向
 
