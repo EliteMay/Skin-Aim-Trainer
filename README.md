@@ -21,7 +21,7 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - ESC: 一時停止 / 再開
 - R: 最初からやり直す
 
-Phase 1では移動、武器モデル、Skin、モード選択、細かい設定はまだ入れません。
+移動、武器モデル、Skin、モード選択はまだ入れていません。感度だけはPhase 2で設定可能になりました。
 
 ## Phase 1 完了
 
@@ -43,10 +43,16 @@ Phase 1では移動、武器モデル、Skin、モード選択、細かい設定
 - Game Dev HubからのGodot起動 実機確認
 - 起動導線 / Aim / Shoot / Hit-Miss / Pause / Restart 実機確認
 
-## まだ入れていないもの
+## Phase 2で追加済み
 
-- VALORANT Sensitivity換算
-- DPI / eDPI
+- VALORANT-style Sensitivity設定
+- DPI入力
+- eDPI / cm/360表示
+- Sensitivity保存
+- Resolution scaleの影響を避けるGodot `screen_relative` Mouse Aim
+- Mouse input accumulation無効化
+
+## まだ入れていないもの
 - Gridshot / Microshot / Hold Angle / Flick
 - 武器モデル
 - Skin
