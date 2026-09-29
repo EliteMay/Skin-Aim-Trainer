@@ -214,7 +214,29 @@ horizontal_alignment = 1
 [node name="HowTo" type="Label" parent="UI/StartOverlay/Center/Content"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "1. 開始を押す\n2. マウスで赤いTargetを狙う\n3. 左クリックで撃つ"
+text = "1. 難易度を選ぶ\n2. マウスで赤いTargetを狙う\n3. 左クリックで撃つ"
+horizontal_alignment = 1
+
+[node name="DifficultyRow" type="HBoxContainer" parent="UI/StartOverlay/Center/Content"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="DifficultyLabel" type="Label" parent="UI/StartOverlay/Center/Content/DifficultyRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "難易度"
+
+[node name="DifficultySelect" type="OptionButton" parent="UI/StartOverlay/Center/Content/DifficultyRow"]
+custom_minimum_size = Vector2(260, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+
+[node name="DifficultyDescription" type="Label" parent="UI/StartOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
+theme_override_font_sizes/font_size = 15
+text = "Target: 標準  /  出現範囲: 標準"
 horizontal_alignment = 1
 
 [node name="StartButton" type="Button" parent="UI/StartOverlay/Center/Content"]
@@ -227,7 +249,7 @@ text = "60秒の練習を開始"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.82, 0.46, 1)
 theme_override_font_sizes/font_size = 20
-text = "BEST  0"
+text = "標準 BEST  0"
 horizontal_alignment = 1
 
 [node name="CurrentSensitivity" type="Label" parent="UI/StartOverlay/Center/Content"]
@@ -699,7 +721,7 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.66, 0.72, 1)
 theme_override_font_sizes/font_size = 16
-text = "60秒 Session"
+text = "標準 / 60秒 Session"
 horizontal_alignment = 1
 
 [node name="RetryButton" type="Button" parent="UI/ResultOverlay/Center/Content"]

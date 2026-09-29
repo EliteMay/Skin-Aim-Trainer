@@ -70,6 +70,14 @@ func _ready() -> void:
 	assert(is_equal_approx(AimMath.accuracy_percent(0, 0), 0.0))
 	assert(is_equal_approx(AimMath.accuracy_percent(7, 10), 70.0))
 
+	var settings_path := ProjectSettings.globalize_path("user://settings.cfg")
+	if FileAccess.file_exists("user://settings.cfg"):
+		assert(DirAccess.remove_absolute(settings_path) == OK)
+
+	var legacy_config := ConfigFile.new()
+	legacy_config.set_value("training_records", "default_best_score", 7)
+	assert(legacy_config.save("user://settings.cfg") == OK)
+
 	var packed := load("res://scenes/main.tscn") as PackedScene
 	assert(packed != null)
 	var instance := packed.instantiate()
@@ -83,6 +91,22 @@ func _ready() -> void:
 	assert(instance.get_node("UI/StartOverlay").visible)
 	assert(not instance.get_node("UI/HUD").visible)
 	assert(not instance.get_node("UI/SettingsOverlay").visible)
+
+	var difficulty_select := instance.get_node(
+		"UI/StartOverlay/Center/Content/DifficultyRow/DifficultySelect"
+	) as OptionButton
+	assert(difficulty_select != null)
+	assert(difficulty_select.item_count == 3)
+	assert(difficulty_select.selected == 1)
+	assert(instance.selected_difficulty == instance.DifficultyLevel.NORMAL)
+	assert(instance.personal_best_score == 7)
+	assert(
+		instance.get_node("UI/StartOverlay/Center/Content/BestScore").text
+		== "標準 BEST  7"
+	)
+	var difficulty_sphere := instance.target_mesh.mesh as SphereMesh
+	assert(difficulty_sphere != null)
+	assert(is_equal_approx(difficulty_sphere.radius, 0.62))
 
 	assert(not instance.get_node("UI/CrosshairSettingsOverlay").visible)
 	assert(
@@ -157,7 +181,11 @@ func _ready() -> void:
 	assert(start_best_label != null)
 	assert(timer_label.text == "01:00")
 
-	instance.personal_best_score = 0
+	var start_content := instance.get_node(
+		"UI/StartOverlay/Center/Content"
+	) as Control
+	assert(start_content.size.y <= viewport_size.y)
+
 	instance.start_training()
 	assert(instance.get_node("UI/HUD").visible)
 	assert(not instance.get_node("UI/StartOverlay").visible)
@@ -206,9 +234,13 @@ func _ready() -> void:
 	)
 	assert(
 		instance.get_node("UI/ResultOverlay/Center/Content/Best").text
-		== "BEST  12"
+		== "標準 BEST  12"
 	)
-	assert(start_best_label.text == "BEST  12")
+	assert(
+		instance.get_node("UI/ResultOverlay/Center/Content/Duration").text
+		== "標準 / 60秒 Session"
+	)
+	assert(start_best_label.text == "標準 BEST  12")
 
 	var records_config := ConfigFile.new()
 	assert(records_config.load("user://settings.cfg") == OK)
@@ -217,6 +249,15 @@ func _ready() -> void:
 			records_config.get_value(
 				"training_records",
 				"default_best_score",
+				0
+			)
+		) == 7
+	)
+	assert(
+		int(
+			records_config.get_value(
+				"training_records",
+				"best_normal_score",
 				0
 			)
 		) == 12
@@ -228,6 +269,92 @@ func _ready() -> void:
 	assert(is_equal_approx(instance.session_remaining_seconds, 60.0))
 	assert(timer_label.text == "01:00")
 	assert(not instance.get_node("UI/ResultOverlay").visible)
+
+	instance._show_ready_state()
+	var sensitivity_before_difficulty: float = instance.valorant_sensitivity
+	var crosshair_before_difficulty: Dictionary = instance.crosshair_profile.duplicate(true)
+	difficulty_select.select(instance.DifficultyLevel.EASY)
+	difficulty_select.item_selected.emit(instance.DifficultyLevel.EASY)
+	assert(instance.selected_difficulty == instance.DifficultyLevel.EASY)
+	assert(is_equal_approx(instance.valorant_sensitivity, sensitivity_before_difficulty))
+	assert(instance.crosshair_profile == crosshair_before_difficulty)
+	assert(instance.personal_best_score == 0)
+	assert(start_best_label.text == "かんたん BEST  0")
+	assert(is_equal_approx(difficulty_sphere.radius, 0.82))
+	var target_position: Vector3 = instance.target_body.position
+	assert(target_position.x >= -4.2 and target_position.x <= 4.2)
+	assert(target_position.y >= 0.6 and target_position.y <= 4.2)
+
+	var difficulty_config := ConfigFile.new()
+	assert(difficulty_config.load("user://settings.cfg") == OK)
+	assert(
+		str(
+			difficulty_config.get_value(
+				"training",
+				"difficulty",
+				""
+			)
+		) == "easy"
+	)
+
+	instance.start_training()
+	instance.score = 5
+	instance.hits = 5
+	instance.shots = 6
+	instance.misses = 1
+	instance.session_remaining_seconds = 0.01
+	instance._process(0.02)
+	assert(instance.run_state == instance.RunState.RESULT)
+	assert(instance.personal_best_score == 5)
+	assert(
+		instance.get_node("UI/ResultOverlay/Center/Content/Best").text
+		== "かんたん BEST  5"
+	)
+
+	records_config = ConfigFile.new()
+	assert(records_config.load("user://settings.cfg") == OK)
+	assert(
+		int(
+			records_config.get_value(
+				"training_records",
+				"best_easy_score",
+				0
+			)
+		) == 5
+	)
+	assert(
+		int(
+			records_config.get_value(
+				"training_records",
+				"best_normal_score",
+				0
+			)
+		) == 12
+	)
+
+	instance._show_ready_state()
+	difficulty_select.select(instance.DifficultyLevel.HARD)
+	difficulty_select.item_selected.emit(instance.DifficultyLevel.HARD)
+	assert(instance.selected_difficulty == instance.DifficultyLevel.HARD)
+	assert(instance.personal_best_score == 0)
+	assert(start_best_label.text == "むずかしい BEST  0")
+	assert(is_equal_approx(difficulty_sphere.radius, 0.46))
+	assert(is_equal_approx(instance.valorant_sensitivity, sensitivity_before_difficulty))
+	assert(instance.crosshair_profile == crosshair_before_difficulty)
+	instance.start_training()
+	assert(is_equal_approx(instance.session_remaining_seconds, 60.0))
+	assert(instance.score == 0)
+	instance._show_ready_state()
+	target_position = instance.target_body.position
+	assert(target_position.x >= -6.2 and target_position.x <= 6.2)
+	assert(target_position.y >= -0.1 and target_position.y <= 5.0)
+
+	difficulty_select.select(instance.DifficultyLevel.NORMAL)
+	difficulty_select.item_selected.emit(instance.DifficultyLevel.NORMAL)
+	assert(instance.selected_difficulty == instance.DifficultyLevel.NORMAL)
+	assert(instance.personal_best_score == 12)
+	assert(start_best_label.text == "標準 BEST  12")
+	assert(is_equal_approx(difficulty_sphere.radius, 0.62))
 
 	var dpi_input := instance.get_node(
 		"UI/SettingsOverlay/Center/Content/Fields/DpiInput"

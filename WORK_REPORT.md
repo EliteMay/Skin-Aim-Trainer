@@ -272,4 +272,43 @@ default_best_score=<int>
 - Linux Core Smoke: PASS — GitHub Actions run 36594652199
 - Windows Direct Smoke: PASS — GitHub Actions run 36594652199
 - Countdown / Pause / Result / Best persistence: PASS — GitHub Actions run 36594652199
+- Windows Actual Playtest: PASS — Game Dev Hub共有Pack 2026-09-30 / 8 of 8
+
+
+## 2026-09-30 — Phase 2 Difficulty
+
+### Previous Task Closure
+
+Game Dev Hub共有PackでTimer / Result / Personal BestのWindows実機確認8/8 PASSを確認し、Roadmapの実機確認Taskを完了へ更新した。
+
+### Design Decision
+
+DifficultyはCurrent TrainingのAim条件だけを変える。
+
+- かんたん: 大きいTarget / 狭いspawn range
+- 標準: 既存と同じTarget / spawn range
+- むずかしい: 小さいTarget / 広いspawn range
+
+Sensitivity / Crosshair / Hit Detection rule / Score rule / 60秒SessionはDifficultyで変更しない。
+
+### Implemented
+
+- Start画面Difficulty selector
+- 選択DifficultyのLocal persistence
+- Difficulty別Target radius
+- Difficulty別spawn range
+- Mesh / Collisionを同じradiusへ同期
+- ResultへのDifficulty表示
+- Difficulty別Personal Best
+- 旧default_best_scoreをNormal Bestとして読む互換処理
+- Legacy keyを削除しない非破壊Migration
+- Difficulty UI / geometry / records / migration regression coverage
+
+### Validation State
+
+- Godot Import / Cold Start: PASS — GitHub Actions run 36599258512
+- Linux Core Smoke: PASS — GitHub Actions run 36599258512
+- Windows Direct Smoke: PASS — GitHub Actions run 36599258512
+- Legacy Best compatibility: PASS — GitHub Actions run 36599258512
 - Windows Actual Playtest: NOT_RUN
+- Final visual review: NOT_RUN — Start画面の追加Selectorは実機確認Taskで確認する

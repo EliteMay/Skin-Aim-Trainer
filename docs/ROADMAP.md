@@ -132,7 +132,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - Retry / 開始画面へ戻るを追加する
   - Godot Smoke TestでCountdown / Pause / Result / Best保存を確認する
 
-- [ ] Timer / Result / Personal Bestを実機確認する
+- [x] Timer / Result / Personal Bestを実機確認する
   - 担当: あなた
   - 「60秒の練習を開始」でTimerが01:00から減る
   - ESCでPause中はTimerが止まる
@@ -142,7 +142,28 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - Gameを閉じて再起動してもBESTが残る
   - 「もう一度」で新しい60秒Sessionを開始できる
   - 「開始画面へ戻る」でStartへ戻れる
-- [ ] Difficulty
+  - 2026-09-30 Game Dev Hub共有Packで8/8 PASS
+
+- [x] Difficulty
+  - 担当: ChatGPT
+  - Start画面へ「かんたん / 標準 / むずかしい」の3段階を追加
+  - DifficultyでTarget sizeとspawn rangeだけを変更
+  - Sensitivity / Crosshair / Score rule / 60秒Sessionは変更しない
+  - 選択したDifficultyをuser://settings.cfgへ保存
+  - Personal BestをDifficulty別に保存
+  - 旧default_best_scoreはNormalのBestとして読み込み互換を維持
+  - Difficulty / migration / Best分離をGodot Smoke Testへ追加
+
+- [ ] Difficultyを実機確認する
+  - 担当: あなた
+  - Start画面で3段階の難易度を選べる
+  - 「かんたん」はTargetが大きく、出現範囲が狭い
+  - 「標準」はこれまでと同じTarget size / 出現範囲
+  - 「むずかしい」はTargetが小さく、出現範囲が広い
+  - 難易度を変えてもSensitivity / Crosshair / 60秒 / Score ruleは変わらない
+  - BESTが難易度ごとに別々に保存される
+  - Gameを閉じて再起動しても選択DifficultyとBESTが残る
+
 - [ ] Gridshot
 
 ## Phase 3 — Training Modes / Scenario Library
