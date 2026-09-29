@@ -174,7 +174,7 @@ Userから、将来はAim Lab / Kovaak'sのようにHomeから複数Stageを選�
 
 ### Validation State
 
-- Parser unit/smoke coverage: pending CI
-- Godot import / cold start: pending CI
+- Parser unit/smoke coverage: PASS — GitHub Actions run 36552007274
+- Godot import / cold start: PASS — GitHub Actions run 36552007274
 - Windows VALORANT code import: NOT_RUN
 - Windows persistence: NOT_RUN
