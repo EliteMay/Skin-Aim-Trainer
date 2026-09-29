@@ -527,15 +527,10 @@ func _update_hud() -> void:
 
 
 func _update_timer_label() -> void:
-	var total_seconds := int(ceil(session_remaining_seconds))
-	var minutes := total_seconds / 60
+	var total_seconds := maxi(int(ceil(session_remaining_seconds)), 0)
+	var minutes := int(total_seconds / 60)
 	var seconds := total_seconds % 60
 	timer_label.text = "%02d:%02d" % [minutes, seconds]
-
-
-func _format_session_time(seconds_value: float) -> String:
-	var total_seconds := maxi(int(ceil(seconds_value)), 0)
-	return "%02d:%02d" % [total_seconds / 60, total_seconds % 60]
 
 
 func _update_best_labels() -> void:
