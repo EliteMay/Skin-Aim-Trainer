@@ -1,7 +1,7 @@
 # REQUIREMENTS — Skin Aim Trainer
 
 Updated: 2026-09-29
-Status: Godot rewrite / Phase 1 actual playtest pending
+Status: Phase 1 complete / Phase 2 active
 
 ## Product Core
 
@@ -63,6 +63,8 @@ Status: Godot rewrite / Phase 1 actual playtest pending
 Phase 1では移動を入れない。まずAimとShootの品質だけを確認する。
 
 ### Phase 1 Completion
+
+2026-09-29にWindows実機で以下を確認し、Phase 1を完了した。
 
 - 開始方法が説明なしでも見つけられる
 - Mouse movementでAimが安定して動く
