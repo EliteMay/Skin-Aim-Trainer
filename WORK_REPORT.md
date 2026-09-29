@@ -21,6 +21,7 @@ Skin Aim TrainerのPhase 1 Core Aim Prototypeを作成。
 
 - Static validation: PASS（required files 12/12）
 - Node tests: PASS（6/6）
+- GitHub Actions CI: PASS（`npm run validate`）
 - Local HTTP smoke: PASS（index.html / src/main.js 配信確認）
 - Browser runtime / Pointer Lock: 未確認
 - Actual Playtest: 未確認
