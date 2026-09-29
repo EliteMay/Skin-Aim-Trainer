@@ -82,7 +82,7 @@ Aim CoreへElectron固有処理を直接混ぜません。
 
 `docs/ROADMAP.md` はGame Dev Hubのやることリストで読める形式です。
 
-Stable v0.1.27まではGodot Project専用ですが、Game Dev HubのCurrent `main`にはWeb / Electron Project対応を追加済みです。対応版ではProject種類に **Web / Electron** を選び、このRepositoryを登録できます。
+Game Dev Hub **v0.1.28以降**はWeb / Electron Project対応済みです。Project種類に **Web / Electron** を選び、このRepositoryを登録できます。
 
 `game-dev-hub.json` はHubが開発Server起動後に開くloopback URLだけを保持します。任意Commandは持たせません。
 
