@@ -96,6 +96,24 @@ func _ready() -> void:
 		) is Button
 	)
 
+	var start_crosshair_button := instance.get_node(
+		"UI/StartOverlay/Center/Content/CrosshairButton"
+	) as Button
+	assert(start_crosshair_button != null)
+	assert(start_crosshair_button.visible)
+	assert(not start_crosshair_button.disabled)
+
+	start_crosshair_button.emit_signal("pressed")
+	await get_tree().process_frame
+
+	assert(not instance.get_node("UI/StartOverlay").visible)
+	assert(instance.get_node("UI/CrosshairSettingsOverlay").visible)
+	assert(
+		instance.get_node(
+			"UI/CrosshairSettingsOverlay/Center/Content/CodeInput"
+		).has_focus()
+	)
+
 	var dpi_input := instance.get_node(
 		"UI/SettingsOverlay/Center/Content/Fields/DpiInput"
 	) as SpinBox
