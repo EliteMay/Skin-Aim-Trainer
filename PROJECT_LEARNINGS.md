@@ -107,3 +107,20 @@
 - Context: Restart途中やPause中のScoreをBestとして保存すると、Session比較の意味が崩れる。
 - Decision: Personal BestはTimer 0でSession完了した時だけ、Current Scoreが既存Bestを超えた場合に更新する。
 - Prevention: Shoot / Restart / Pause処理からBest保存を呼ばない。将来Stage化したらStage ID単位のRecord keyへ移行する。
+
+
+## PL-014 — Difficultyが変わるScoreはRecordを分離する
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Target size / spawn rangeが異なるDifficultyで同じPersonal Bestを共有すると、Score比較の意味が崩れる。
+- Decision: Personal BestをDifficulty keyごとに分離し、Result / Startでは選択中DifficultyのBestだけを表示する。
+- Prevention: DifficultyやStage条件を追加するときは、同じScore Recordを共有して比較可能かを先に確認する。
+
+## PL-015 — Save key分割では旧RecordをNormalへ非破壊移行する
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Difficulty追加前は`training_records/default_best_score`だけを保存していた。
+- Decision: 新しい`best_normal_score`が無い場合だけ旧値をNormal Bestとして読む。旧Keyは削除しない。
+- Prevention: Save構造を分割するときは旧Key fallbackとRegression Testを同じ変更に含める。
