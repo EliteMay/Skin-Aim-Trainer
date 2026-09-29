@@ -43,34 +43,44 @@
   - 担当: ChatGPT
   - Import / Cold Start / Core SmokeをCIで確認
 
-- [ ] Godot版をGame Dev Hubから起動する
+- [x] Godot版をGame Dev Hubから起動する
   - 担当: あなた
   - Game Dev Hubの旧Skin Aim Trainer登録を解除する
   - Fileは削除しない
   - RepositoryをGodot Projectとして再登録する
   - 「開発を開始」→「ゲームを起動」
 
-- [ ] 操作が迷わないか確認する
+- [x] 操作が迷わないか確認する
   - 担当: あなた
   - 起動直後に何を押すか分かる
   - 「練習を開始」を押せる
   - マウスで赤いTargetを狙える
   - 左クリックで撃てる
 
-- [ ] Aim / Shootを実機確認する
+- [x] Aim / Shootを実機確認する
   - 担当: あなた
   - Targetを5回Hitする
   - 空振りを数回行う
   - SCORE / HIT / MISS / 命中率が正しく変わる
   - Aimが引っ掛からない
 
-- [ ] Pause / Restartを実機確認する
+- [x] Pause / Restartを実機確認する
   - 担当: あなた
   - ESCで一時停止
   - ESCまたは「練習に戻る」で再開
   - Rまたは「最初からやり直す」でScoreが0へ戻る
 
 完了条件: 起動 → 開始 → Aim → Shoot → Hit/Miss → Score → Pause/Resume/RestartをWindows Actual Playtestし、操作方法が分からないBlockingがない。
+
+### Phase 1 実機確認結果 — 2026-09-29
+
+- Game Dev HubからGodot版を起動: PASS
+- 起動直後の操作導線: PASS
+- Mouse Aim / Shoot / Hit / Miss / Score / 命中率: PASS
+- ESC Pause / Resume / Restart: PASS
+- Blockingな操作問題: なし
+
+Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensitivity / DPI / eDPI Researchと設定。
 
 ## Phase 2 — Training Foundation
 
