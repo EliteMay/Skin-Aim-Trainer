@@ -1,6 +1,6 @@
 # REQUIREMENTS — Skin Aim Trainer
 
-Updated: 2026-09-29
+Updated: 2026-09-30
 Status: Phase 1 complete / Phase 2 active
 
 ## Product Core
@@ -126,6 +126,28 @@ Phase 2のCurrent Trainingは、結果比較ができる固定Sessionとして�
 - Account / Cloud Saveを必須にしない
 
 現在の60秒値はTraining FoundationのDefault。将来Home / Stage Libraryを導入したら、DurationとBest Record keyをStage metadata側へ移行できる構造を維持する。
+
+## Difficulty Contract
+
+Phase 2のCurrent Trainingでは、DifficultyをAim課題のTarget presentationだけに限定する。
+
+- `かんたん / 標準 / むずかしい` の3段階
+- DifficultyはTarget radiusとspawn rangeだけを変更する
+- Sensitivity / DPI / Crosshair / Hit Detection rule / Score rule / Session durationは変更しない
+- Start画面で選択し、Session開始後はそのSession中のDifficultyを固定する
+- 選択DifficultyはLocal Settingsへ保存する
+- Personal BestはDifficultyごとに別Recordとして保存する
+- 旧`training_records/default_best_score`は`標準`のBestとして読み込み、既存User Dataを捨てない
+- 旧KeyはMigration時に削除しない
+- Balance値はProject parameterとして保持し、Windows Actual Playtestで必要なら調整する
+
+Current balance:
+
+| Difficulty | Target radius | X range | Y range |
+|---|---:|---:|---:|
+| かんたん | 0.82 | -4.2〜4.2 | 0.6〜4.2 |
+| 標準 | 0.62 | -5.2〜5.2 | 0.2〜4.6 |
+| むずかしい | 0.46 | -6.2〜6.2 | -0.1〜5.0 |
 
 ## Future Home / Stage Library Direction
 
