@@ -132,6 +132,18 @@ func _ready() -> void:
 		).has_focus()
 	)
 
+	var crosshair_content := instance.get_node(
+		"UI/CrosshairSettingsOverlay/Center/Content"
+	) as Control
+	var viewport_size := instance.get_viewport().get_visible_rect().size
+	print(
+		"CROSSHAIR_LAYOUT: viewport=",
+		viewport_size,
+		" content_rect=",
+		crosshair_content.get_global_rect()
+	)
+	assert(crosshair_content.size.y <= viewport_size.y)
+
 	var dpi_input := instance.get_node(
 		"UI/SettingsOverlay/Center/Content/Fields/DpiInput"
 	) as SpinBox
