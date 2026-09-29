@@ -40,7 +40,10 @@ Status: Phase 1 complete / Phase 2 active
 - Training開始後はCrosshair / Target / Score系だけを主表示にする
 - 常時表示する操作Hintは `ESC メニュー / R やり直し` だけ
 - ESCでPause画面を表示
-- Pause画面は「練習に戻る」「最初からやり直す」の2Actionを中心にする
+- Pause画面では「練習に戻る」をPrimary Actionとして維持する
+- Pause画面から「最初からやり直す」「メインメニューへ戻る」を選べる
+- 「メインメニューへ戻る」は途中Sessionを完了扱いにせず破棄し、Personal Bestを更新しない
+- 感度 / Crosshair設定はPause内のSecondary Actionとして維持する
 - Phase 1ではモード選択、Skin選択、詳細設定を開始前導線へ混ぜない
 - User-facing UIは日本語だけで意味が分かる状態にする
 

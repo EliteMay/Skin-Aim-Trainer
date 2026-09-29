@@ -312,3 +312,26 @@ Sensitivity / Crosshair / Hit Detection rule / Score rule / 60秒SessionはDiffi
 - Legacy Best compatibility: PASS — GitHub Actions run 36599258512
 - Windows Actual Playtest: NOT_RUN
 - Final visual review: NOT_RUN — Start画面の追加Selectorは実機確認Taskで確認する
+
+
+## 2026-09-30 — Pauseからメインメニューへ戻る導線
+
+### User Feedback
+
+Difficulty等のWindows実機確認中、60秒Sessionの途中からStartへ戻れず、毎回の比較テストがしにくいとFeedbackを受けた。
+
+### Implemented
+
+- Pause画面へ「メインメニューへ戻る」を追加
+- ESCでPauseした後、途中Sessionを破棄してREADY / Startへ戻れる
+- 確認Dialogは出さず、繰り返しPlaytestを短い導線で行えるようにした
+- 途中Session破棄ではPersonal Bestを更新しない
+- Startへ戻った後の次SessionはScore / Timerを通常どおり初期化する
+- Pause Menuが1600x900 viewport内へ収まるRegressionを追加
+- Pause → Main Menu / unfinished score非保存をCore Smokeへ追加
+
+### Validation State
+
+- Linux Godot CI: PASS — GitHub Actions run 36609240253
+- Windows Direct Smoke: PASS — GitHub Actions run 36609240253
+- Windows Actual Playtest: NOT_RUN

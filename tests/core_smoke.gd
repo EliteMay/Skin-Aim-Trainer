@@ -197,11 +197,47 @@ func _ready() -> void:
 	assert(instance.session_remaining_seconds < 59.0)
 	assert(timer_label.text == "00:59")
 
+	instance.score = 25
 	instance.pause_training()
 	var paused_remaining: float = instance.session_remaining_seconds
 	instance._process(5.0)
 	assert(is_equal_approx(instance.session_remaining_seconds, paused_remaining))
 
+	var pause_main_menu_button := instance.get_node(
+		"UI/PauseOverlay/Center/Content/MainMenuButton"
+	) as Button
+	assert(pause_main_menu_button != null)
+	assert(pause_main_menu_button.visible)
+	assert(not pause_main_menu_button.disabled)
+	var pause_content := instance.get_node(
+		"UI/PauseOverlay/Center/Content"
+	) as Control
+	assert(pause_content.size.y <= viewport_size.y)
+
+	pause_main_menu_button.pressed.emit()
+	await get_tree().process_frame
+	assert(instance.run_state == instance.RunState.READY)
+	assert(instance.get_node("UI/StartOverlay").visible)
+	assert(not instance.get_node("UI/PauseOverlay").visible)
+	assert(not instance.get_node("UI/HUD").visible)
+	assert(not instance.get_node("UI/Crosshair").visible)
+	assert(not instance.target_mesh.visible)
+	assert(instance.personal_best_score == 7)
+
+	var abandon_config := ConfigFile.new()
+	assert(abandon_config.load("user://settings.cfg") == OK)
+	assert(
+		not abandon_config.has_section_key(
+			"training_records",
+			"best_normal_score"
+		)
+	)
+
+	instance.start_training()
+	assert(instance.run_state == instance.RunState.PLAYING)
+	assert(instance.score == 0)
+	assert(is_equal_approx(instance.session_remaining_seconds, 60.0))
+	instance.pause_training()
 	instance.resume_training()
 	instance.score = 12
 	instance.hits = 12

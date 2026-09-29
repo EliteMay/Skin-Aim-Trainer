@@ -160,6 +160,8 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 「かんたん」はTargetが大きく、出現範囲が狭い
   - 「標準」はこれまでと同じTarget size / 出現範囲
   - 「むずかしい」はTargetが小さく、出現範囲が広い
+  - 練習途中でESC →「メインメニューへ戻る」でStartへすぐ戻れる
+  - 途中Sessionを破棄してもBESTは更新されない
   - 難易度を変えてもSensitivity / Crosshair / 60秒 / Score ruleは変わらない
   - BESTが難易度ごとに別々に保存される
   - Gameを閉じて再起動しても選択DifficultyとBESTが残る

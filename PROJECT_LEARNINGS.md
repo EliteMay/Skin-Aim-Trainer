@@ -124,3 +124,12 @@
 - Context: Difficulty追加前は`training_records/default_best_score`だけを保存していた。
 - Decision: 新しい`best_normal_score`が無い場合だけ旧値をNormal Bestとして読む。旧Keyは削除しない。
 - Prevention: Save構造を分割するときは旧Key fallbackとRegression Testを同じ変更に含める。
+
+
+## PL-016 — 繰り返しPlaytestには途中離脱の短い導線を用意する
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Difficultyの比較確認で、60秒Sessionを最後まで待つかRestartするだけではStartへ戻れず、実機テストの反復Costが高かった。
+- Decision: Pauseから確認DialogなしでMain Menuへ戻れる導線を用意し、途中SessionはRecord更新対象にしない。
+- Prevention: Stage / Difficulty / Skin等を比較する機能を追加するときは、Gameplay中から安全に選択画面へ戻れるRecovery Pathも同時に確認する。
