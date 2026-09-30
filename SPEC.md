@@ -40,24 +40,24 @@ Main (Node3D)
 
 Gameplay Run Stateは4状態を維持する。
 
-- `READY` — Play / Training Library。Cursor visible。
+- `READY` — Sandbox / Scenario Browser。Cursor visible。
 - `PLAYING` — Mouse captured。Aim / Shoot / Countdown受付。
 - `PAUSED` — Pause画面。Cursor visible。Countdown停止。
 - `RESULT` — Session終了結果。Cursor visible。Shoot停止。
 
-READY中はTraining Libraryと選択中TrainingのQuick Settingsを同じSurfaceに表示する。Stage選択はGameplay Run Stateを増やさず、READY内のSelection変更として扱う。
+READY中はLOCAL SCENARIOSと選択中TrainingのQuick Settingsを同じSurfaceに表示する。Stage選択はGameplay Run Stateを増やさず、READY内のSelection変更として扱う。
 
 遷移:
 
 ```text
-READY(Play Library) --Training選択--> READY(同じSurfaceで選択更新)
+READY(Scenario Browser) --Training選択--> READY(同じSurfaceで選択更新)
 READY --開始--> PLAYING
 PLAYING --ESC--> PAUSED
 PAUSED --ESC / 練習に戻る--> PLAYING
-PAUSED --メインメニューへ戻る--> READY(Play Library)
+PAUSED --メインメニューへ戻る--> READY(Scenario Browser)
 PLAYING --Timer 0--> RESULT
 RESULT --もう一度 / R--> PLAYING(reset)
-RESULT --Homeへ戻る / ESC--> READY(Play Library)
+RESULT --Homeへ戻る / ESC--> READY(Scenario Browser)
 PLAYING / PAUSED --R / やり直す--> PLAYING(reset)
 ```
 
@@ -164,7 +164,7 @@ Difficulty Profile:
 - 60秒Session / Score / Accuracyは既存Contractを再利用
 - Personal BestはMode + Difficultyで分離保存
 
-ModeはPlay Libraryで選んだStage metadataから決定する。Training開始後はSession中のModeを固定する。別Stage Setup画面や重複Mode Selectorは置かない。
+ModeはScenario Browserで選んだStage metadataから決定する。Training開始後はSession中のModeを固定する。別Stage Setup画面や重複Mode Selectorは置かない。
 
 ## Shooting / Hit Detection
 
@@ -191,21 +191,22 @@ Accuracy:
 
 ## UI / Usability
 
-### Play / Training Library
+### Sandbox / Scenario Browser
 
 起動直後のFirst View。Aim Trainerで最も頻度の高い「Trainingを選ぶ → 必要なら設定を変える → 開始」を1 Surfaceで完了する。
 
-Left / Training Library:
+Left / LOCAL SCENARIOS:
 
-- Product / PLAY context
+- Product / SANDBOX context
 - 実装済みStage一覧
 - StageごとのTitle / Category / Duration / Current Difficulty Best
 - 選択中Stageをpressed stateで明示
 - 未実装Stageは表示しない
 
-Right / Selected Training:
+Right / SCENARIO INFO:
 
 - Stage Title
+- Category / Tags / Duration
 - Category / Duration
 - Stage Description
 - Current Stage / Difficulty BEST
@@ -215,9 +216,9 @@ Right / Selected Training:
 - Crosshair Settings入口
 - 大きい「練習を開始」
 
-Stage選択時は別画面へ遷移せずRight Panelだけ更新する。Sensitivity / Crosshairの詳細Overlayを閉じた場合も同じPlay Libraryへ戻る。
+Stage選択時は別画面へ遷移せずRight Panelだけ更新する。Sensitivity / Crosshairの詳細Overlayを閉じた場合も同じScenario Browserへ戻る。
 
-Stage一覧は`data/stages.json`から動的に生成する。Currentは5 StageだけなのでSearch / Filterを置かない。
+Scenario一覧は`data/stages.json`から動的に生成する。Currentは5 ScenarioだけなのでSearch / Filterを置かない。List rowはTitle / Category / Duration / current Difficulty PBを表示し、Detail側はCategory / Tags / Duration / Difficulty別の正確なTarget情報を表示する。
 
 ### Training
 
@@ -240,7 +241,7 @@ Training中のPrimary Visual:
 - 最初からやり直す
 - メインメニューへ戻る
 
-「メインメニューへ戻る」は現在の途中Sessionを破棄してPlay Libraryへ戻す。途中ScoreはPersonal Bestへ保存しない。確認Dialogは出さず、Training / Difficulty等を繰り返し検証しやすい短い導線を優先する。
+「メインメニューへ戻る」は現在の途中Sessionを破棄してScenario Browserへ戻す。途中ScoreはPersonal Bestへ保存しない。確認Dialogは出さず、Training / Difficulty等を繰り返し検証しやすい短い導線を優先する。
 
 ### Sensitivity Settings
 
@@ -251,7 +252,7 @@ Training中のPrimary Visual:
 - Rotation coefficient
 - Save / Cancel
 
-Selected Training Panelでは「練習を開始」をPrimary Actionとして維持し、感度 / Crosshair設定はSecondary Actionにする。
+SCENARIO INFO Panelでは「練習を開始」をPrimary Actionとして維持し、感度 / Crosshair設定はSecondary Actionにする。
 
 ### Crosshair Settings
 
@@ -329,23 +330,23 @@ Current Recordは既存互換のためMode + Difficulty Keyを維持する。Sta
 
 ### Difficulty
 
-- Selected Training PanelのOptionButtonで3段階から選択
+- SCENARIO INFO PanelのOptionButtonで3段階から選択
 - 変更はREADY Stateでのみ受け付ける
 - 選択時にTarget Mesh / Collision / spawn rangeを同じProfileから更新する
 - Difficulty変更はSensitivity / Crosshair / Session duration / Score ruleへ影響させない
 - ResultへDifficulty名を表示する
-- Selected Training PanelのBESTは選択DifficultyのRecordだけを表示する
+- SCENARIO INFO PanelのBESTは選択DifficultyのRecordだけを表示する
 
 ### Play / Stage Library
 
 Current Flow:
 
 ```text
-Play Library
+Scenario Browser
 → Training選択 + Quick Settings（同一Surface）
 → Training
 → Result
-→ Retry / Play Library
+→ Retry / Scenario Browser
 ```
 
 Stage Catalogは`data/stages.json`、Loaderは`scripts/stage_catalog.gd`。
@@ -362,7 +363,7 @@ Current metadata:
 - `sort_order`
 - `tags`
 
-Play Libraryはplayable StageだけをCatalog順に生成する。Stage Buttonはtoggle stateを持ち、選択時は画面遷移せずSelected Training Panelを更新する。Stage数が増えるまではSearch / Filterを追加しない。将来はcategory / tagsをBrowse / Searchへ使える。
+Scenario Browserはplayable StageだけをCatalog順に生成する。Stage Buttonはtoggle stateを持ち、選択時は画面遷移せずSCENARIO INFO Panelを更新する。Stage数が増えるまではSearch / Filterを追加しない。将来はcategory / tagsをBrowse / Searchへ使える。
 
 Current playable Stage:
 
@@ -395,12 +396,12 @@ Automated:
 - Pitch clamp
 - Accuracy calculation
 - Scene contract
-- Play Library UI default state
+- Scenario Browser UI default state
 - Stage Catalog JSON load / normalization
 - Training list dynamic generation
 - Training selection stays on the same Surface
-- Selected Training detail / Quick Settings synchronization
-- Sensitivity / Crosshair overlay → Play Library return
+- SCENARIO INFO detail / Quick Settings synchronization
+- Sensitivity / Crosshair overlay → Scenario Browser return
 - Timer countdown
 - Pause中Timer停止
 - Pause → メインメニュー遷移
@@ -426,7 +427,7 @@ Automated:
 
 Actual Playtest:
 
-- Play LibraryでTraining選択 / Quick Settings / Startが1画面で理解できるか
+- Scenario BrowserでTraining選択 / Quick Settings / Startが1画面で理解できるか
 - Mouse capture
 - fast mouse movement
 - repeated Hit / Miss

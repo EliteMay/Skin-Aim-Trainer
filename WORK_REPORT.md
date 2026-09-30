@@ -682,3 +682,47 @@ Aimlabsの2026 Aim BasicsではFlickingを主要カテゴリとして扱い、�
 - Repository implementation: COMPLETE
 - GitHub Actions: PENDING
 - Windows Actual Playtest: NOT_RUN
+
+
+## 2026-09-30 — KovaaK's-inspired Scenario Browser terminology / content
+
+### User feedback
+
+Current menuの名称と情報内容を、Aim TrainerとしてKovaaK'sに近い認知モデルへ寄せたい。ただしKovaaK'sのUI / Asset / Brandをコピーする意図ではない。
+
+### Domain research brief
+
+- Target: Desktop FPS Aim Trainer menu
+- Primary task: Scenarioを探す → 内容を確認 → Sensitivity / Crosshair / Difficultyを必要なら調整 → Play
+- Current UI: Dark split-viewの一覧 + detail panelは保持
+- KovaaK's公式Wiki: Sandboxを大量のpractice scenarios / playlistsの中心として扱い、SettingsではSensitivity / Crosshair等を調整する
+- KovaaK's公式Web: Scenarios / PlaylistsをBrowse対象として分け、Scenario名などを高密度に一覧化する
+- Reference screenshot: Sandbox BrowserはScenario一覧を主役にし、右側に補助情報を置く高密度Desktop UI
+
+### Direction
+
+KEEP:
+- dark theme
+- list + detailのmaster-detail構造
+- 同一画面でDifficulty / Sensitivity / Crosshairを変更できる短い導線
+- 日本語の説明本文
+
+CHANGE:
+- 「トレーニング」「Play Library」中心の語彙をSandbox / Scenario Browserへ整理
+- 左をLOCAL SCENARIOS、右をSCENARIO INFOとして役割を明確化
+- Category / Duration / PBをScenario rowへ集約
+- Existing tagsをSCENARIO INFOへ表示
+- Difficulty説明をModeごとの実際のTarget / movement parameterへ合わせる
+- Primary actionをPLAY SCENARIOへ変更
+
+DO NOT COPY:
+- KovaaK's固有のBranding / Logo / orange-green color scheme
+- Leaderboard / Rating / Online Scenario等、Current Productに存在しない機能
+- exact layout / assets / wording beyond generic domain vocabulary
+
+### Validation state
+
+- Repository implementation: COMPLETE
+- Godot Import / Cold Start / Core Smoke: PASS — GitHub Actions run 36684964286
+- Windows Core Smoke: PASS — GitHub Actions run 36684964286
+- Visual actual-play screenshot: NOT_RUN

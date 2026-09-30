@@ -281,7 +281,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
 
 - [ ] Flickを実機確認する
   - 担当: あなた
-  - Play Libraryに「Flick」が表示される
+  - Scenario BrowserのLOCAL SCENARIOSに「Flick」が表示される
   - 開始すると中央から離れた位置にTargetが1個表示される
   - Hitするたび前のTargetから十分離れた位置へ移動する
   - Microshotより明確に大きなAim移動になる

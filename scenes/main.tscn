@@ -218,7 +218,7 @@ text = "SKIN AIM TRAINER"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.68, 0.74, 0.82, 1)
 theme_override_font_sizes/font_size = 17
-text = "トレーニングを選んで、同じ画面ですぐ設定して開始"
+text = "SANDBOX  /  シナリオを選択 → 設定 → PLAY"
 
 [node name="Body" type="HBoxContainer" parent="UI/HomeOverlay/Margin/Content"]
 layout_mode = 2
@@ -235,18 +235,18 @@ theme_override_constants/separation = 12
 layout_mode = 2
 theme_override_colors/font_color = Color(0.42, 0.78, 0.96, 1)
 theme_override_font_sizes/font_size = 14
-text = "PLAY"
+text = "SANDBOX"
 
 [node name="SectionTitle" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/Library"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "トレーニング"
+text = "SCENARIO BROWSER"
 
 [node name="SectionHint" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/Library"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.58, 0.64, 0.72, 1)
 theme_override_font_sizes/font_size = 14
-text = "練習したいモードを選択"
+text = "LOCAL SCENARIOS  /  内蔵シナリオ"
 
 [node name="StageScroll" type="ScrollContainer" parent="UI/HomeOverlay/Margin/Content/Body/Library"]
 custom_minimum_size = Vector2(0, 230)
@@ -262,7 +262,7 @@ theme_override_constants/separation = 8
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.64, 1)
 theme_override_font_sizes/font_size = 13
-text = "実装済みモードをすべて表示。4件以上はこの一覧をスクロールできます。"
+text = "内蔵シナリオを一覧表示。マウスホイールでスクロールできます。"
 autowrap_mode = 2
 
 [node name="SelectedPanel" type="PanelContainer" parent="UI/HomeOverlay/Margin/Content/Body"]
@@ -284,7 +284,7 @@ theme_override_constants/separation = 12
 layout_mode = 2
 theme_override_colors/font_color = Color(0.42, 0.78, 0.96, 1)
 theme_override_font_sizes/font_size = 13
-text = "選択中"
+text = "SCENARIO INFO"
 
 [node name="Title" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
@@ -295,7 +295,14 @@ text = "シングルターゲット"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.76, 0.84, 1)
 theme_override_font_sizes/font_size = 15
-text = "基礎  ·  60秒"
+text = "Clicking  ·  60s"
+
+[node name="Tags" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.66, 0.78, 1)
+theme_override_font_sizes/font_size = 12
+text = "TAGS  ·  PRECISION  /  CLICKING"
+autowrap_mode = 2
 
 [node name="Description" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
@@ -316,7 +323,7 @@ layout_mode = 2
 [node name="DifficultyLabel" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "難易度"
+text = "DIFFICULTY / 難易度"
 
 [node name="DifficultySelect" type="OptionButton" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 custom_minimum_size = Vector2(0, 46)
@@ -335,7 +342,7 @@ layout_mode = 2
 [node name="QuickSettingsLabel" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "クイック設定"
+text = "SETTINGS / クイック設定"
 
 [node name="CurrentSensitivity" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
@@ -353,26 +360,26 @@ custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 15
-text = "感度設定"
+text = "SENSITIVITY / 感度"
 
 [node name="CrosshairButton" type="Button" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/SettingsActions"]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 15
-text = "クロスヘア"
+text = "CROSSHAIR / クロスヘア"
 
 [node name="StartButton" type="Button" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 custom_minimum_size = Vector2(0, 62)
 layout_mode = 2
 theme_override_font_sizes/font_size = 23
-text = "60秒の練習を開始"
+text = "PLAY SCENARIO  ·  60s"
 
 [node name="Keys" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.52, 0.58, 0.66, 1)
 theme_override_font_sizes/font_size = 13
-text = "練習中: ESC メニュー  /  R やり直し\nDPIはマウス本体と同じ値を入力"
+text = "PLAY中: ESC メニュー  /  R リスタート\nDPIはマウス本体と同じ値を入力"
 horizontal_alignment = 1
 
 [node name="PauseOverlay" type="Control" parent="UI"]
@@ -456,7 +463,7 @@ text = "最初からやり直す"
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 19
-text = "メインメニューへ戻る"
+text = "SCENARIO BROWSERへ戻る"
 tooltip_text = "途中のSessionは記録されません"
 
 [node name="SettingsOverlay" type="Control" parent="UI"]
@@ -838,4 +845,4 @@ text = "もう一度"
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "Homeへ戻る"
+text = "SCENARIO BROWSERへ戻る"

@@ -116,6 +116,9 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 @onready var stage_meta_label: Label = (
 	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/Meta
 )
+@onready var stage_tags_label: Label = (
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/Tags
+)
 @onready var stage_description_label: Label = (
 	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/Description
 )
@@ -993,7 +996,7 @@ func _build_home_stage_list() -> void:
 
 	if home_stage_buttons.is_empty():
 		var empty_button := Button.new()
-		empty_button.text = "ステージ情報を読み込めませんでした"
+		empty_button.text = "シナリオ情報を読み込めませんでした"
 		empty_button.disabled = true
 		empty_button.custom_minimum_size = Vector2(0, 70)
 		home_stage_list.add_child(empty_button)
@@ -1015,7 +1018,7 @@ func _refresh_home_stage_buttons() -> void:
 		var category := str(stage.get("category", "その他"))
 		var duration := maxi(int(stage.get("duration_seconds", 60)), 1)
 		var best := _best_for_mode(mode_key)
-		button.text = "%s\n%s  ·  %d秒  ·  %s BEST %d" % [
+		button.text = "%s\n%s  ·  %ds  ·  %s PB %d" % [
 			title,
 			category,
 			duration,
@@ -1040,26 +1043,34 @@ func _open_stage(mode_key: String) -> void:
 	_set_targets_active(false)
 	var save_error := _save_training_settings()
 	_sync_home_selection_ui()
+	_sync_difficulty_ui()
 	_update_sensitivity_labels()
-	_update_best_labels()
 
 	if save_error != OK:
 		difficulty_description.text = (
-			"トレーニング選択を保存できませんでした。Error: %d" % save_error
+			"シナリオ選択を保存できませんでした。Error: %d" % save_error
 		)
 
 
 func _sync_home_selection_ui() -> void:
 	var stage := _current_stage()
 	var title := _current_mode_label()
-	var category := str(stage.get("category", "Training"))
+	var category := str(stage.get("category", "SCENARIO"))
 	var description := str(stage.get("description", ""))
 	var duration := int(round(_current_stage_duration_seconds()))
+	var tag_labels := PackedStringArray()
+	for tag in stage.get("tags", []):
+		tag_labels.append(str(tag).to_upper())
 
 	stage_title_label.text = title
-	stage_meta_label.text = "%s  ·  %d秒" % [category, duration]
+	stage_meta_label.text = "%s  ·  %ds" % [category, duration]
+	stage_tags_label.text = (
+		"TAGS  ·  %s" % "  /  ".join(tag_labels)
+		if not tag_labels.is_empty()
+		else "TAGS  ·  -"
+	)
 	stage_description_label.text = description
-	start_button.text = "%d秒の練習を開始" % duration
+	start_button.text = "PLAY SCENARIO  ·  %ds" % duration
 
 
 func _populate_difficulty_options() -> void:
@@ -1092,9 +1103,30 @@ func _sync_current_personal_best() -> void:
 
 func _sync_difficulty_ui() -> void:
 	difficulty_select.select(selected_difficulty)
-	difficulty_description.text = DIFFICULTY_DESCRIPTIONS[selected_difficulty]
+	difficulty_description.text = _current_difficulty_description()
 	_sync_current_personal_best()
 	_update_best_labels()
+
+
+func _current_difficulty_description() -> String:
+	if selected_training_mode == TrainingMode.HOLD_ANGLE:
+		return "Target %.2f  /  Peek %.1f  /  %s" % [
+			DIFFICULTY_TARGET_RADII[selected_difficulty],
+			HOLD_ANGLE_PEEK_OFFSETS[selected_difficulty],
+			_current_difficulty_label(),
+		]
+	if selected_training_mode == TrainingMode.MICROSHOT:
+		return "Target %.2f  /  最大移動 %.2f  /  中央寄り" % [
+			MICROSHOT_TARGET_RADII[selected_difficulty],
+			MICROSHOT_MAX_STEP[selected_difficulty],
+		]
+	if selected_training_mode == TrainingMode.FLICK:
+		return "Target %.2f  /  最低移動 %.1f  /  %s範囲" % [
+			FLICK_TARGET_RADII[selected_difficulty],
+			FLICK_MIN_STEP[selected_difficulty],
+			_current_difficulty_label(),
+		]
+	return DIFFICULTY_DESCRIPTIONS[selected_difficulty]
 
 
 func _on_difficulty_selected(index: int) -> void:
@@ -1110,7 +1142,7 @@ func _on_difficulty_selected(index: int) -> void:
 	_move_active_targets()
 	_set_targets_active(false)
 	_update_best_labels()
-	difficulty_description.text = DIFFICULTY_DESCRIPTIONS[selected_difficulty]
+	difficulty_description.text = _current_difficulty_description()
 
 	var save_error := _save_training_settings()
 	if save_error != OK:
