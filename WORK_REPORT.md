@@ -529,3 +529,25 @@ Current 2-Stage規模では、Training selectionと開始前設定を別Surface�
 - Difficulty / Sensitivity / Crosshair entry points colocated: PASS — Core Smoke
 - Existing Single / Gridshot gameplay / records: PASS — Core Smoke
 - Windows Actual Playtest / final visual review: NOT_RUN
+
+
+## 2026-09-30 — Aimlabs / KovaaK's UI Research Deepening
+
+User requested that Mode selection and Settings remain together and that Aimlabs / KovaaK's be referenced more deeply.
+
+Additional research covered:
+- Aimlabs 2.0 Play Screen / Training Grid
+- Aimlabs Favorites / Recents direction
+- Aimlabs first-session sensitivity / crosshair setup
+- KovaaK's current Scenario Browser
+- KovaaK's Main Settings ownership for sensitivity / crosshair / FOV
+- KovaaK's 3.7.3 playlist state persistence, search, results skipping and Settings recovery fixes
+
+Decision:
+- Current one-screen Play Library + Selected Training / Quick Settings remains the correct direction.
+- Search / Favorites / Recents are intentionally deferred while only two Stages exist.
+- Sensitivity / Crosshair remain global persistent settings, but their current state and entry points stay beside the selected Training.
+- Settings overlays must return to the same Play Library context.
+- Future library growth should first add Recents / Favorites / Search without fragmenting Training discovery across more screens.
+
+No gameplay contract or save migration changed in this research-only update.
