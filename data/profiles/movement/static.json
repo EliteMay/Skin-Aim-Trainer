@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "id": "static",
+  "profile_type": "movement",
+  "description": "No autonomous movement.",
+  "movement_type": "static"
+}
