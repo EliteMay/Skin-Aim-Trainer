@@ -726,3 +726,32 @@ DO NOT COPY:
 - Godot Import / Cold Start / Core Smoke: PASS — GitHub Actions run 36684964286
 - Windows Core Smoke: PASS — GitHub Actions run 36684964286
 - Visual actual-play screenshot: NOT_RUN
+
+
+## 2026-09-30 — Product direction reset: Scenario Engine first, Skin later
+
+### User decision
+
+個別Scenarioを順番にHardcodeしてからSkinへ進むのではなく、KovaaK'sのScenario modelを広く再現できる汎用Aim Trainer基盤を先に完成させる。その後にVALORANT-style Skin layerを追加し、欲しいScenarioは後から追加する方針へ変更。
+
+### External research
+
+KovaaK's公式WikiではScenarioがCharacter / Weapon / Bot / Dodge / Aim / Ability等のProfileを組み合わせる構造として説明されている。またChallenge側にはBot数・Lives・制限、Scoring、Tagsがあり、Scenario Browserで検索・分類に使われる。
+
+Current公式Steam説明ではSandboxに多数のScenario / Playlistが存在し、Challenge / Playlist / Freeplay、Scenario / Map Editorを主要Capabilityとしている。Current公式WebもScenario / Playlist Browseを中心にしている。
+
+### Architecture decision
+
+- Exact content cloneではなく、Scenario capability parityを目標にする
+- Current 5 ModesはPrototype / Migration fixtures
+- 新規Scenario追加のPrimary pathをTrainingMode enumからScenario JSON + reusable profilesへ変更
+- Scenario RecordをMode keyからScenario IDへMigration
+- Scenario Engine → Scenario Pack → Browser/Playlist → Weapon/Skinの順で開発
+- Editor / Online Workshop / Global Leaderboardは初期Scenario Engineの必須条件から外す
+
+### IP boundary
+
+- KovaaK's Source Code / Asset / Logo / proprietary fileをコピーしない
+- Community Scenario fileを権利確認なしでBundleしない
+- 公開されている動作説明やUser提供情報からTraining behaviorをOriginal実装する
+- VALORANT Skinも権利状態を別途確認し、Riot公式Productと誤認するBrandingを行わない

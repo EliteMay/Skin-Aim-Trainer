@@ -236,3 +236,15 @@
 - Decision: User-facing browse surfaceはSANDBOX / SCENARIO BROWSER / LOCAL SCENARIOS / SCENARIO INFOへ整理し、内部mode / stage識別子は変更しない。
 - Content rule: listはTitle / Category / Duration / PB、detailはTags / Description / Difficulty parameter / Settings / Playを担当する。
 - Reference boundary: KovaaK'sからはscenario-centric browse / settingsの構造原理だけをtransferし、Brand / Asset / exact layout / online機能はcopyしない。
+
+
+## SAT-ARCH-001 — Scenarioを増やす前にScenario Engineを作る
+
+- Date: 2026-09-30
+- Type: Architecture / Game Design
+- Status: Adopted
+- Problem: Single / Gridshot / Hold Angle / Microshot / Flickをenum + mode-specific branchで増やす方式は、KovaaK's級のScenario diversityへ拡張するとMain Runtimeが巨大化する。
+- Decision: Current 5 ModesをMigration fixturesとして固定し、以後はScenario JSON + Player / Weapon / Bot / Spawn / Movement / Challenge / Scoring Profileの組合せをPrimary architectureにする。
+- Goal: 新しいScenarioの大半をData追加だけで作れるようにする。
+- Exception: Dataだけで表現できない新BehaviorはScenario固有HackではなくReusable Componentとして追加する。
+- Product order: Scenario Engine / Scenario Packを先に完成させ、VALORANT-style Skin layerは後段へ送る。

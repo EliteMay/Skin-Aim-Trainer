@@ -110,6 +110,74 @@ Difficulty Profile:
 | 標準 | 0.62 | -5.2〜5.2 | 0.2〜4.6 |
 | むずかしい | 0.46 | -6.2〜6.2 | -0.1〜5.0 |
 
+## Scenario Engine Target Architecture
+
+Current hardcoded Training Modesは動作確認済みPrototypeとして残すが、新規Scenario追加のTarget ArchitectureはProfile-driven Runtimeへ移行する。
+
+KovaaK's公式WikiではScenarioがCharacter / Weapon / Bot / Dodge / Aim / Ability等のProfileを組み合わせる構造として説明されている。Current Projectでは同じ責務分離を参考にしつつ、必要範囲をOriginal Schemaで実装する。
+
+Target structure:
+
+```text
+data/
+├─ scenarios/
+│  ├─ <scenario-id>.json
+│  └─ ...
+├─ profiles/
+│  ├─ players/
+│  ├─ weapons/
+│  ├─ targets/
+│  ├─ bots/
+│  ├─ movement/
+│  ├─ aim/
+│  └─ scoring/
+└─ playlists/
+```
+
+Scenario v1 conceptual schema:
+
+```json
+{
+  "schema_version": 1,
+  "id": "example-static-click",
+  "title": "Example Static Click",
+  "aim_type": "clicking",
+  "duration_seconds": 60,
+  "tags": ["static", "precision"],
+  "player_profile": "default-player",
+  "weapon_profile": "hitscan-click",
+  "bot_profiles": ["static-target"],
+  "challenge": {
+    "max_active_bots": 3,
+    "respawn": "on_kill"
+  },
+  "scoring": "accuracy-click-score"
+}
+```
+
+Scenario Runtime responsibilities:
+
+1. Scenario definition load / validation
+2. Profile resolution
+3. Spawn / despawn lifecycle
+4. Bot movement / dodge
+5. Target health / hitbox
+6. Weapon fire mode / damage / ammo rule
+7. Challenge timer / Freeplay
+8. Scoring / accuracy / result
+9. Scenario ID record persistence
+10. Browser metadata / filter indexes
+
+Legacy Prototype:
+
+- Single
+- Gridshot
+- Hold Angle / Pre-Aim
+- Microshot
+- Flick
+
+これらはScenario Engine v1の最初のMigration fixturesとして使い、Engine移行後はScenario JSON + reusable behavior componentから起動する。
+
 ## Training Modes
 
 ### Single
@@ -326,7 +394,13 @@ best_flick_hard_score=<int>
 
 旧`training_records/default_best_score`があり、`best_normal_score`が無い場合は旧値をNormal Bestとして読み込む。旧Keyは削除しない。
 
-Current Recordは既存互換のためMode + Difficulty Keyを維持する。StageとModeが1対1でなくなる段階でStage ID + Difficulty単位へMigrationする。
+Current RecordはLegacy互換のためMode + Difficulty Keyを読み込む。Scenario Engine v1ではScenario IDをPrimary Record Keyにし、必要なVariant / DifficultyをSecondary Keyとして保存する。
+
+Migration:
+- legacy mode recordsは削除しない
+- 対応するSeed Scenarioへ初回だけcopyできる
+- copy済みmarkerを保存し、重複Migrationしない
+- Scenario定義変更時にRecord identityを壊さない
 
 ### Difficulty
 
@@ -374,6 +448,23 @@ Current playable Stage:
 5. Flick
 
 新しいStageを追加するとき、Sceneへ固定Buttonを追加しない。Catalog追加とGameplay実装を分離し、Main Sceneの巨大なUI条件分岐を避ける。
+
+## Scenario Capability Matrix
+
+Scenario Engine v1の最低Capability:
+
+| Family | Required behavior |
+|---|---|
+| Static Clicking | stationary targets / kill-respawn / configurable count-size-range |
+| Dynamic Clicking | moving targets / click-to-kill / arc or strafe movement |
+| Smooth Tracking | continuous movement / hold-fire / damage over time |
+| Reactive Tracking | unpredictable direction/speed changes |
+| Target Switching | multiple living targets / health / switch after kill |
+| Angle / Pre-Aim | hidden/wait/peek state |
+| Strafe | left-right movement / pause / speed variation |
+| Air | vertical + horizontal movement / gravity or scripted arc |
+
+Scenario定義だけで表現できないBehaviorが出た場合は、Scenario固有Scriptを増やす前にReusable Componentとして追加できるかを検討する。
 
 ## Performance
 
