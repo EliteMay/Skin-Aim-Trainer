@@ -6,7 +6,7 @@ OKIAIMXの「すぐ練習を始められる短い導線」を参考にしつつ�
 
 **Browser / Electron版は終了し、Godot 4.7.2 + GDScriptでWindowsゲームとして開発します。**
 
-Phase 1 / Phase 2はWindows実機確認まで完了し、Phase 3 — Training Modes / Scenario Libraryへ進んでいます。Play / Training LibraryとQuick SettingsもWindows実機確認済みです。引き続き最優先は「マウスAimが素直に動く」「操作が一目で分かる」ことです。
+Phase 1 / Phase 2のAim基盤はWindows実機確認まで完了し、現在はKovaaK's型の汎用Scenario Engineへ移行しています。Play / Training LibraryとQuick SettingsもWindows実機確認済みです。引き続き最優先は「マウスAimが素直に動く」「操作が一目で分かる」ことです。
 
 ## 起動後にやること
 
@@ -110,3 +110,18 @@ HubからはGodot Editor起動 / Game起動 / Roadmap確認を使います。
 ## Asset Policy
 
 実VALORANT Skin、3D Model、Texture、Animation、Sound等は、利用条件を確認せずRepositoryへ追加しません。初期はOriginal / Placeholder / 利用許可を確認できるAssetだけを使用します。
+
+
+## Current Product Direction — Scenario Engine First
+
+2026-09-30から、個別Training Modeを1つずつ増やす方針より先に、**KovaaK's型のScenarioをData-drivenに表現できる汎用Engine**を作る方針へ変更しました。
+
+優先順:
+
+1. Scenario Engine / Bot / Spawn / Movement / Challenge / Scoring
+2. Scenario Browser / Search / Filter / Playlist / Challenge / Freeplay
+3. Built-in Scenario Pack（Clicking / Tracking / Switching / Reactive等）
+4. 必要になったScenarioをData追加で増やせる状態
+5. Weapon / VALORANT-style Skin体験を最後に統合
+
+KovaaK'sのコード・Asset・Brand・Community配布Fileを複製するのではなく、Scenarioを成立させる機能・挙動・設定構造をOriginal実装します。
