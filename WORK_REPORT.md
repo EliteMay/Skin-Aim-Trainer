@@ -577,7 +577,9 @@ AimlabsのCurrent angle-holding解説では、Crosshair placementを維持しつ
 
 - Repository implementation: COMPLETE
 - Static / Godot smoke coverage: ADDED
-- GitHub Actions: PENDING
+- Godot Import / Cold Start: PASS — GitHub Actions run 36672055887
+- Linux Core Smoke: PASS — GitHub Actions run 36672055887
+- Windows Direct Smoke: PASS — GitHub Actions run 36672055887
 - Windows Actual Playtest: NOT_RUN
 
 ### External References
