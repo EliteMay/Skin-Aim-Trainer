@@ -587,3 +587,27 @@ AimlabsのCurrent angle-holding解説では、Crosshair placementを維持しつ
 - Aimlabs — How to Hold Angles in Counter-Strike 2 While Strafing (2026-02-27)
 - Aimlabs — Unlocking the Secrets to Calm Aim (2026)
 - KovaaK's Scenario Library — Valorant Angle Hold系Scenarioが存在
+
+
+## 2026-09-30 — Stage Library clipping fix
+
+### Symptom
+
+Repository and Roadmap were updated to Hold Angle / Pre-Aim, but the newly added Training was not visible in the actual game UI.
+
+### Root cause
+
+The Training list used a fixed VBoxContainer area without scrolling. The list was designed when only two Training cards existed, so adding a third card could place the newest item outside the visible area depending on the actual window/layout size.
+
+### Fix
+
+- Wrap the Training list in a ScrollContainer
+- Let the list expand vertically inside the available Play Library area
+- Reduce each Stage card minimum height from 92px to 82px
+- Keep the current selected-training panel and data-driven Stage Catalog unchanged
+- Extend Godot smoke coverage to assert the ScrollContainer exists and all 3 Stage buttons are created
+
+### Validation state
+
+- Automated CI: PENDING
+- Windows Actual Playtest: NOT_RUN
