@@ -879,7 +879,7 @@ func _build_home_stage_list() -> void:
 
 		var button := Button.new()
 		button.name = "Stage_%s" % str(stage.get("id", mode_key))
-		button.custom_minimum_size = Vector2(0, 82)
+		button.custom_minimum_size = Vector2(0, 68)
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.toggle_mode = true
 		button.add_theme_font_size_override("font_size", 18)
