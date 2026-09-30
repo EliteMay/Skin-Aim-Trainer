@@ -611,3 +611,24 @@ The Training list used a fixed VBoxContainer area without scrolling. The list wa
 
 - Automated CI: PENDING
 - Windows Actual Playtest: NOT_RUN
+
+
+## 2026-09-30 — Ensure current 3 Training cards are visible without scrolling
+
+### Follow-up symptom
+
+After the first scroll-container fix, the Repository was definitely at the latest commit but the new Hold Angle / Pre-Aim item still was not obvious to the user.
+
+### Adjustment
+
+- Keep the ScrollContainer for future library growth
+- Reduce current Training card minimum height from 82px to 68px
+- Reduce vertical separation from 12px to 8px
+- Ensure all current 3 cards fit in the visible 230px Training viewport without requiring wheel scrolling
+- Update the helper text so scrolling is only needed from 4+ items
+- Add a smoke assertion that the current StageList height fits inside the visible StageScroll area
+
+### Validation state
+
+- Automated CI: PENDING
+- Windows Actual Playtest: NOT_RUN
