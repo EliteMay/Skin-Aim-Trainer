@@ -450,3 +450,82 @@ References:
 - Existing Single / Gridshot gameplay regression: PASS — GitHub Actions run 36658238221
 - Windows Actual Playtest: NOT_RUN
 - Final visual review: NOT_RUN — Home / Stage SetupはWindows実機確認Taskで確認する
+
+
+## 2026-09-30 — Play Library / Quick Settings Consolidation
+
+### User Feedback
+
+Phase 3 Home / Stage Library Foundationを実装後、Userから「設定とかはモードを選ぶところにあるべき」「Aim LabとKovaaK'sをもっと参考にしてほしい」とFeedback。
+
+前回のHome → Stage Setup分離はWindows Actual Playtest前だったため、未検証Flowを維持せずCurrent Product Researchから再設計した。
+
+### Current Product Research
+
+Aimlabs:
+- 2026-09-12のPlay 2.0でTraining Gridを導入。
+- Tasks / Playlists / Guides / Benchmarks / Events / Multiplayer等をPlayへ集約。
+- 公式発表は、Trainingを探すために複数Screenをclickして回る時間を減らすことを目的としている。
+- 2025-12 Getting StartedではHomeからQuick Play / Tasksへ入り、SettingsからSensitivity / Crosshair等を調整する。
+- 2026-03 Sensitivity GuideでもTraining前のSensitivity consistencyを重要項目として扱う。
+
+KovaaK's:
+- Main SettingsはCrosshair / Mouse Sensitivity / FOV等、Training feelへ直結する設定の中心。
+- Sensitivity ScaleはGame dropdown / searchを持つ。
+- 2025-01 v3.7.3ではPlaylist state persistence / search / result skipping / Session Stats clarityを改善。
+- SettingsからEscapeで戻れない不具合も修正されており、Training ContextへのRecoveryもProduct qualityとして扱われている。
+
+References:
+- https://steamcommunity.com/app/714010/announcements/
+- https://aimlabs.com/articles/aimlabs/getting-started-in-aimlabs-four-steps-for-your-first-session/
+- https://aimlabs.com/articles/aimlabs/how-to-configure-and-convert-your-sensitivity-in-aimlabs/
+- https://wiki.kovaaks.com/home/KovaaK%27s/Settings
+- KovaaK's 3.7.3 official Steam patch notes
+
+Detailed Research:
+- `docs/research/aim-trainer-play-ui-2026-09.md`
+
+### Decision
+
+Current 2-Stage規模では、Training selectionと開始前設定を別Surfaceへ分ける利益よりNavigation costが大きい。
+
+採用:
+- 左: Training Library
+- 右: Selected Training / Quick Settings
+- Difficulty: Right Panel内
+- Sensitivity summary + Settings入口: Right Panel内
+- Crosshair Settings入口: Right Panel内
+- Play: Right Panel内
+- Stage選択ではPage transitionしない
+- Sensitivity / Crosshair詳細Overlayを閉じると同じPlay Libraryへ戻る
+
+非採用:
+- Home → 別Stage Setup
+- 2 Stageだけの段階でSearch / Filterを追加
+- Aimlabs / KovaaK'sのUI / Asset / Brandingコピー
+
+### Implemented
+
+- StartOverlay / separate Stage Setupを削除
+- Play / Training Libraryを1 Surface化
+- Stage LibraryとSelected Training Panelの2-column composition
+- Selected Training Title / Category / Duration / Description / BEST
+- Difficulty selectorをSelected Training Panelへ配置
+- Sensitivity summary / settings buttonをSelected Training Panelへ配置
+- Crosshair settings buttonをSelected Training Panelへ配置
+- Primary Play buttonをSelected Training Panelへ配置
+- Stage Buttonのselected toggle state
+- Stage切替はsame-surface update
+- Settings / Crosshair OverlayのREADY return先をPlay Libraryへ変更
+- Existing Single / Gridshot gameplay / records / save compatibilityを維持
+- Smoke Testをone-screen flowへ更新
+
+### Validation State
+
+- Godot Linux import / cold start / core smoke: PASS — PR #11 CI
+- Windows Godot direct smoke: PASS — PR #11 CI
+- Separate Stage Setup removal contract: PASS — Core Smoke
+- Training selection stays on same Surface: PASS — Core Smoke
+- Difficulty / Sensitivity / Crosshair entry points colocated: PASS — Core Smoke
+- Existing Single / Gridshot gameplay / records: PASS — Core Smoke
+- Windows Actual Playtest / final visual review: NOT_RUN
