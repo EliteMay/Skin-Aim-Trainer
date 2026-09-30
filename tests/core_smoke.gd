@@ -115,6 +115,8 @@ func _ready() -> void:
 	) as ScrollContainer
 	assert(stage_scroll != null)
 	assert(stage_scroll.size_flags_vertical == Control.SIZE_EXPAND_FILL)
+	await get_tree().process_frame
+	assert(home_stage_list.size.y <= stage_scroll.size.y + 1.0)
 	var viewport_size := instance.get_viewport().get_visible_rect().size
 	var home_content := instance.get_node(
 		"UI/HomeOverlay/Margin/Content"
