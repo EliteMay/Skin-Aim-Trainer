@@ -154,7 +154,7 @@ Current balance:
 
 ## Training Mode Contract
 
-Phase 2ではCurrent Trainingの比較用に、最小のMode切替を追加する。
+Phase 2ではCurrent Trainingの比較用に、Single / Gridshotの2 Modeを提供する。Phase 3以降はModeをStart画面のSelectorで切り替えず、HomeのStage Catalogから選択する。
 
 ### シングル
 
@@ -173,7 +173,7 @@ Phase 2ではCurrent Trainingの比較用に、最小のMode切替を追加す�
 - Sensitivity / DPI / Crosshair / Difficulty Contractはシングルと共有する
 - GridshotのPersonal BestはDifficultyごとに別Recordとして保存する
 
-Mode選択はLocal Settingsへ保存する。既存のシングルBEST Keyは変更せず、Gridshotだけ新しいKeyを追加する。
+最後に選んだStageのModeはLocal Settingsへ保存する。既存のシングルBEST Keyは変更せず、Gridshotだけ新しいKeyを追加する。
 
 Current record mapping:
 
@@ -189,21 +189,32 @@ gridshot:
   best_gridshot_hard_score
 ```
 
-将来Home / Stage Libraryを導入したら、Current Mode selectorはStage metadata / Stage IDベースへ移行する。
+Mode選択はHomeのStage metadataからRuntime Modeへ変換する。将来StageごとにGameplay Scriptが増える場合も、Home UIへMode固有条件分岐を追加しない。
 
-## Future Home / Stage Library Direction
+## Home / Stage Library Contract
 
-現在は実装しないが、最終的にAim Lab / Kovaak's系のTraining Platform構成へ拡張する。
+Phase 3のFoundationとして、起動直後のPrimary SurfaceをHomeへ変更する。
 
-想定Flow:
+Current Flow:
 
-`Home → Stage / Training選択 → Play → Result → 再挑戦 / 次のStage`
+`Home → Stage Setup → Play → Result → Retry / Home`
 
-- Homeを追加する
-- Gridshot / Flick / Micro / Tracking / Hold Angle等を複数Stageとして管理する
-- StageはData-drivenに追加できる構成にする
-- Stageごとに説明 / 難易度 / Score / Personal Bestを持てるようにする
-- 現在の単一Training画面を巨大な条件分岐へ育てない
+- Homeには実装済み / playableなStageだけを表示する
+- Stage定義は`data/stages.json`をSource of Truthとする
+- Stage metadataは最低限 `id / mode / title / category / description / duration_seconds / playable / sort_order / tags` を持つ
+- 現在のplayable Stageは「シングルターゲット」「Gridshot」
+- HomeのStage一覧はCatalog Dataから動的に生成する
+- Stage Setupは選択済みStageのTitle / Category / Description / Durationを表示する
+- Stage SetupではDifficulty / Sensitivity / Crosshairを調整できる
+- Training途中のPause →「メインメニューへ戻る」はHomeへ戻す
+- Resultの「Homeへ戻る」はHomeへ戻す
+- 最後に選んだMode / Difficultyは既存Local Settingsへ保存する
+- Stage DurationはmetadataからRuntimeへ渡せるようにする。Current Stageはすべて60秒
+- Stageが2件のCurrent段階ではSearch / Filterを追加しない
+- 将来Stage数が増えたらcategory / tagsを使ってBrowse / Searchを追加できる構造を維持する
+- 新Stage追加でHome Sceneへ固定Buttonや巨大な条件分岐を追加しない
+
+Current Recordは既存互換のためMode + Difficulty Keyを維持する。StageがModeと1対1でなくなる段階でStage ID + Difficulty RecordへMigrationする。
 
 ## Skin Contract
 

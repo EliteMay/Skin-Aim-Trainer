@@ -377,4 +377,76 @@ Aimlabs公式のCurrent materialでGridshotがCore Taskとして継続してい�
 - Linux Core Smoke: PASS — GitHub Actions run 36656512823
 - Windows Direct Smoke: PASS — GitHub Actions run 36656512823
 - Existing Single BEST compatibility: PASS — GitHub Actions run 36656512823
-- Gridshot Windows Actual Playtest: NOT_RUN
+- Gridshot Windows Actual Playtest: PASS — Game Dev Hub共有Pack 2026-09-30 / 8 of 8
+
+
+## 2026-09-30 — Phase 3 Home / Stage Library Foundation
+
+### Previous Task Closure
+
+Game Dev Hub共有PackでGridshotのWindows実機確認8/8 PASSを確認し、RoadmapのGridshot実機確認Taskを完了へ更新した。
+
+確認済み:
+
+- Gridshot選択
+- 3 Target同時表示
+- HitしたTargetだけRespawn
+- Miss / Accuracy
+- Difficulty反映
+- 60秒Result / Gridshot BEST
+- Single / Gridshot BEST分離
+- 再起動後Mode / BEST Persistence
+
+### Flow / Visual Research
+
+MeaningfulなMenu / IA変更のため、最新GuideのTask-first Structure / Domain-first Visual Researchに従ってCurrent Aim Trainerを確認した。
+
+Representative evidence:
+
+- AimlabsはCurrent Productで多数のTasks / PlaylistsをTrainingから選ぶ構成を維持している
+- Aimlabsの2026年更新でもTraining navigation上のFeatured row / Playlist導線が使われている
+- KovaaK'sはScenario Libraryを一覧・検索でき、Scenario数が大きい
+- KovaaK's Playlist Browserはname / author / aim typeでBrowse / Searchし、description / scenario breakdown / timeを表示する
+
+ProjectへのDecision:
+
+- CurrentはPlayable Stageが2件だけなのでSearch / Filterは追加しない
+- Homeは「練習を探して開始する」Primary Surfaceにする
+- Stage Setupは選択済みStageのDifficulty / Sensitivity / Crosshairへ責務を限定する
+- HomeとStage Setupに同じMode Selectorを重複させない
+- category / tagsをStage metadataへ持たせ、Stage数が増えた時にBrowse / Searchへ拡張できるようにする
+- Aimlabs / KovaaK'sのUI / Assets / Brandingはコピーしない
+
+References:
+
+- https://www.aimlabs.com/
+- https://aimlabs.com/articles/aimlabs/big-updates-to-aimlabs-on-console/
+- https://kovaaks.com/kovaaks/scenarios
+- KovaaK's Steam announcement — Playlist Browser
+
+### Implemented
+
+- 起動直後のHome
+- Home → Stage Setup → Play → Result → Retry / Home
+- `data/stages.json` Stage Catalog
+- `scripts/stage_catalog.gd` loader / normalization
+- CatalogからPlayable Stage Buttonを動的生成
+- Current Stage: シングルターゲット / Gridshot
+- Stage metadata: id / mode / title / category / description / duration / playable / sort order / tags
+- Stage SetupへTitle / Category / Duration / Descriptionを表示
+- Stage DurationをmetadataからRuntimeへ渡す
+- Stage SetupからHomeへ戻る
+- Pause Main MenuをHomeへ接続
+- Result BackをHomeへ接続
+- 既存Single / Gridshot Save Key互換を維持
+- Home / Catalog / Stage Flow Smoke Test
+
+### Validation State
+
+- Godot Import / Cold Start: PASS — GitHub Actions run 36658238221
+- Linux Core Smoke: PASS — GitHub Actions run 36658238221
+- Windows Direct Smoke: PASS — GitHub Actions run 36658238221
+- Stage Catalog / Home / Result→Home routing regression: PASS — GitHub Actions run 36658238221
+- Existing Single / Gridshot gameplay regression: PASS — GitHub Actions run 36658238221
+- Windows Actual Playtest: NOT_RUN
+- Final visual review: NOT_RUN — Home / Stage SetupはWindows実機確認Taskで確認する

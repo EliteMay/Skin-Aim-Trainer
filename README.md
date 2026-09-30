@@ -10,9 +10,9 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 
 ## 起動後にやること
 
-1. **練習モードと難易度を選ぶ**
-2. **60秒の練習を開始** を押す
-3. マウスで赤いTargetを狙って左クリックで撃つ
+1. **Homeでステージを選ぶ**
+2. Stage Setupで**難易度 / 感度 / クロスヘア**を確認する
+3. **60秒の練習を開始** を押して、赤いTargetを狙って左クリックで撃つ
 
 操作:
 
@@ -22,7 +22,7 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - Pause中の「メインメニューへ戻る」: 途中Sessionを破棄して開始画面へ戻る
 - R: 最初からやり直す
 
-移動、武器モデル、Skinはまだ入れていません。Phase 2では感度・Crosshair・Difficultyに加え、シングル / Gridshotを切り替えられます。
+移動、武器モデル、Skinはまだ入れていません。Homeから現在実装済みのシングルターゲット / Gridshotを選べます。
 
 ## Phase 1 完了
 
@@ -66,12 +66,19 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - Gridshotの3 Target同時表示 / Hit TargetだけRespawn
 - GridshotのDifficulty別Personal Best
 
-## 将来のUI方向
+## Phase 3で追加済み
 
-現在はCore Trainingの検証を優先していますが、将来は **Home → Stage選択 → Play → Result** のAim Lab / Kovaak's系Training Platform構成へ拡張します。
+- 起動直後のHome
+- Data-driven Stage Library
+- Home → Stage Setup → Play → Result → Home
+- シングルターゲット / GridshotをStage Catalogから動的表示
+- Stage metadataを`data/stages.json`へ分離
+- Stage category / description / duration / mode / tags
+- ESC / ResultからHomeへ戻る導線
+
+現在は2 Stageだけなので検索 / Filterは入れていません。Stage数が増えた段階で、category / tagsを使ったBrowse / Searchを追加できる構造にしています。
 
 ## まだ入れていないもの
-- Home / Stage Library
 - Microshot / Hold Angle / Flick / Tracking
 - 武器モデル
 - Skin

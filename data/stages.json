@@ -1,0 +1,24 @@
+[
+  {
+    "id": "single-target",
+    "mode": "single",
+    "title": "シングルターゲット",
+    "category": "基礎",
+    "description": "1つのTargetへ正確にAimして撃つ基本練習",
+    "duration_seconds": 60,
+    "playable": true,
+    "sort_order": 10,
+    "tags": ["Precision", "Clicking"]
+  },
+  {
+    "id": "gridshot",
+    "mode": "gridshot",
+    "title": "Gridshot",
+    "category": "ターゲット切替",
+    "description": "3つのTargetを素早く切り替えながら撃つ練習",
+    "duration_seconds": 60,
+    "playable": true,
+    "sort_order": 20,
+    "tags": ["Flick", "Target Switching"]
+  }
+]
