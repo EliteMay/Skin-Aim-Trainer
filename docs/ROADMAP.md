@@ -279,41 +279,150 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - AimlabsのFlicking / click-timingの考え方を参考にし、UI・Asset・Scenario自体はコピーしない
   - 2026-09-30 Repository実装・Godot Smoke Test追加済み
 
-- [ ] Flickを実機確認する
+- Flick prototype実機確認: Scenario Engine移行により単独Completion Gateから外す。既存FlickはMigration fixtureとして保持する。
+
+## Phase 4 — Generic Scenario Engine
+
+- [ ] Scenario Definition v1 / Loader / Validator
+  - 担当: ChatGPT
+  - data/scenarios / data/profilesへ分離
+  - schema_version / id / aim_type / duration / tags / profile references
+  - 不正Scenarioは起動せずBrowserでErrorを表示
+  - Legacy stages.jsonはMigration完了まで読み取り互換を維持
+
+- [ ] Profile Runtime
+  - 担当: ChatGPT
+  - Player Profile
+  - Weapon Profile
+  - Target / Character Profile
+  - Bot Profile
+  - Spawn Profile
+  - Movement / Dodge Profile
+  - Aim Profile
+  - Scoring Profile
+
+- [ ] Bot / Spawn / Lifecycle Engine
+  - 担当: ChatGPT
+  - active bot count
+  - spawn range / spawn point
+  - blocked spawn radius
+  - health / kill / despawn / respawn
+  - static / strafe / random-direction / arc movement
+
+- [ ] Weapon / Challenge / Scoring Engine
+  - 担当: ChatGPT
+  - hitscan click
+  - automatic hitscan
+  - fire rate / damage / ammo / reload rule
+  - Challenge timer / Freeplay
+  - score / accuracy / kills / damage
+  - Scenario ID Personal Best
+
+- [ ] Legacy 5 ScenarioをGeneric EngineへMigration
+  - 担当: ChatGPT
+  - Single
+  - Gridshot
+  - Hold Angle / Pre-Aim
+  - Microshot
+  - Flick
+  - Gameplay outcomeが旧Runtimeと大きく変わらないことをSmoke Testで比較
+
+- [ ] Generic Scenario Engineを実機確認する
   - 担当: あなた
-  - Scenario BrowserのLOCAL SCENARIOSに「Flick」が表示される
-  - 開始すると中央から離れた位置にTargetが1個表示される
-  - Hitするたび前のTargetから十分離れた位置へ移動する
-  - Microshotより明確に大きなAim移動になる
-  - 難易度を変えるとTarget size / 最低移動距離 / spawn範囲が変わる
-  - MissではScoreが増えず命中率へ反映される
-  - 60秒後にResultへ移動し、FlickのBESTが保存される
-  - 他ModeのBESTと混ざらず、再起動後も選択ModeとBESTが維持される
-- [ ] Skin Test Range
+  - 5つのLegacy ScenarioがScenario JSONから起動する
+  - Scenario切替でMouse感度が変化しない
+  - Static / moving / multiple targetが正しく動く
+  - Result / PBがScenarioごとに分離される
+  - ESC / Retry / Browser returnが壊れていない
 
-## Phase 4 — Weapon
+## Phase 5 — KovaaK's-style Scenario Coverage
 
-- [ ] Primary Rifle 1種類
-- [ ] Ammo
-- [ ] Reload
-- [ ] Equip
+- [ ] Static Clicking pack
+  - 担当: ChatGPT
+  - small / wide / multi-target / micro / large-angle variants
+
+- [ ] Dynamic Clicking pack
+  - 担当: ChatGPT
+  - moving click targets
+  - bounce / arc target
+  - timed kill
+
+- [ ] Smooth Tracking pack
+  - 担当: ChatGPT
+  - horizontal smooth
+  - vertical / diagonal
+  - close / mid range
+
+- [ ] Reactive Tracking pack
+  - 担当: ChatGPT
+  - random strafe
+  - speed / direction change
+  - short reaction window
+
+- [ ] Target Switching pack
+  - 担当: ChatGPT
+  - multiple targets
+  - target health
+  - kill → next target switching
+
+- [ ] VALORANT-oriented Scenario pack
+  - 担当: ChatGPT
+  - micro correction
+  - one tap
+  - angle hold / peek
+  - strafe target
+  - stop-and-click oriented scenario
+
+- [ ] Scenario Browserを大量Scenario向けに拡張
+  - 担当: ChatGPT
+  - Search
+  - Aim Type filter
+  - Tags
+  - Favorite
+  - Recent
+  - Local / Built-in distinction
+
+- [ ] Local Playlist
+  - 担当: ChatGPT
+  - Scenario順序
+  - Repeat count
+  - Run all
+  - Playlist保存
+
+- [ ] Scenario Packを実機確認する
+  - 担当: あなた
+  - Clicking / Tracking / Switching / Reactiveの違いが体感できる
+  - Search / Filterで目的Scenarioを見つけられる
+  - Playlistを最後まで連続実行できる
+
+## Phase 6 — Weapon / VALORANT-style Skin Layer
+
+- [ ] Primary Rifle foundation
+- [ ] Ammo / Reload / Equip
 - [ ] Inspect
 - [ ] Fire feedback
+- [ ] Weapon Animation / Audio contract
+- [ ] SkinとWeapon gameplay parameterを完全分離
 
-## Phase 5 — Skin System
+## Phase 7 — Skin System
 
 - [ ] Data-driven Skin model
 - [ ] Skin Library
 - [ ] Variant
 - [ ] Asset loading / Cache
 - [ ] Skin選択保存
+- [ ] Skin Test Range
+- [ ] Rights / Source metadata
+- [ ] Skin変更でScenario / Aim / Hitbox / Scoreが変わらないRegression
 
-## Phase 6 — Audio / Animation
+## Phase 8 — Scenario Expansion
 
-- [ ] Fire / Reload / Hit sound
-- [ ] Weapon / Inspect animation
+- [ ] Userが追加希望したScenarioを順次追加
+  - 原則: Scenario JSON / Profile追加で対応
+  - Engine capability不足時だけReusable behaviorを追加
+  - 既存Scenario回帰を壊さない
 
-## Phase 7 — Windows Distribution
+## Phase 9 — Windows Distribution
 
 - [ ] Windows Export
 - [ ] Installer
@@ -322,9 +431,10 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
 - [ ] Update strategy
 - [ ] Logs / Diagnostics
 
-## Phase 8 — Quality
+## Phase 10 — Quality
 
 - [ ] High Refresh / Input latency
 - [ ] Long-session stability
 - [ ] Actual Playtest regression
 - [ ] Windows build / installer regression
+- [ ] 100+ Scenario catalog performance
