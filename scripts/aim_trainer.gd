@@ -992,6 +992,10 @@ func _load_scenario_catalog() -> void:
 		stages = StageCatalog.load_stages()
 		scenario_catalog_using_v1 = false
 
+	if not stages.is_empty() and _current_stage().is_empty():
+		selected_training_mode = _mode_from_key(str(stages[0].get("mode", "single")))
+		_sync_current_personal_best()
+
 
 func _sync_scenario_catalog_status() -> void:
 	if scenario_catalog_using_v1:
@@ -1049,6 +1053,7 @@ func _build_home_stage_list() -> void:
 		empty_button.custom_minimum_size = Vector2(0, 70)
 		home_stage_list.add_child(empty_button)
 
+	start_button.disabled = home_stage_buttons.is_empty()
 	_refresh_home_stage_buttons()
 
 
