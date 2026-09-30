@@ -38,23 +38,27 @@ Main (Node3D)
 
 ## Run State
 
-4状態を持つ。
+Gameplay Run Stateは4状態を維持する。
 
-- `READY` — 開始画面。Cursor visible。
+- `READY` — HomeまたはStage Setup。Cursor visible。
 - `PLAYING` — Mouse captured。Aim / Shoot / Countdown受付。
 - `PAUSED` — Pause画面。Cursor visible。Countdown停止。
 - `RESULT` — Session終了結果。Cursor visible。Shoot停止。
 
+READY中のUI Surfaceは`Home`と`Stage Setup`を分離する。Stage選択はGameplay Run Stateを増やさず、READY内のSurface遷移として扱う。
+
 遷移:
 
 ```text
-READY --開始--> PLAYING
+HOME --Stage選択--> READY(Stage Setup)
+READY(Stage Setup) --開始--> PLAYING
+READY(Stage Setup) --Home / ESC--> HOME
 PLAYING --ESC--> PAUSED
 PAUSED --ESC / 練習に戻る--> PLAYING
-PAUSED --メインメニューへ戻る--> READY
+PAUSED --メインメニューへ戻る--> HOME
 PLAYING --Timer 0--> RESULT
 RESULT --もう一度 / R--> PLAYING(reset)
-RESULT --開始画面へ戻る / ESC--> READY
+RESULT --Homeへ戻る / ESC--> HOME
 PLAYING / PAUSED --R / やり直す--> PLAYING(reset)
 ```
 
@@ -87,10 +91,12 @@ DPIは計算・表示・保存に使用する。ApplicationからMouse Hardware 
 
 ## Target
 
-- 1個だけ表示する
 - Camera前方の固定距離Plane上へRandom spawn
 - X / Y範囲をDifficulty Profileから取得する
-- Hit後だけ次位置へ移動する
+- SingleはActive Target 1個
+- GridshotはActive Target 3個
+- HitしたTargetだけ次位置へ移動する
+- Multi-target Modeでは極端なTarget重なりを避けるMinimum Separationを持つ
 
 Targetは`StaticBody3D + SphereShape3D`でPhysics collisionを持つ。Mesh radiusとCollision radiusは同じDifficulty valueを使用し、VisualとHit判定を一致させる。
 
@@ -120,7 +126,7 @@ Difficulty Profile:
 - Accuracyは既存のHit / Shots計算を再利用
 - Difficulty Profileは3 Targetすべてへ同じRadius / Spawn Rangeを適用
 
-Mode切替はREADY Stateでのみ受け付ける。Training開始後はSession中のModeを固定する。
+ModeはHomeで選んだStage metadataから決定する。Training開始後はSession中のModeを固定する。Stage SetupにはMode Selectorを置かない。
 
 ## Shooting / Hit Detection
 
@@ -147,18 +153,34 @@ Accuracy:
 
 ## UI / Usability
 
-### Start
+### Home
 
-First Viewで以下だけを強く見せる。
+起動直後のFirst View。
 
 - Product名
-- 「やることは3つだけ」
-- 3Step操作説明
-- 小さいTraining Mode selector
-- 小さいDifficulty selector
-- 大きい「60秒の練習を開始」
+- 「ステージを選んで練習」
+- 前回選択Stage / Difficulty
+- 実装済みStage一覧
+- StageごとのTitle / Category / Duration / Current Difficulty Best
+- 未実装Stageは表示しない
 
-未実装のMode / SkinはMain flowへ出さない。
+Stage一覧は`data/stages.json`から動的に生成する。Currentは2 StageだけなのでSearch / Filterを置かない。
+
+### Stage Setup
+
+HomeでStageを選んだ後の設定Surface。
+
+- Stage Title
+- Category / Duration
+- Stage Description
+- Difficulty selector
+- Current Stage / Difficulty BEST
+- Sensitivity summary / Settings
+- Crosshair Settings
+- 大きい「練習を開始」
+- Homeへ戻る
+
+Mode Selectorは置かない。Stageを変える場合はHomeへ戻る。
 
 ### Training
 
@@ -181,7 +203,7 @@ Training中のPrimary Visual:
 - 最初からやり直す
 - メインメニューへ戻る
 
-「メインメニューへ戻る」は現在の途中Sessionを破棄してREADYへ戻す。途中ScoreはPersonal Bestへ保存しない。確認Dialogは出さず、Difficulty等を繰り返し検証しやすい短い導線を優先する。
+「メインメニューへ戻る」は現在の途中Sessionを破棄してHomeへ戻す。途中ScoreはPersonal Bestへ保存しない。確認Dialogは出さず、Stage / Difficulty等を繰り返し検証しやすい短い導線を優先する。
 
 ### Sensitivity Settings
 
@@ -192,7 +214,7 @@ Training中のPrimary Visual:
 - Rotation coefficient
 - Save / Cancel
 
-Start画面では「練習を開始」をPrimary Actionとして維持し、感度設定はSecondary Actionにする。
+Stage Setupでは「練習を開始」をPrimary Actionとして維持し、感度設定はSecondary Actionにする。
 
 ### Crosshair Settings
 
@@ -237,7 +259,7 @@ Result表示:
 - Personal Best
 - New Best表示
 - Retry
-- Startへ戻る
+- Homeへ戻る
 
 Personal BestはDifficulty別に`user://settings.cfg`へ保存する。
 
@@ -257,30 +279,51 @@ best_gridshot_hard_score=<int>
 
 旧`training_records/default_best_score`があり、`best_normal_score`が無い場合は旧値をNormal Bestとして読み込む。旧Keyは削除しない。
 
-Stage Library導入時はStage ID + Difficulty単位のRecordへ拡張する。
+Current Recordは既存互換のためMode + Difficulty Keyを維持する。StageとModeが1対1でなくなる段階でStage ID + Difficulty単位へMigrationする。
 
 ### Difficulty
 
-- Start画面のOptionButtonで3段階から選択
+- Stage SetupのOptionButtonで3段階から選択
 - 変更はREADY Stateでのみ受け付ける
 - 選択時にTarget Mesh / Collision / spawn rangeを同じProfileから更新する
 - Difficulty変更はSensitivity / Crosshair / Session duration / Score ruleへ影響させない
 - ResultへDifficulty名を表示する
-- Start画面のBESTは選択DifficultyのRecordだけを表示する
+- Stage SetupのBESTは選択DifficultyのRecordだけを表示する
 
-### Future Home / Stage Library
+### Home / Stage Library
 
-将来は単一Start画面から、Home / Scenario Library中心の構造へ移行する。
+Current Flow:
 
 ```text
 Home
-→ Stage Library
+→ Stage Setup
 → Training
 → Result
-→ Retry / Next
+→ Retry / Home
 ```
 
-Stage定義はData-driven化し、Mode追加でMain Sceneへ巨大な分岐を追加しない。
+Stage Catalogは`data/stages.json`、Loaderは`scripts/stage_catalog.gd`。
+
+Current metadata:
+
+- `id`
+- `mode`
+- `title`
+- `category`
+- `description`
+- `duration_seconds`
+- `playable`
+- `sort_order`
+- `tags`
+
+Homeはplayable StageだけをCatalog順に生成する。Stage数が増えるまではSearch / Filterを追加しない。将来はcategory / tagsをBrowse / Searchへ使える。
+
+Current playable Stage:
+
+1. シングルターゲット
+2. Gridshot
+
+新しいStageを追加するとき、Home Sceneへ固定Buttonを追加しない。Catalog追加とGameplay実装を分離し、Main Sceneの巨大なUI条件分岐を避ける。
 
 ## Performance
 
@@ -303,7 +346,11 @@ Automated:
 - Pitch clamp
 - Accuracy calculation
 - Scene contract
-- Start UI default state
+- Home UI default state
+- Stage Catalog JSON load / normalization
+- Home Stage list dynamic generation
+- Home → Stage Setup transition
+- Stage Setup → Home transition
 - Timer countdown
 - Pause中Timer停止
 - Pause → メインメニュー遷移
@@ -315,14 +362,14 @@ Automated:
 - Difficulty target radius / spawn range
 - Difficulty別Best分離
 - Legacy default_best_score → Normal Best compatibility
-- Training Mode selector contract
+- Stage selection → Training Mode mapping
 - Single 1 Target / Gridshot 3 Target activation
 - Gridshot Target respawn isolation
 - Mode別Personal Best分離
 
 Actual Playtest:
 
-- Start flowの理解
+- Home → Stage Setup flowの理解
 - Mouse capture
 - fast mouse movement
 - repeated Hit / Miss
