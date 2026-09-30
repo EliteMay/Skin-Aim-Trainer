@@ -92,6 +92,14 @@ func _ready() -> void:
 	assert(not instance.get_node("UI/HUD").visible)
 	assert(not instance.get_node("UI/SettingsOverlay").visible)
 
+	var mode_select := instance.get_node(
+		"UI/StartOverlay/Center/Content/ModeRow/ModeSelect"
+	) as OptionButton
+	assert(mode_select != null)
+	assert(mode_select.item_count == 2)
+	assert(mode_select.selected == 0)
+	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
+
 	var difficulty_select := instance.get_node(
 		"UI/StartOverlay/Center/Content/DifficultyRow/DifficultySelect"
 	) as OptionButton
@@ -102,7 +110,7 @@ func _ready() -> void:
 	assert(instance.personal_best_score == 7)
 	assert(
 		instance.get_node("UI/StartOverlay/Center/Content/BestScore").text
-		== "標準 BEST  7"
+		== "シングル / 標準 BEST  7"
 	)
 	var difficulty_sphere := instance.target_mesh.mesh as SphereMesh
 	assert(difficulty_sphere != null)
@@ -270,13 +278,13 @@ func _ready() -> void:
 	)
 	assert(
 		instance.get_node("UI/ResultOverlay/Center/Content/Best").text
-		== "標準 BEST  12"
+		== "シングル / 標準 BEST  12"
 	)
 	assert(
 		instance.get_node("UI/ResultOverlay/Center/Content/Duration").text
-		== "標準 / 60秒 Session"
+		== "シングル / 標準 / 60秒 Session"
 	)
-	assert(start_best_label.text == "標準 BEST  12")
+	assert(start_best_label.text == "シングル / 標準 BEST  12")
 
 	var records_config := ConfigFile.new()
 	assert(records_config.load("user://settings.cfg") == OK)
@@ -315,7 +323,7 @@ func _ready() -> void:
 	assert(is_equal_approx(instance.valorant_sensitivity, sensitivity_before_difficulty))
 	assert(instance.crosshair_profile == crosshair_before_difficulty)
 	assert(instance.personal_best_score == 0)
-	assert(start_best_label.text == "かんたん BEST  0")
+	assert(start_best_label.text == "シングル / かんたん BEST  0")
 	assert(is_equal_approx(difficulty_sphere.radius, 0.82))
 	var target_position: Vector3 = instance.target_body.position
 	assert(target_position.x >= -4.2 and target_position.x <= 4.2)
@@ -344,7 +352,7 @@ func _ready() -> void:
 	assert(instance.personal_best_score == 5)
 	assert(
 		instance.get_node("UI/ResultOverlay/Center/Content/Best").text
-		== "かんたん BEST  5"
+		== "シングル / かんたん BEST  5"
 	)
 
 	records_config = ConfigFile.new()
@@ -373,7 +381,7 @@ func _ready() -> void:
 	difficulty_select.item_selected.emit(instance.DifficultyLevel.HARD)
 	assert(instance.selected_difficulty == instance.DifficultyLevel.HARD)
 	assert(instance.personal_best_score == 0)
-	assert(start_best_label.text == "むずかしい BEST  0")
+	assert(start_best_label.text == "シングル / むずかしい BEST  0")
 	assert(is_equal_approx(difficulty_sphere.radius, 0.46))
 	assert(is_equal_approx(instance.valorant_sensitivity, sensitivity_before_difficulty))
 	assert(instance.crosshair_profile == crosshair_before_difficulty)
@@ -389,8 +397,98 @@ func _ready() -> void:
 	difficulty_select.item_selected.emit(instance.DifficultyLevel.NORMAL)
 	assert(instance.selected_difficulty == instance.DifficultyLevel.NORMAL)
 	assert(instance.personal_best_score == 12)
-	assert(start_best_label.text == "標準 BEST  12")
+	assert(start_best_label.text == "シングル / 標準 BEST  12")
 	assert(is_equal_approx(difficulty_sphere.radius, 0.62))
+
+	mode_select.select(instance.TrainingMode.GRIDSHOT)
+	mode_select.item_selected.emit(instance.TrainingMode.GRIDSHOT)
+	assert(instance.selected_training_mode == instance.TrainingMode.GRIDSHOT)
+	assert(instance.personal_best_score == 0)
+	assert(start_best_label.text == "Gridshot / 標準 BEST  0")
+	assert(instance.target_bodies.size() == 3)
+	assert(instance.target_meshes.size() == 3)
+	assert(instance.target_collisions.size() == 3)
+	for mesh in instance.target_meshes:
+		assert(not (mesh as MeshInstance3D).visible)
+
+	var mode_config := ConfigFile.new()
+	assert(mode_config.load("user://settings.cfg") == OK)
+	assert(str(mode_config.get_value("training", "mode", "")) == "gridshot")
+
+	instance.start_training()
+	assert(instance.run_state == instance.RunState.PLAYING)
+	var visible_gridshot_targets := 0
+	for index in range(instance.target_meshes.size()):
+		var grid_mesh := instance.target_meshes[index] as MeshInstance3D
+		var grid_collision := instance.target_collisions[index] as CollisionShape3D
+		if grid_mesh.visible:
+			visible_gridshot_targets += 1
+		assert(not grid_collision.disabled)
+	assert(visible_gridshot_targets == 3)
+
+	var first_grid_position: Vector3 = instance.target_bodies[0].position
+	var third_grid_position: Vector3 = instance.target_bodies[2].position
+	instance._move_target_at(1)
+	assert(instance.target_bodies[0].position == first_grid_position)
+	assert(instance.target_bodies[2].position == third_grid_position)
+
+	instance.score = 9
+	instance.hits = 9
+	instance.shots = 11
+	instance.misses = 2
+	instance.session_remaining_seconds = 0.01
+	instance._process(0.02)
+	assert(instance.run_state == instance.RunState.RESULT)
+	assert(instance.personal_best_score == 9)
+	assert(
+		instance.get_node("UI/ResultOverlay/Center/Content/Best").text
+		== "Gridshot / 標準 BEST  9"
+	)
+	assert(
+		instance.get_node("UI/ResultOverlay/Center/Content/Duration").text
+		== "Gridshot / 標準 / 60秒 Session"
+	)
+
+	records_config = ConfigFile.new()
+	assert(records_config.load("user://settings.cfg") == OK)
+	assert(
+		int(
+			records_config.get_value(
+				"training_records",
+				"best_gridshot_normal_score",
+				0
+			)
+		) == 9
+	)
+	assert(
+		int(
+			records_config.get_value(
+				"training_records",
+				"best_normal_score",
+				0
+			)
+		) == 12
+	)
+
+	instance._show_ready_state()
+	mode_select.select(instance.TrainingMode.SINGLE)
+	mode_select.item_selected.emit(instance.TrainingMode.SINGLE)
+	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
+	assert(instance.personal_best_score == 12)
+	assert(start_best_label.text == "シングル / 標準 BEST  12")
+	instance.start_training()
+	var visible_single_targets := 0
+	for index in range(instance.target_meshes.size()):
+		var single_mesh := instance.target_meshes[index] as MeshInstance3D
+		var single_collision := instance.target_collisions[index] as CollisionShape3D
+		if single_mesh.visible:
+			visible_single_targets += 1
+		if index == 0:
+			assert(not single_collision.disabled)
+		else:
+			assert(single_collision.disabled)
+	assert(visible_single_targets == 1)
+	instance._show_ready_state()
 
 	var dpi_input := instance.get_node(
 		"UI/SettingsOverlay/Center/Content/Fields/DpiInput"
