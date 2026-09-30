@@ -184,3 +184,13 @@
 - Context: Aim TrainerのLibrary設計を一般的な「Home → Detail/Setup」として組んだ後、2026-09のAimlabs Play 2.0がTraining discoveryをPlayへ集約してScreen hoppingを減らす方向へ更新されていることを重点確認した。
 - Decision: Meaningful UI判断では古いScreenshotや一般的Patternだけでなく、Current Productの最新Release / Announcement / official guideを確認し、Project固有User Feedbackと照合する。
 - Prevention: Reference Game名が明示された場合、古い記憶だけで構造を決めずCurrent official evidenceを先に確認する。
+
+
+## SAT-UI-001 — Dynamic Stage lists must be scrollable before content growth
+
+- Date: 2026-09-30
+- Type: UI / Responsive Layout
+- Status: Adopted
+- Problem: A fixed VBoxContainer worked with two Training cards but a third data-driven Stage could exist correctly in memory while being visually clipped.
+- Decision: Any data-driven Training list that can grow must live inside a ScrollContainer or equivalent bounded overflow surface.
+- Prevention: Smoke tests must verify both item count and the presence of a bounded scrolling container; item existence alone is not enough to prove visibility.
