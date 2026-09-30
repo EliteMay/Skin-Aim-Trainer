@@ -150,3 +150,28 @@
 - Context: Gridshotでは3 Targetを同時表示するため、Hitごとに全Targetを再配置するとTarget switchingの連続性が崩れる。
 - Decision: RaycastでHitしたColliderのIndexを特定し、そのTargetだけRespawnする。
 - Prevention: Multi-target Trainingでは全体Resetと1 Target更新を分離し、通常Hitで無関係Targetを動かさない。
+
+
+## PL-019 — Stage選択とStage設定を同じSurfaceへ重複させない
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Homeを追加した後もStage SetupにSingle / Gridshot Selectorを残すと、同じNavigation判断が2か所に存在してFlowが分かりにくくなる。
+- Decision: StageはHomeで選び、Stage Setupは選択済みStageのDifficulty / Sensitivity / Crosshair / Startだけを扱う。
+- Prevention: Home / Libraryを導入した後は、Local SetupへTop-level Stage Navigationを重複配置しない。
+
+## PL-020 — 小さいLibraryへSearchを先回りで追加しない
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Aimlabs / KovaaK'sの大規模LibraryではSearch / Filterが重要だが、Current Skin Aim TrainerはPlayable Stageが2件だけ。
+- Decision: Current Homeは一覧選択だけにし、Stage metadataへcategory / tagsを保持してStage数が増えた時にBrowse / Searchへ拡張する。
+- Prevention: Reference Productの規模依存UIを機械的にコピーせず、Current content volumeとTask frequencyを確認する。
+
+## PL-021 — Stage metadataをScene固定Nodeから分離する
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Stage追加ごとにHome SceneへButton / Title / Categoryを直書きすると、Scenario Library化でSceneとMain Scriptが肥大化する。
+- Decision: Stage metadataを`data/stages.json`へ分離し、Home ButtonはCatalogから動的生成する。
+- Prevention: 新Stageの表示情報をSceneへ固定追加せず、CatalogとGameplay implementationを別責務として扱う。
