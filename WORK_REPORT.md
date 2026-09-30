@@ -780,5 +780,6 @@ Current Gameplay codeはまだTrainingMode enumを使用する。Scenario Defini
 ### Validation state
 
 - Repository implementation: COMPLETE
-- Godot CI: PENDING
+- Godot Import / Cold Start / Core Smoke: PASS — GitHub Actions run 36704718353
+- Windows Core Smoke: PASS — GitHub Actions run 36704718353
 - Windows actual playtest: NOT_REQUIRED for metadata-only migration; gameplay regression is covered by existing smoke and later Generic Scenario Engine playtest
