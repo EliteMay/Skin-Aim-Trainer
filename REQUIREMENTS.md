@@ -154,7 +154,7 @@ Current balance:
 
 ## Training Mode Contract
 
-Phase 2ではSingle / Gridshotを導入し、Phase 3でHold Angle / Pre-AimとMicroshotを追加する。ModeはHomeのStage Catalogから選択し、別のMode Selectorを重複させない。
+Phase 2ではSingle / Gridshotを導入し、Phase 3でHold Angle / Pre-Aim、Microshot、Flickを追加する。ModeはHomeのStage Catalogから選択し、別のMode Selectorを重複させない。
 
 ### シングル
 
@@ -194,6 +194,18 @@ Phase 2ではSingle / Gridshotを導入し、Phase 3でHold Angle / Pre-AimとMi
 - Session / Accuracy / Sensitivity / Crosshairは既存Contractを再利用する
 - Personal BestはDifficultyごとに専用Recordへ保存する
 
+### Flick
+
+- Active Targetは1個
+- Targetは静止し、Hitした時だけ次位置へRespawnする
+- 初回はCrosshair中央基準から一定距離以上離れた位置へ出す
+- 2発目以降は直前Targetから一定距離以上離れた位置へ出す
+- Minimum displacement: Easy 2.2 / Normal 3.2 / Hard 4.2
+- Target radius: Easy 0.76 / Normal 0.56 / Hard 0.42
+- Spawn boundsは既存Difficulty Rangeを再利用する
+- Session / Accuracy / Sensitivity / Crosshairは既存Contractを再利用する
+- Personal BestはDifficultyごとに専用Recordへ保存する
+
 最後に選んだStageのModeはLocal Settingsへ保存する。既存のシングルBEST Keyは変更せず、新Modeは専用Keyを追加する。
 
 Current record mapping:
@@ -218,6 +230,11 @@ microshot:
   best_microshot_easy_score
   best_microshot_normal_score
   best_microshot_hard_score
+
+flick:
+  best_flick_easy_score
+  best_flick_normal_score
+  best_flick_hard_score
 ```
 
 Mode選択はHomeのStage metadataからRuntime Modeへ変換する。将来StageごとにGameplay Scriptが増える場合も、Home UIへMode固有条件分岐を追加しない。
@@ -235,7 +252,7 @@ Current Flow:
 - Training選択のためだけに別Page / Stage Setupへ遷移しない
 - Stage定義は`data/stages.json`をSource of Truthとする
 - Stage metadataは最低限 `id / mode / title / category / description / duration_seconds / playable / sort_order / tags` を持つ
-- 現在のplayable Stageは「シングルターゲット」「Gridshot」「Hold Angle / Pre-Aim」「Microshot」
+- 現在のplayable Stageは「シングルターゲット」「Gridshot」「Hold Angle / Pre-Aim」「Microshot」「Flick」
 - Training一覧はCatalog Dataから動的に生成する
 - 選択中PanelへTitle / Category / Description / Duration / Personal Bestを表示する
 - Difficultyは選択中Panel内で直接変更できる
