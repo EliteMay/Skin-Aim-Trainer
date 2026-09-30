@@ -127,3 +127,130 @@ Actual Windows Playtest:
 - Single / Gridshot切替で不要な画面遷移が発生しないか
 - Difficulty / Sensitivity / Crosshairへの到達が自然か
 - 1600x900でPanelが収まり操作しやすいか
+
+
+## Deeper Current-Product Comparison — 2026-09-30
+
+### Aimlabs 2.0 Play Screen
+
+Official current announcement:
+- https://steamcommunity.com/app/714010/announcements/
+- "Aimlabs 2.0 Play Screen - all of your training, all in one place" (2026-09-12)
+
+Observed:
+- Play 2.0 introduces a consolidated Training Grid.
+- Tasks / Playlists / Guides / Benchmarks / Events / Multiplayer are discoverable from the same Play destination.
+- The stated goal is to reduce time spent finding training and clicking through separate screens.
+- Favorites and Recents receive dedicated access so repeated training does not require rediscovery every session.
+
+Project transfer:
+- Keep Training discovery as the primary surface.
+- Do not split Mode selection and pre-training settings into separate pages unless the amount of content makes that necessary.
+- When the Skin Aim Trainer library grows, first add lightweight Recents / Favorites before creating more top-level navigation.
+
+### Aimlabs First-Session / Settings Flow
+
+Official current guides:
+- https://aimlabs.com/articles/aimlabs/getting-started-in-aimlabs-four-steps-for-your-first-session/
+- https://aimlabs.com/articles/aimlabs/how-to-configure-and-convert-your-sensitivity-in-aimlabs/
+
+Observed:
+- Sensitivity is treated as a setup-critical configuration before training.
+- Game Profile / FOV / sensitivity are grouped under Settings.
+- Crosshair, audio, graphics and visual choices are also configurable from Settings.
+- Home / Play remains the training-discovery surface, while Settings is a reusable global configuration surface.
+
+Project transfer:
+- Surface the current Sensitivity / Crosshair state beside the selected Training so the user does not lose context.
+- Keep detailed Sensitivity / Crosshair editors as overlays rather than permanently expanding the primary Play layout.
+- Closing a Settings overlay should return to the same selected Training without losing selection.
+
+### KovaaK's Scenario Browser
+
+Current scenario browser:
+- https://kovaaks.com/kovaaks/scenarios
+
+Observed:
+- The browser is built around a large searchable scenario collection.
+- Scenario name / score-oriented information is visible in the browsing context.
+- Search is useful because the content set is already large.
+
+Project transfer:
+- Search is not justified for two playable Stages.
+- Preserve Stage metadata such as category / tags so Search / Filter can be added without redesigning the data model later.
+- Add Search only when finding a Stage from the visible list becomes a real repeated cost.
+
+### KovaaK's Main Settings
+
+Reference:
+- https://wiki.kovaaks.com/home/KovaaK%27s/Settings
+
+Observed:
+- Crosshair, mouse sensitivity and FOV are central Settings concerns.
+- Sensitivity Scale can map to a selected game and also supports cm/360-style configuration.
+- The Settings surface is reusable across scenarios rather than recreated inside each Scenario.
+
+Project transfer:
+- Keep sensitivity and crosshair as global persistent settings.
+- Expose their current summary and entry points next to the selected Training.
+- Do not duplicate independent copies of the same setting per Stage unless a future Stage explicitly requires an override.
+
+### KovaaK's 3.7.3 Flow / Persistence Improvements
+
+Official patch notes:
+- https://store.steampowered.com/news/posts/?appgroupname=KovaaK+2.0%3A+The+Meta&appids=824270&enddate=1738766467&feed=steam_community_announcements
+
+Observed:
+- Playlist state is remembered across restarts.
+- Search was added inside playlist selection.
+- "Skip Challenge Results" was added for users who want lower interruption.
+- Session Stats layout was revised for clarity.
+- Escape-key recovery from sound / crosshair picker Settings was explicitly fixed.
+
+Project transfer:
+- Preserve selected Training / Difficulty across restart.
+- Prioritize predictable back / Escape behavior from Sensitivity and Crosshair overlays.
+- Keep Result → Replay / Play Library recovery short.
+- Later, if repeated training makes Result interruption costly, add a user-controlled skip/auto-retry option instead of forcing it by default.
+
+## Updated Direction Contract
+
+Current primary composition remains:
+
+```text
+PLAY / TRAINING LIBRARY
+├─ Left: Training list
+│  ├─ シングルターゲット
+│  ├─ Gridshot
+│  └─ future Stages
+└─ Right: Selected Training
+   ├─ Title / Category / Description / Duration
+   ├─ BEST
+   ├─ Difficulty
+   ├─ Sensitivity summary + Settings
+   ├─ Crosshair Settings
+   └─ Primary Play button
+```
+
+KEEP:
+- One-surface Training selection + Quick Settings
+- Data-driven Stage catalog
+- Global persistent Sensitivity / Crosshair
+- Result / Retry / Play Library recovery
+- Low-distraction Training HUD
+
+DO NOT ADD YET:
+- Search
+- Favorites
+- Recents
+- Playlist editor
+- Multiple top-level tabs
+- Per-Stage copies of global Sensitivity / Crosshair
+
+ADD WHEN CONTENT / USAGE JUSTIFIES IT:
+- Recents / Favorites for repeated training
+- Search / category filter for a larger Stage library
+- Playlist / Routine composition
+- Result skip / auto-next options
+
+The design goal is not to reproduce Aimlabs or KovaaK's visually. The transferable pattern is: training discovery is centralized, current setup is easy to inspect before Play, global aim settings remain reusable, and returning to training does not lose context.
