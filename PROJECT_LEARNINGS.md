@@ -152,13 +152,13 @@
 - Prevention: Multi-target Trainingでは全体Resetと1 Target更新を分離し、通常Hitで無関係Targetを動かさない。
 
 
-## PL-019 — Stage選択とStage設定を同じSurfaceへ重複させない
+## PL-019 — Training選択と開始前設定を不必要に分離しない
 
 - Date: 2026-09-30
 - Status: Adopted
-- Context: Homeを追加した後もStage SetupにSingle / Gridshot Selectorを残すと、同じNavigation判断が2か所に存在してFlowが分かりにくくなる。
-- Decision: StageはHomeで選び、Stage Setupは選択済みStageのDifficulty / Sensitivity / Crosshair / Startだけを扱う。
-- Prevention: Home / Libraryを導入した後は、Local SetupへTop-level Stage Navigationを重複配置しない。
+- Context: 初回Home / Stage Library実装ではHomeでTrainingを選んだ後に別Stage Setupへ遷移してDifficulty / Sensitivity / Crosshair / Startを扱ったが、User Feedbackで「設定はモードを選ぶところにあるべき」と指摘された。Current Aimlabs Play 2.0もTraining discoveryを1つのPlay Surfaceへ集約する方向を明示している。
+- Decision: Current規模ではTraining LibraryとSelected Training / Quick Settingsを同じSurfaceへ置く。Stage選択ではPage transitionせず、Difficulty / Sensitivity / Crosshair / StartとのContextを維持する。
+- Prevention: Primary Taskが「選ぶ → 少し設定 → 実行」の短い反復なら、中間Pageを追加する前に同一Surfaceで完了できないかを確認する。
 
 ## PL-020 — 小さいLibraryへSearchを先回りで追加しない
 
@@ -175,3 +175,12 @@
 - Context: Stage追加ごとにHome SceneへButton / Title / Categoryを直書きすると、Scenario Library化でSceneとMain Scriptが肥大化する。
 - Decision: Stage metadataを`data/stages.json`へ分離し、Home ButtonはCatalogから動的生成する。
 - Prevention: 新Stageの表示情報をSceneへ固定追加せず、CatalogとGameplay implementationを別責務として扱う。
+
+
+## PL-022 — Reference ProductはCurrent UI方向まで確認する
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Aim TrainerのLibrary設計を一般的な「Home → Detail/Setup」として組んだ後、2026-09のAimlabs Play 2.0がTraining discoveryをPlayへ集約してScreen hoppingを減らす方向へ更新されていることを重点確認した。
+- Decision: Meaningful UI判断では古いScreenshotや一般的Patternだけでなく、Current Productの最新Release / Announcement / official guideを確認し、Project固有User Feedbackと照合する。
+- Prevention: Reference Game名が明示された場合、古い記憶だけで構造を決めずCurrent official evidenceを先に確認する。
