@@ -106,10 +106,15 @@ func _ready() -> void:
 	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
 
 	var home_stage_list := instance.get_node(
-		"UI/HomeOverlay/Margin/Content/Body/Library/StageList"
+		"UI/HomeOverlay/Margin/Content/Body/Library/StageScroll/StageList"
 	) as VBoxContainer
 	assert(home_stage_list != null)
 	assert(home_stage_list.get_child_count() == 3)
+	var stage_scroll := instance.get_node(
+		"UI/HomeOverlay/Margin/Content/Body/Library/StageScroll"
+	) as ScrollContainer
+	assert(stage_scroll != null)
+	assert(stage_scroll.size_flags_vertical == Control.SIZE_EXPAND_FILL)
 	var viewport_size := instance.get_viewport().get_visible_rect().size
 	var home_content := instance.get_node(
 		"UI/HomeOverlay/Margin/Content"
