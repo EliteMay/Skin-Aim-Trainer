@@ -254,7 +254,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 実装完了後、Roadmapのこの項目を[x]へ変更し、次に「Microshotを実機確認する」をCurrent Taskへする
   - 2026-09-30 Repository実装・Godot Smoke Test追加済み
 
-- [ ] Microshotを実機確認する
+- [x] Microshotを実機確認する
   - 担当: あなた
   - Play Libraryに「Microshot」が表示される
   - 開始すると小さなTargetが中央付近に1個表示される
@@ -264,8 +264,31 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 60秒後にResultへ移動し、MicroshotのBESTが保存される
   - Single / Gridshot / Hold Angle / MicroshotのBESTが混ざらない
   - ESC → メインメニュー / 再起動後も選択ModeとBESTが維持される
+  - 2026-09-30 Game Dev Hub共有Packで8/8 PASS
 
-- [ ] Flick
+- [x] Flick
+  - 担当: ChatGPT
+  - 静止Targetを1個表示し、Hit後は前位置から十分離れた位置へRespawnする
+  - 初回TargetもCrosshair中央付近から一定距離以上離して、大きいAim移動から開始する
+  - DifficultyでTarget size / 最低移動距離 / spawn rangeを変える
+  - Hit +1 / MissはAccuracyへ反映する既存Score ruleを再利用する
+  - Sensitivity / Crosshair / 60秒Sessionを既存Contractのまま使う
+  - Single / Gridshot / Hold Angle / Microshotとは別にDifficulty別BESTを保存する
+  - Stage CatalogへFlickを追加する
+  - Mode / minimum displacement / save key / ResultをGodot Smoke Testへ追加する
+  - AimlabsのFlicking / click-timingの考え方を参考にし、UI・Asset・Scenario自体はコピーしない
+  - 2026-09-30 Repository実装・Godot Smoke Test追加済み
+
+- [ ] Flickを実機確認する
+  - 担当: あなた
+  - Play Libraryに「Flick」が表示される
+  - 開始すると中央から離れた位置にTargetが1個表示される
+  - Hitするたび前のTargetから十分離れた位置へ移動する
+  - Microshotより明確に大きなAim移動になる
+  - 難易度を変えるとTarget size / 最低移動距離 / spawn範囲が変わる
+  - MissではScoreが増えず命中率へ反映される
+  - 60秒後にResultへ移動し、FlickのBESTが保存される
+  - 他ModeのBESTと混ざらず、再起動後も選択ModeとBESTが維持される
 - [ ] Skin Test Range
 
 ## Phase 4 — Weapon
