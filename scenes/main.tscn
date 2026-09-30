@@ -256,13 +256,13 @@ size_flags_vertical = 3
 [node name="StageList" type="VBoxContainer" parent="UI/HomeOverlay/Margin/Content/Body/Library/StageScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="LibraryHint" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/Library"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.64, 1)
 theme_override_font_sizes/font_size = 13
-text = "現在は実装済みモードだけ表示。モードが増えたらカテゴリ・検索を追加します。"
+text = "実装済みモードをすべて表示。4件以上はこの一覧をスクロールできます。"
 autowrap_mode = 2
 
 [node name="SelectedPanel" type="PanelContainer" parent="UI/HomeOverlay/Margin/Content/Body"]
