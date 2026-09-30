@@ -507,7 +507,16 @@ func _ready() -> void:
 		) == 12
 	)
 
-	instance._show_home()
+	var result_home_button := instance.get_node(
+		"UI/ResultOverlay/Center/Content/BackButton"
+	) as Button
+	assert(result_home_button != null)
+	assert(result_home_button.text == "Homeへ戻る")
+	result_home_button.pressed.emit()
+	await get_tree().process_frame
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(not instance.get_node("UI/ResultOverlay").visible)
+
 	instance._open_stage("single")
 	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
 	assert(instance.personal_best_score == 12)
