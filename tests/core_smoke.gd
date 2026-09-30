@@ -98,76 +98,99 @@ func _ready() -> void:
 	assert(instance.has_method("restart_training"))
 	assert(instance.has_method("_show_home"))
 	assert(instance.get_node("UI/HomeOverlay").visible)
-	assert(not instance.get_node("UI/StartOverlay").visible)
+	assert(instance.get_node_or_null("UI/StartOverlay") == null)
 	assert(not instance.get_node("UI/HUD").visible)
 	assert(not instance.get_node("UI/SettingsOverlay").visible)
 	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
 
 	var home_stage_list := instance.get_node(
-		"UI/HomeOverlay/Center/Content/StageList"
+		"UI/HomeOverlay/Margin/Content/Body/Library/StageList"
 	) as VBoxContainer
 	assert(home_stage_list != null)
 	assert(home_stage_list.get_child_count() == 2)
 	var viewport_size := instance.get_viewport().get_visible_rect().size
 	var home_content := instance.get_node(
-		"UI/HomeOverlay/Center/Content"
+		"UI/HomeOverlay/Margin/Content"
 	) as Control
 	assert(home_content.size.y <= viewport_size.y)
+
+	var selected_prefix := (
+		"UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"
+	)
 	var first_stage_button := home_stage_list.get_child(0) as Button
 	var second_stage_button := home_stage_list.get_child(1) as Button
 	assert(first_stage_button != null)
 	assert(second_stage_button != null)
 	assert(first_stage_button.text.contains("シングルターゲット"))
 	assert(second_stage_button.text.contains("Gridshot"))
+	assert(first_stage_button.button_pressed)
 
-	first_stage_button.pressed.emit()
-	await get_tree().process_frame
-	assert(not instance.get_node("UI/HomeOverlay").visible)
-	assert(instance.get_node("UI/StartOverlay").visible)
+	assert(instance.get_node(selected_prefix + "/Title").text == "シングルターゲット")
+	assert(instance.get_node(selected_prefix + "/Meta").text == "基礎  ·  60秒")
 	assert(
-		instance.get_node("UI/StartOverlay/Center/Content/Title").text
-		== "シングルターゲット"
-	)
-	assert(
-		instance.get_node("UI/StartOverlay/Center/Content/Subtitle").text
-		== "基礎  ·  60秒"
+		instance.get_node(selected_prefix + "/Description").text
+		== "1つのTargetへ正確にAimして撃つ基本練習"
 	)
 
 	var difficulty_select := instance.get_node(
-		"UI/StartOverlay/Center/Content/DifficultyRow/DifficultySelect"
+		selected_prefix + "/DifficultySelect"
 	) as OptionButton
 	assert(difficulty_select != null)
 	assert(difficulty_select.item_count == 3)
 	assert(difficulty_select.selected == 1)
 	assert(instance.selected_difficulty == instance.DifficultyLevel.NORMAL)
 	assert(instance.personal_best_score == 7)
-	assert(
-		instance.get_node("UI/StartOverlay/Center/Content/BestScore").text
-		== "シングルターゲット / 標準 BEST  7"
-	)
+
+	var start_best_label := instance.get_node(
+		selected_prefix + "/BestScore"
+	) as Label
+	assert(start_best_label != null)
+	assert(start_best_label.text == "シングルターゲット / 標準 BEST  7")
+
 	var difficulty_sphere := instance.target_mesh.mesh as SphereMesh
 	assert(difficulty_sphere != null)
 	assert(is_equal_approx(difficulty_sphere.radius, 0.62))
 
-	assert(not instance.get_node("UI/CrosshairSettingsOverlay").visible)
-	assert(
-		instance.get_node(
-			"UI/CrosshairSettingsOverlay/Center/Content/CodeInput"
-		) is LineEdit
-	)
-	assert(
-		instance.get_node(
-			"UI/CrosshairSettingsOverlay/Center/Content/ImportCodeButton"
-		) is Button
-	)
+	second_stage_button.pressed.emit()
+	await get_tree().process_frame
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(instance.selected_training_mode == instance.TrainingMode.GRIDSHOT)
+	assert(instance.get_node(selected_prefix + "/Title").text == "Gridshot")
+	assert(second_stage_button.button_pressed)
 
-	var start_crosshair_button := instance.get_node(
-		"UI/StartOverlay/Center/Content/CrosshairButton"
+	first_stage_button.pressed.emit()
+	await get_tree().process_frame
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
+	assert(instance.get_node(selected_prefix + "/Title").text == "シングルターゲット")
+	assert(first_stage_button.button_pressed)
+
+	var start_settings_button := instance.get_node(
+		selected_prefix + "/SettingsActions/SettingsButton"
 	) as Button
+	var start_crosshair_button := instance.get_node(
+		selected_prefix + "/SettingsActions/CrosshairButton"
+	) as Button
+	var start_button := instance.get_node(
+		selected_prefix + "/StartButton"
+	) as Button
+	assert(start_settings_button != null)
 	assert(start_crosshair_button != null)
+	assert(start_button != null)
+	assert(start_settings_button.visible)
 	assert(start_crosshair_button.visible)
-	assert(not start_crosshair_button.disabled)
+	assert(start_button.visible)
 
+	start_settings_button.pressed.emit()
+	await get_tree().process_frame
+	assert(not instance.get_node("UI/HomeOverlay").visible)
+	assert(instance.get_node("UI/SettingsOverlay").visible)
+	instance._cancel_settings()
+	await get_tree().process_frame
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(not instance.get_node("UI/SettingsOverlay").visible)
+
+	assert(not instance.get_node("UI/CrosshairSettingsOverlay").visible)
 	var button_center := (
 		start_crosshair_button.global_position
 		+ start_crosshair_button.size * 0.5
@@ -189,7 +212,7 @@ func _ready() -> void:
 	instance.get_viewport().push_input(mouse_up, true)
 	await get_tree().process_frame
 
-	assert(not instance.get_node("UI/StartOverlay").visible)
+	assert(not instance.get_node("UI/HomeOverlay").visible)
 	assert(instance.get_node("UI/CrosshairSettingsOverlay").visible)
 	assert(
 		instance.get_node(
@@ -210,25 +233,15 @@ func _ready() -> void:
 
 	instance._cancel_crosshair_settings()
 	await get_tree().process_frame
-	assert(instance.get_node("UI/StartOverlay").visible)
+	assert(instance.get_node("UI/HomeOverlay").visible)
 	assert(not instance.get_node("UI/ResultOverlay").visible)
 
 	var timer_label := instance.get_node("UI/HUD/Timer") as Label
-	var start_best_label := instance.get_node(
-		"UI/StartOverlay/Center/Content/BestScore"
-	) as Label
 	assert(timer_label != null)
-	assert(start_best_label != null)
 	assert(timer_label.text == "01:00")
-
-	var start_content := instance.get_node(
-		"UI/StartOverlay/Center/Content"
-	) as Control
-	assert(start_content.size.y <= viewport_size.y)
 
 	instance.start_training()
 	assert(instance.get_node("UI/HUD").visible)
-	assert(not instance.get_node("UI/StartOverlay").visible)
 	assert(not instance.get_node("UI/ResultOverlay").visible)
 	assert(is_equal_approx(instance.session_remaining_seconds, 60.0))
 	assert(timer_label.text == "01:00")
@@ -258,7 +271,6 @@ func _ready() -> void:
 	await get_tree().process_frame
 	assert(instance.run_state == instance.RunState.READY)
 	assert(instance.get_node("UI/HomeOverlay").visible)
-	assert(not instance.get_node("UI/StartOverlay").visible)
 	assert(not instance.get_node("UI/PauseOverlay").visible)
 	assert(not instance.get_node("UI/HUD").visible)
 	assert(not instance.get_node("UI/Crosshair").visible)
@@ -275,7 +287,8 @@ func _ready() -> void:
 	)
 
 	instance._open_stage("single")
-	assert(instance.get_node("UI/StartOverlay").visible)
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(instance.get_node(selected_prefix + "/Title").text == "シングルターゲット")
 	instance.start_training()
 	assert(instance.run_state == instance.RunState.PLAYING)
 	assert(instance.score == 0)
@@ -439,7 +452,8 @@ func _ready() -> void:
 	assert(instance.get_node("UI/HomeOverlay").visible)
 	instance._open_stage("gridshot")
 	assert(instance.selected_training_mode == instance.TrainingMode.GRIDSHOT)
-	assert(instance.get_node("UI/StartOverlay").visible)
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(instance.get_node(selected_prefix + "/Title").text == "Gridshot")
 	assert(instance.personal_best_score == 0)
 	assert(start_best_label.text == "Gridshot / 標準 BEST  0")
 	assert(instance.target_bodies.size() == 3)
@@ -534,18 +548,12 @@ func _ready() -> void:
 			assert(single_collision.disabled)
 	assert(visible_single_targets == 1)
 	instance._show_ready_state()
-
-	var stage_home_button := instance.get_node(
-		"UI/StartOverlay/Center/Content/HomeButton"
-	) as Button
-	assert(stage_home_button != null)
-	stage_home_button.pressed.emit()
-	await get_tree().process_frame
 	assert(instance.get_node("UI/HomeOverlay").visible)
-	assert(not instance.get_node("UI/StartOverlay").visible)
+	assert(instance.get_node(selected_prefix + "/Title").text == "シングルターゲット")
 	assert(
-		instance.get_node("UI/HomeOverlay/Center/Content/LastStage").text
-		== "前回: シングルターゲット / 標準"
+		instance.get_node(selected_prefix + "/CurrentSensitivity").text.contains(
+			"VALORANT 0.100"
+		)
 	)
 
 	var dpi_input := instance.get_node(
