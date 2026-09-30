@@ -151,9 +151,23 @@ Scenario v1 conceptual schema:
     "max_active_bots": 3,
     "respawn": "on_kill"
   },
-  "scoring": "accuracy-click-score"
+  "scoring": "accuracy-click-score",
+  "runtime_adapter": "legacy_mode",
+  "legacy_mode": "single",
+  "sort_order": 10
 }
 ```
+
+Current implementation:
+
+- Loader: `scripts/scenario_catalog.gd`
+- Scenario source: `data/scenarios/*.json`
+- Profile reference root: `data/profiles/<type>/<id>.json`
+- Valid ScenarioだけBrowserへ渡す
+- Validation Errorはpath / scenario_id / messageとして保持
+- Browser下部にValidation statusを表示
+- Current 5 Scenarioは`runtime_adapter = legacy_mode`で既存Runtimeへ変換
+- `data/stages.json`はScenario directory未導入時だけFallback
 
 Scenario Runtime responsibilities:
 
