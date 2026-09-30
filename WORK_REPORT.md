@@ -723,5 +723,6 @@ DO NOT COPY:
 ### Validation state
 
 - Repository implementation: COMPLETE
-- Automated CI: PENDING
+- Godot Import / Cold Start / Core Smoke: PASS — GitHub Actions run 36684964286
+- Windows Core Smoke: PASS — GitHub Actions run 36684964286
 - Visual actual-play screenshot: NOT_RUN
