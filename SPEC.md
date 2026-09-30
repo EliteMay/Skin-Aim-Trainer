@@ -40,25 +40,24 @@ Main (Node3D)
 
 Gameplay Run Stateは4状態を維持する。
 
-- `READY` — HomeまたはStage Setup。Cursor visible。
+- `READY` — Play / Training Library。Cursor visible。
 - `PLAYING` — Mouse captured。Aim / Shoot / Countdown受付。
 - `PAUSED` — Pause画面。Cursor visible。Countdown停止。
 - `RESULT` — Session終了結果。Cursor visible。Shoot停止。
 
-READY中のUI Surfaceは`Home`と`Stage Setup`を分離する。Stage選択はGameplay Run Stateを増やさず、READY内のSurface遷移として扱う。
+READY中はTraining Libraryと選択中TrainingのQuick Settingsを同じSurfaceに表示する。Stage選択はGameplay Run Stateを増やさず、READY内のSelection変更として扱う。
 
 遷移:
 
 ```text
-HOME --Stage選択--> READY(Stage Setup)
-READY(Stage Setup) --開始--> PLAYING
-READY(Stage Setup) --Home / ESC--> HOME
+READY(Play Library) --Training選択--> READY(同じSurfaceで選択更新)
+READY --開始--> PLAYING
 PLAYING --ESC--> PAUSED
 PAUSED --ESC / 練習に戻る--> PLAYING
-PAUSED --メインメニューへ戻る--> HOME
+PAUSED --メインメニューへ戻る--> READY(Play Library)
 PLAYING --Timer 0--> RESULT
 RESULT --もう一度 / R--> PLAYING(reset)
-RESULT --Homeへ戻る / ESC--> HOME
+RESULT --Homeへ戻る / ESC--> READY(Play Library)
 PLAYING / PAUSED --R / やり直す--> PLAYING(reset)
 ```
 
@@ -126,7 +125,7 @@ Difficulty Profile:
 - Accuracyは既存のHit / Shots計算を再利用
 - Difficulty Profileは3 Targetすべてへ同じRadius / Spawn Rangeを適用
 
-ModeはHomeで選んだStage metadataから決定する。Training開始後はSession中のModeを固定する。Stage SetupにはMode Selectorを置かない。
+ModeはPlay Libraryで選んだStage metadataから決定する。Training開始後はSession中のModeを固定する。別Stage Setup画面や重複Mode Selectorは置かない。
 
 ## Shooting / Hit Detection
 
@@ -153,34 +152,33 @@ Accuracy:
 
 ## UI / Usability
 
-### Home
+### Play / Training Library
 
-起動直後のFirst View。
+起動直後のFirst View。Aim Trainerで最も頻度の高い「Trainingを選ぶ → 必要なら設定を変える → 開始」を1 Surfaceで完了する。
 
-- Product名
-- 「ステージを選んで練習」
-- 前回選択Stage / Difficulty
+Left / Training Library:
+
+- Product / PLAY context
 - 実装済みStage一覧
 - StageごとのTitle / Category / Duration / Current Difficulty Best
+- 選択中Stageをpressed stateで明示
 - 未実装Stageは表示しない
 
-Stage一覧は`data/stages.json`から動的に生成する。Currentは2 StageだけなのでSearch / Filterを置かない。
-
-### Stage Setup
-
-HomeでStageを選んだ後の設定Surface。
+Right / Selected Training:
 
 - Stage Title
 - Category / Duration
 - Stage Description
-- Difficulty selector
 - Current Stage / Difficulty BEST
-- Sensitivity summary / Settings
-- Crosshair Settings
+- Difficulty selector
+- Sensitivity summary
+- Sensitivity Settings入口
+- Crosshair Settings入口
 - 大きい「練習を開始」
-- Homeへ戻る
 
-Mode Selectorは置かない。Stageを変える場合はHomeへ戻る。
+Stage選択時は別画面へ遷移せずRight Panelだけ更新する。Sensitivity / Crosshairの詳細Overlayを閉じた場合も同じPlay Libraryへ戻る。
+
+Stage一覧は`data/stages.json`から動的に生成する。Currentは2 StageだけなのでSearch / Filterを置かない。
 
 ### Training
 
@@ -203,7 +201,7 @@ Training中のPrimary Visual:
 - 最初からやり直す
 - メインメニューへ戻る
 
-「メインメニューへ戻る」は現在の途中Sessionを破棄してHomeへ戻す。途中ScoreはPersonal Bestへ保存しない。確認Dialogは出さず、Stage / Difficulty等を繰り返し検証しやすい短い導線を優先する。
+「メインメニューへ戻る」は現在の途中Sessionを破棄してPlay Libraryへ戻す。途中ScoreはPersonal Bestへ保存しない。確認Dialogは出さず、Training / Difficulty等を繰り返し検証しやすい短い導線を優先する。
 
 ### Sensitivity Settings
 
@@ -214,7 +212,7 @@ Training中のPrimary Visual:
 - Rotation coefficient
 - Save / Cancel
 
-Stage Setupでは「練習を開始」をPrimary Actionとして維持し、感度設定はSecondary Actionにする。
+Selected Training Panelでは「練習を開始」をPrimary Actionとして維持し、感度 / Crosshair設定はSecondary Actionにする。
 
 ### Crosshair Settings
 
@@ -283,23 +281,23 @@ Current Recordは既存互換のためMode + Difficulty Keyを維持する。Sta
 
 ### Difficulty
 
-- Stage SetupのOptionButtonで3段階から選択
+- Selected Training PanelのOptionButtonで3段階から選択
 - 変更はREADY Stateでのみ受け付ける
 - 選択時にTarget Mesh / Collision / spawn rangeを同じProfileから更新する
 - Difficulty変更はSensitivity / Crosshair / Session duration / Score ruleへ影響させない
 - ResultへDifficulty名を表示する
-- Stage SetupのBESTは選択DifficultyのRecordだけを表示する
+- Selected Training PanelのBESTは選択DifficultyのRecordだけを表示する
 
-### Home / Stage Library
+### Play / Stage Library
 
 Current Flow:
 
 ```text
-Home
-→ Stage Setup
+Play Library
+→ Training選択 + Quick Settings（同一Surface）
 → Training
 → Result
-→ Retry / Home
+→ Retry / Play Library
 ```
 
 Stage Catalogは`data/stages.json`、Loaderは`scripts/stage_catalog.gd`。
@@ -316,14 +314,14 @@ Current metadata:
 - `sort_order`
 - `tags`
 
-Homeはplayable StageだけをCatalog順に生成する。Stage数が増えるまではSearch / Filterを追加しない。将来はcategory / tagsをBrowse / Searchへ使える。
+Play Libraryはplayable StageだけをCatalog順に生成する。Stage Buttonはtoggle stateを持ち、選択時は画面遷移せずSelected Training Panelを更新する。Stage数が増えるまではSearch / Filterを追加しない。将来はcategory / tagsをBrowse / Searchへ使える。
 
 Current playable Stage:
 
 1. シングルターゲット
 2. Gridshot
 
-新しいStageを追加するとき、Home Sceneへ固定Buttonを追加しない。Catalog追加とGameplay実装を分離し、Main Sceneの巨大なUI条件分岐を避ける。
+新しいStageを追加するとき、Sceneへ固定Buttonを追加しない。Catalog追加とGameplay実装を分離し、Main Sceneの巨大なUI条件分岐を避ける。
 
 ## Performance
 
@@ -346,11 +344,12 @@ Automated:
 - Pitch clamp
 - Accuracy calculation
 - Scene contract
-- Home UI default state
+- Play Library UI default state
 - Stage Catalog JSON load / normalization
-- Home Stage list dynamic generation
-- Home → Stage Setup transition
-- Stage Setup → Home transition
+- Training list dynamic generation
+- Training selection stays on the same Surface
+- Selected Training detail / Quick Settings synchronization
+- Sensitivity / Crosshair overlay → Play Library return
 - Timer countdown
 - Pause中Timer停止
 - Pause → メインメニュー遷移
@@ -369,7 +368,7 @@ Automated:
 
 Actual Playtest:
 
-- Home → Stage Setup flowの理解
+- Play LibraryでTraining選択 / Quick Settings / Startが1画面で理解できるか
 - Mouse capture
 - fast mouse movement
 - repeated Hit / Miss
