@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "player_profile": "default-player",
+  "weapon_profile": "hitscan-click",
+  "bot_profiles": [
+    "legacy-target"
+  ],
+  "scoring": "accuracy-click-score",
+  "runtime_adapter": "legacy_mode",
+  "playable": true,
+  "id": "microshot",
+  "title": "Microshot",
+  "aim_type": "clicking",
+  "category": "Micro Adjustment",
+  "description": "中央付近の小さなTargetを、短い距離だけ追い続けて細かいAim補正を反復する練習",
+  "duration_seconds": 60,
+  "tags": [
+    "Micro Adjustment",
+    "Precision",
+    "Clicking",
+    "VALORANT"
+  ],
+  "challenge": {
+    "max_active_bots": 1,
+    "respawn": "on_kill"
+  },
+  "legacy_mode": "microshot",
+  "sort_order": 40
+}
