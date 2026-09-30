@@ -22,16 +22,18 @@ enum TrainingMode {
 	GRIDSHOT,
 	HOLD_ANGLE,
 	MICROSHOT,
+	FLICK,
 }
 
 const TARGET_DISTANCE := 14.0
-const TRAINING_MODE_KEYS := ["single", "gridshot", "hold_angle", "microshot"]
-const TRAINING_MODE_LABELS := ["シングル", "Gridshot", "Hold Angle / Pre-Aim", "Microshot"]
+const TRAINING_MODE_KEYS := ["single", "gridshot", "hold_angle", "microshot", "flick"]
+const TRAINING_MODE_LABELS := ["シングル", "Gridshot", "Hold Angle / Pre-Aim", "Microshot", "Flick"]
 const TRAINING_MODE_DESCRIPTIONS := [
 	"1 Targetを順番に狙う基本練習",
 	"3 Targetを素早く切り替えて撃つ練習",
 	"置きAimを維持し、Peek後の小さな補正を撃つ練習",
 	"小さなTargetへ細かいmicro-adjustmentを繰り返す練習",
+	"離れたTargetへ大きく素早くAimし、止めて撃つ練習",
 ]
 const DEFAULT_TRAINING_MODE := TrainingMode.SINGLE
 const GRIDSHOT_TARGET_COUNT := 3
@@ -45,6 +47,9 @@ const MICROSHOT_TARGET_RADII := [0.50, 0.36, 0.26]
 const MICROSHOT_MAX_STEP := [0.75, 1.05, 1.35]
 const MICROSHOT_CENTER_X_RANGE := Vector2(-2.4, 2.4)
 const MICROSHOT_CENTER_Y_RANGE := Vector2(0.9, 3.7)
+const FLICK_TARGET_RADII := [0.76, 0.56, 0.42]
+const FLICK_MIN_STEP := [2.2, 3.2, 4.2]
+const FLICK_CENTER_REFERENCE := Vector2(0.0, 2.0)
 const DIFFICULTY_KEYS := ["easy", "normal", "hard"]
 const DIFFICULTY_LABELS := ["かんたん", "標準", "むずかしい"]
 const DIFFICULTY_DESCRIPTIONS := [
@@ -250,6 +255,9 @@ var personal_best_scores: Dictionary = {
 	"microshot_easy": 0,
 	"microshot_normal": 0,
 	"microshot_hard": 0,
+	"flick_easy": 0,
+	"flick_normal": 0,
+	"flick_hard": 0,
 }
 var personal_best_score := 0
 var last_session_new_best := false
@@ -614,6 +622,8 @@ func _shoot() -> void:
 				_prepare_hold_angle_cycle()
 			elif selected_training_mode == TrainingMode.MICROSHOT:
 				_move_microshot_target()
+			elif selected_training_mode == TrainingMode.FLICK:
+				_move_flick_target()
 			else:
 				_move_target_at(target_index)
 		_show_feedback("HIT +1", Color(0.42, 1.0, 0.64))
@@ -712,6 +722,9 @@ func _move_active_targets() -> void:
 	if selected_training_mode == TrainingMode.MICROSHOT:
 		_place_microshot_start()
 		return
+	if selected_training_mode == TrainingMode.FLICK:
+		_place_flick_start()
+		return
 	for index in range(_active_target_count()):
 		_move_target_at(index)
 
@@ -748,6 +761,45 @@ func _move_microshot_target() -> void:
 			break
 
 	body.position = candidate
+
+
+func _place_flick_start() -> void:
+	_move_flick_target_from(FLICK_CENTER_REFERENCE)
+
+
+func _move_flick_target() -> void:
+	if target_bodies.is_empty():
+		return
+	var body := target_bodies[0] as StaticBody3D
+	_move_flick_target_from(Vector2(body.position.x, body.position.y))
+
+
+func _move_flick_target_from(reference: Vector2) -> void:
+	if target_bodies.is_empty():
+		return
+
+	var x_range: Vector2 = DIFFICULTY_X_RANGES[selected_difficulty]
+	var y_range: Vector2 = DIFFICULTY_Y_RANGES[selected_difficulty]
+	var min_step: float = FLICK_MIN_STEP[selected_difficulty]
+	var best_candidate := Vector3(reference.x, reference.y, -TARGET_DISTANCE)
+	var best_distance := -1.0
+
+	for attempt in range(40):
+		var candidate := Vector3(
+			rng.randf_range(x_range.x, x_range.y),
+			rng.randf_range(y_range.x, y_range.y),
+			-TARGET_DISTANCE
+		)
+		var candidate_distance := Vector2(candidate.x, candidate.y).distance_to(reference)
+		if candidate_distance > best_distance:
+			best_candidate = candidate
+			best_distance = candidate_distance
+		if candidate_distance >= min_step:
+			best_candidate = candidate
+			break
+
+	var body := target_bodies[0] as StaticBody3D
+	body.position = best_candidate
 
 
 func _prepare_hold_angle_cycle() -> void:
@@ -840,11 +892,11 @@ func _move_target_at(index: int) -> void:
 
 
 func _apply_difficulty_to_target() -> void:
-	var radius: float = (
-		MICROSHOT_TARGET_RADII[selected_difficulty]
-		if selected_training_mode == TrainingMode.MICROSHOT
-		else DIFFICULTY_TARGET_RADII[selected_difficulty]
-	)
+	var radius: float = DIFFICULTY_TARGET_RADII[selected_difficulty]
+	if selected_training_mode == TrainingMode.MICROSHOT:
+		radius = MICROSHOT_TARGET_RADII[selected_difficulty]
+	elif selected_training_mode == TrainingMode.FLICK:
+		radius = FLICK_TARGET_RADII[selected_difficulty]
 	for index in range(target_meshes.size()):
 		var mesh := target_meshes[index] as MeshInstance3D
 		var sphere := mesh.mesh as SphereMesh
@@ -1098,6 +1150,8 @@ func _current_best_config_key() -> String:
 		return "best_hold_angle_%s_score" % _current_difficulty_key()
 	if selected_training_mode == TrainingMode.MICROSHOT:
 		return "best_microshot_%s_score" % _current_difficulty_key()
+	if selected_training_mode == TrainingMode.FLICK:
+		return "best_flick_%s_score" % _current_difficulty_key()
 	return "best_%s_score" % _current_difficulty_key()
 
 
@@ -1310,6 +1364,18 @@ func _load_settings() -> void:
 	)
 	personal_best_scores["microshot_hard"] = maxi(
 		int(config.get_value(RECORDS_SECTION, "best_microshot_hard_score", 0)),
+		0
+	)
+	personal_best_scores["flick_easy"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_flick_easy_score", 0)),
+		0
+	)
+	personal_best_scores["flick_normal"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_flick_normal_score", 0)),
+		0
+	)
+	personal_best_scores["flick_hard"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_flick_hard_score", 0)),
 		0
 	)
 	_sync_current_personal_best()
