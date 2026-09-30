@@ -72,13 +72,15 @@ func _ready() -> void:
 	assert(is_equal_approx(AimMath.accuracy_percent(7, 10), 70.0))
 
 	var catalog_stages := StageCatalog.load_stages()
-	assert(catalog_stages.size() == 3)
+	assert(catalog_stages.size() == 4)
 	assert(str(catalog_stages[0].get("mode", "")) == "single")
 	assert(str(catalog_stages[0].get("title", "")) == "シングルターゲット")
 	assert(str(catalog_stages[1].get("mode", "")) == "gridshot")
 	assert(int(catalog_stages[1].get("duration_seconds", 0)) == 60)
 	assert(str(catalog_stages[2].get("mode", "")) == "hold_angle")
 	assert(str(catalog_stages[2].get("title", "")) == "Hold Angle / Pre-Aim")
+	assert(str(catalog_stages[3].get("mode", "")) == "microshot")
+	assert(str(catalog_stages[3].get("title", "")) == "Microshot")
 
 	var settings_path := ProjectSettings.globalize_path("user://settings.cfg")
 	if FileAccess.file_exists("user://settings.cfg"):
@@ -109,7 +111,7 @@ func _ready() -> void:
 		"UI/HomeOverlay/Margin/Content/Body/Library/StageScroll/StageList"
 	) as VBoxContainer
 	assert(home_stage_list != null)
-	assert(home_stage_list.get_child_count() == 3)
+	assert(home_stage_list.get_child_count() == 4)
 	var stage_scroll := instance.get_node(
 		"UI/HomeOverlay/Margin/Content/Body/Library/StageScroll"
 	) as ScrollContainer
@@ -129,12 +131,15 @@ func _ready() -> void:
 	var first_stage_button := home_stage_list.get_child(0) as Button
 	var second_stage_button := home_stage_list.get_child(1) as Button
 	var third_stage_button := home_stage_list.get_child(2) as Button
+	var fourth_stage_button := home_stage_list.get_child(3) as Button
 	assert(first_stage_button != null)
 	assert(second_stage_button != null)
 	assert(third_stage_button != null)
+	assert(fourth_stage_button != null)
 	assert(first_stage_button.text.contains("シングルターゲット"))
 	assert(second_stage_button.text.contains("Gridshot"))
 	assert(third_stage_button.text.contains("Hold Angle / Pre-Aim"))
+	assert(fourth_stage_button.text.contains("Microshot"))
 	assert(first_stage_button.button_pressed)
 
 	assert(instance.get_node(selected_prefix + "/Title").text == "シングルターゲット")
@@ -593,6 +598,34 @@ func _ready() -> void:
 			)
 		) == 4
 	)
+
+	instance._show_home()
+	instance._open_stage("microshot")
+	assert(instance.selected_training_mode == instance.TrainingMode.MICROSHOT)
+	assert(instance.get_node(selected_prefix + "/Title").text == "Microshot")
+	assert(instance.personal_best_score == 0)
+	var micro_radius := (instance.target_meshes[0] as MeshInstance3D).mesh as SphereMesh
+	assert(is_equal_approx(micro_radius.radius, 0.36))
+	instance.start_training()
+	var micro_start: Vector3 = instance.target_bodies[0].position
+	assert(absf(micro_start.x) <= 0.55)
+	assert(micro_start.y >= 1.65 and micro_start.y <= 2.35)
+	instance._move_microshot_target()
+	var micro_next: Vector3 = instance.target_bodies[0].position
+	var micro_delta := Vector2(micro_next.x - micro_start.x, micro_next.y - micro_start.y).length()
+	assert(micro_delta > 0.0)
+	assert(micro_delta <= instance.MICROSHOT_MAX_STEP[instance.DifficultyLevel.NORMAL] + 0.01)
+	instance.score = 5
+	instance.hits = 5
+	instance.shots = 6
+	instance.misses = 1
+	instance.session_remaining_seconds = 0.01
+	instance._process(0.02)
+	assert(instance.run_state == instance.RunState.RESULT)
+	assert(instance.personal_best_score == 5)
+	records_config = ConfigFile.new()
+	assert(records_config.load("user://settings.cfg") == OK)
+	assert(int(records_config.get_value("training_records", "best_microshot_normal_score", 0)) == 5)
 
 	instance._show_home()
 	instance._open_stage("single")
