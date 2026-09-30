@@ -89,32 +89,38 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 @onready var feedback_timer: Timer = $FeedbackTimer
 
 @onready var home_overlay: Control = $UI/HomeOverlay
-@onready var home_stage_list: VBoxContainer = $UI/HomeOverlay/Center/Content/StageList
-@onready var home_last_stage_label: Label = $UI/HomeOverlay/Center/Content/LastStage
-
-@onready var start_overlay: Control = $UI/StartOverlay
-@onready var stage_title_label: Label = $UI/StartOverlay/Center/Content/Title
-@onready var stage_meta_label: Label = $UI/StartOverlay/Center/Content/Subtitle
-@onready var stage_description_label: Label = (
-	$UI/StartOverlay/Center/Content/StageDescription
+@onready var home_stage_list: VBoxContainer = (
+	$UI/HomeOverlay/Margin/Content/Body/Library/StageList
 )
-@onready var start_button: Button = $UI/StartOverlay/Center/Content/StartButton
+@onready var stage_title_label: Label = (
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/Title
+)
+@onready var stage_meta_label: Label = (
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/Meta
+)
+@onready var stage_description_label: Label = (
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/Description
+)
+@onready var start_button: Button = (
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/StartButton
+)
 @onready var start_sensitivity_label: Label = (
-	$UI/StartOverlay/Center/Content/CurrentSensitivity
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/CurrentSensitivity
 )
 @onready var start_settings_button: Button = (
-	$UI/StartOverlay/Center/Content/SettingsButton
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/SettingsActions/SettingsButton
 )
 @onready var start_crosshair_button: Button = (
-	$UI/StartOverlay/Center/Content/CrosshairButton
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/SettingsActions/CrosshairButton
 )
-@onready var stage_home_button: Button = $UI/StartOverlay/Center/Content/HomeButton
-@onready var start_best_label: Label = $UI/StartOverlay/Center/Content/BestScore
+@onready var start_best_label: Label = (
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/BestScore
+)
 @onready var difficulty_select: OptionButton = (
-	$UI/StartOverlay/Center/Content/DifficultyRow/DifficultySelect
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/DifficultySelect
 )
 @onready var difficulty_description: Label = (
-	$UI/StartOverlay/Center/Content/DifficultyDescription
+	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/DifficultyDescription
 )
 
 @onready var pause_overlay: Control = $UI/PauseOverlay
@@ -284,7 +290,6 @@ func _ready() -> void:
 	start_crosshair_button.pressed.connect(
 		func() -> void: _open_crosshair_settings(RunState.READY)
 	)
-	stage_home_button.pressed.connect(_show_home)
 	resume_button.pressed.connect(resume_training)
 	restart_button.pressed.connect(restart_training)
 	pause_main_menu_button.pressed.connect(return_to_main_menu)
@@ -372,8 +377,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				resume_training()
 			elif run_state == RunState.RESULT:
 				_show_home()
-			elif run_state == RunState.READY and start_overlay.visible:
-				_show_home()
 			get_viewport().set_input_as_handled()
 			return
 
@@ -415,7 +418,6 @@ func start_training() -> void:
 	_reset_round()
 	run_state = RunState.PLAYING
 	home_overlay.visible = false
-	start_overlay.visible = false
 	pause_overlay.visible = false
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = false
@@ -461,7 +463,6 @@ func restart_training() -> void:
 	_reset_round()
 	run_state = RunState.PLAYING
 	home_overlay.visible = false
-	start_overlay.visible = false
 	pause_overlay.visible = false
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = false
@@ -483,7 +484,6 @@ func return_to_main_menu() -> void:
 func _show_home() -> void:
 	run_state = RunState.READY
 	home_overlay.visible = true
-	start_overlay.visible = false
 	pause_overlay.visible = false
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = false
@@ -495,35 +495,22 @@ func _show_home() -> void:
 	_set_targets_active(false)
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_sync_current_personal_best()
-	_refresh_home_stage_buttons()
-	home_last_stage_label.text = "前回: %s / %s" % [
-		_current_mode_label(),
-		_current_difficulty_label(),
-	]
-	if home_stage_list.get_child_count() > 0:
+	_sync_home_selection_ui()
+	_sync_difficulty_ui()
+	_update_sensitivity_labels()
+	_update_best_labels()
+
+	var selected_button = home_stage_buttons.get(_current_mode_key())
+	if selected_button is Button:
+		selected_button.grab_focus()
+	elif home_stage_list.get_child_count() > 0:
 		var first_button := home_stage_list.get_child(0) as Button
 		if first_button != null:
 			first_button.grab_focus()
 
 
 func _show_ready_state() -> void:
-	run_state = RunState.READY
-	home_overlay.visible = false
-	start_overlay.visible = true
-	pause_overlay.visible = false
-	settings_overlay.visible = false
-	crosshair_settings_overlay.visible = false
-	result_overlay.visible = false
-	hud.visible = false
-	crosshair.visible = false
-	controls_hint.visible = false
-	feedback_label.visible = false
-	_set_targets_active(false)
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	_update_sensitivity_labels()
-	_sync_stage_setup_ui()
-	_update_best_labels()
-	start_button.grab_focus()
+	_show_home()
 
 
 func _reset_round() -> void:
@@ -795,6 +782,7 @@ func _build_home_stage_list() -> void:
 		button.name = "Stage_%s" % str(stage.get("id", mode_key))
 		button.custom_minimum_size = Vector2(0, 92)
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.toggle_mode = true
 		button.add_theme_font_size_override("font_size", 18)
 		button.pressed.connect(_open_stage.bind(mode_key))
 		home_stage_list.add_child(button)
@@ -831,6 +819,7 @@ func _refresh_home_stage_buttons() -> void:
 			_current_difficulty_label(),
 			best,
 		]
+		button.set_pressed_no_signal(mode_key == _current_mode_key())
 
 
 func _open_stage(mode_key: String) -> void:
@@ -846,11 +835,18 @@ func _open_stage(mode_key: String) -> void:
 	_apply_difficulty_to_target()
 	_move_active_targets()
 	_set_targets_active(false)
-	_save_training_settings()
-	_show_ready_state()
+	var save_error := _save_training_settings()
+	_sync_home_selection_ui()
+	_update_sensitivity_labels()
+	_update_best_labels()
+
+	if save_error != OK:
+		difficulty_description.text = (
+			"トレーニング選択を保存できませんでした。Error: %d" % save_error
+		)
 
 
-func _sync_stage_setup_ui() -> void:
+func _sync_home_selection_ui() -> void:
 	var stage := _current_stage()
 	var title := _current_mode_label()
 	var category := str(stage.get("category", "Training"))
@@ -911,7 +907,6 @@ func _on_difficulty_selected(index: int) -> void:
 	_move_active_targets()
 	_set_targets_active(false)
 	_update_best_labels()
-	_refresh_home_stage_buttons()
 	difficulty_description.text = DIFFICULTY_DESCRIPTIONS[selected_difficulty]
 
 	var save_error := _save_training_settings()
@@ -926,6 +921,7 @@ func _update_best_labels() -> void:
 		_current_training_label(),
 		personal_best_score,
 	]
+	_refresh_home_stage_buttons()
 
 
 func _save_training_settings() -> Error:
@@ -1164,7 +1160,6 @@ func _open_settings(return_state: int) -> void:
 	settings_original_dpi = mouse_dpi
 	settings_original_sensitivity = valorant_sensitivity
 
-	start_overlay.visible = false
 	pause_overlay.visible = false
 	crosshair_settings_overlay.visible = false
 	settings_overlay.visible = true
@@ -1210,9 +1205,10 @@ func _close_settings() -> void:
 		resume_button.grab_focus()
 	else:
 		run_state = RunState.READY
-		home_overlay.visible = false
-		start_overlay.visible = true
-		_sync_stage_setup_ui()
+		home_overlay.visible = true
+		_sync_home_selection_ui()
+		_update_sensitivity_labels()
+		_update_best_labels()
 		start_button.grab_focus()
 
 
@@ -1314,7 +1310,6 @@ func _open_crosshair_settings(return_state: int) -> void:
 	crosshair_original_imported_code = crosshair_imported_code
 	crosshair_original_profile = crosshair_profile.duplicate(true)
 
-	start_overlay.visible = false
 	pause_overlay.visible = false
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = true
@@ -1362,9 +1357,9 @@ func _close_crosshair_settings() -> void:
 		resume_button.grab_focus()
 	else:
 		run_state = RunState.READY
-		home_overlay.visible = false
-		start_overlay.visible = true
-		_sync_stage_setup_ui()
+		home_overlay.visible = true
+		_sync_home_selection_ui()
+		_update_best_labels()
 		start_button.grab_focus()
 
 
