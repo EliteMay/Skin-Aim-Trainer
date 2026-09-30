@@ -1,6 +1,7 @@
 extends Node
 
 const AimMath = preload("res://scripts/aim_math.gd")
+const StageCatalog = preload("res://scripts/stage_catalog.gd")
 const ValorantCrosshairCode = preload("res://scripts/valorant_crosshair_code.gd")
 
 
@@ -70,6 +71,13 @@ func _ready() -> void:
 	assert(is_equal_approx(AimMath.accuracy_percent(0, 0), 0.0))
 	assert(is_equal_approx(AimMath.accuracy_percent(7, 10), 70.0))
 
+	var catalog_stages := StageCatalog.load_stages()
+	assert(catalog_stages.size() == 2)
+	assert(str(catalog_stages[0].get("mode", "")) == "single")
+	assert(str(catalog_stages[0].get("title", "")) == "シングルターゲット")
+	assert(str(catalog_stages[1].get("mode", "")) == "gridshot")
+	assert(int(catalog_stages[1].get("duration_seconds", 0)) == 60)
+
 	var settings_path := ProjectSettings.globalize_path("user://settings.cfg")
 	if FileAccess.file_exists("user://settings.cfg"):
 		assert(DirAccess.remove_absolute(settings_path) == OK)
@@ -88,17 +96,42 @@ func _ready() -> void:
 	assert(instance.has_method("pause_training"))
 	assert(instance.has_method("resume_training"))
 	assert(instance.has_method("restart_training"))
-	assert(instance.get_node("UI/StartOverlay").visible)
+	assert(instance.has_method("_show_home"))
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(not instance.get_node("UI/StartOverlay").visible)
 	assert(not instance.get_node("UI/HUD").visible)
 	assert(not instance.get_node("UI/SettingsOverlay").visible)
-
-	var mode_select := instance.get_node(
-		"UI/StartOverlay/Center/Content/ModeRow/ModeSelect"
-	) as OptionButton
-	assert(mode_select != null)
-	assert(mode_select.item_count == 2)
-	assert(mode_select.selected == 0)
 	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
+
+	var home_stage_list := instance.get_node(
+		"UI/HomeOverlay/Center/Content/StageList"
+	) as VBoxContainer
+	assert(home_stage_list != null)
+	assert(home_stage_list.get_child_count() == 2)
+	var viewport_size := instance.get_viewport().get_visible_rect().size
+	var home_content := instance.get_node(
+		"UI/HomeOverlay/Center/Content"
+	) as Control
+	assert(home_content.size.y <= viewport_size.y)
+	var first_stage_button := home_stage_list.get_child(0) as Button
+	var second_stage_button := home_stage_list.get_child(1) as Button
+	assert(first_stage_button != null)
+	assert(second_stage_button != null)
+	assert(first_stage_button.text.contains("シングルターゲット"))
+	assert(second_stage_button.text.contains("Gridshot"))
+
+	first_stage_button.pressed.emit()
+	await get_tree().process_frame
+	assert(not instance.get_node("UI/HomeOverlay").visible)
+	assert(instance.get_node("UI/StartOverlay").visible)
+	assert(
+		instance.get_node("UI/StartOverlay/Center/Content/Title").text
+		== "シングルターゲット"
+	)
+	assert(
+		instance.get_node("UI/StartOverlay/Center/Content/Subtitle").text
+		== "基礎  ·  60秒"
+	)
 
 	var difficulty_select := instance.get_node(
 		"UI/StartOverlay/Center/Content/DifficultyRow/DifficultySelect"
@@ -110,7 +143,7 @@ func _ready() -> void:
 	assert(instance.personal_best_score == 7)
 	assert(
 		instance.get_node("UI/StartOverlay/Center/Content/BestScore").text
-		== "シングル / 標準 BEST  7"
+		== "シングルターゲット / 標準 BEST  7"
 	)
 	var difficulty_sphere := instance.target_mesh.mesh as SphereMesh
 	assert(difficulty_sphere != null)
@@ -167,7 +200,6 @@ func _ready() -> void:
 	var crosshair_content := instance.get_node(
 		"UI/CrosshairSettingsOverlay/Center/Content"
 	) as Control
-	var viewport_size := instance.get_viewport().get_visible_rect().size
 	print(
 		"CROSSHAIR_LAYOUT: viewport=",
 		viewport_size,
@@ -225,7 +257,8 @@ func _ready() -> void:
 	pause_main_menu_button.pressed.emit()
 	await get_tree().process_frame
 	assert(instance.run_state == instance.RunState.READY)
-	assert(instance.get_node("UI/StartOverlay").visible)
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(not instance.get_node("UI/StartOverlay").visible)
 	assert(not instance.get_node("UI/PauseOverlay").visible)
 	assert(not instance.get_node("UI/HUD").visible)
 	assert(not instance.get_node("UI/Crosshair").visible)
@@ -241,6 +274,8 @@ func _ready() -> void:
 		)
 	)
 
+	instance._open_stage("single")
+	assert(instance.get_node("UI/StartOverlay").visible)
 	instance.start_training()
 	assert(instance.run_state == instance.RunState.PLAYING)
 	assert(instance.score == 0)
@@ -278,13 +313,13 @@ func _ready() -> void:
 	)
 	assert(
 		instance.get_node("UI/ResultOverlay/Center/Content/Best").text
-		== "シングル / 標準 BEST  12"
+		== "シングルターゲット / 標準 BEST  12"
 	)
 	assert(
 		instance.get_node("UI/ResultOverlay/Center/Content/Duration").text
-		== "シングル / 標準 / 60秒 Session"
+		== "シングルターゲット / 標準 / 60秒 Session"
 	)
-	assert(start_best_label.text == "シングル / 標準 BEST  12")
+	assert(start_best_label.text == "シングルターゲット / 標準 BEST  12")
 
 	var records_config := ConfigFile.new()
 	assert(records_config.load("user://settings.cfg") == OK)
@@ -323,7 +358,7 @@ func _ready() -> void:
 	assert(is_equal_approx(instance.valorant_sensitivity, sensitivity_before_difficulty))
 	assert(instance.crosshair_profile == crosshair_before_difficulty)
 	assert(instance.personal_best_score == 0)
-	assert(start_best_label.text == "シングル / かんたん BEST  0")
+	assert(start_best_label.text == "シングルターゲット / かんたん BEST  0")
 	assert(is_equal_approx(difficulty_sphere.radius, 0.82))
 	var target_position: Vector3 = instance.target_body.position
 	assert(target_position.x >= -4.2 and target_position.x <= 4.2)
@@ -352,7 +387,7 @@ func _ready() -> void:
 	assert(instance.personal_best_score == 5)
 	assert(
 		instance.get_node("UI/ResultOverlay/Center/Content/Best").text
-		== "シングル / かんたん BEST  5"
+		== "シングルターゲット / かんたん BEST  5"
 	)
 
 	records_config = ConfigFile.new()
@@ -381,7 +416,7 @@ func _ready() -> void:
 	difficulty_select.item_selected.emit(instance.DifficultyLevel.HARD)
 	assert(instance.selected_difficulty == instance.DifficultyLevel.HARD)
 	assert(instance.personal_best_score == 0)
-	assert(start_best_label.text == "シングル / むずかしい BEST  0")
+	assert(start_best_label.text == "シングルターゲット / むずかしい BEST  0")
 	assert(is_equal_approx(difficulty_sphere.radius, 0.46))
 	assert(is_equal_approx(instance.valorant_sensitivity, sensitivity_before_difficulty))
 	assert(instance.crosshair_profile == crosshair_before_difficulty)
@@ -397,12 +432,14 @@ func _ready() -> void:
 	difficulty_select.item_selected.emit(instance.DifficultyLevel.NORMAL)
 	assert(instance.selected_difficulty == instance.DifficultyLevel.NORMAL)
 	assert(instance.personal_best_score == 12)
-	assert(start_best_label.text == "シングル / 標準 BEST  12")
+	assert(start_best_label.text == "シングルターゲット / 標準 BEST  12")
 	assert(is_equal_approx(difficulty_sphere.radius, 0.62))
 
-	mode_select.select(instance.TrainingMode.GRIDSHOT)
-	mode_select.item_selected.emit(instance.TrainingMode.GRIDSHOT)
+	instance._show_home()
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	instance._open_stage("gridshot")
 	assert(instance.selected_training_mode == instance.TrainingMode.GRIDSHOT)
+	assert(instance.get_node("UI/StartOverlay").visible)
 	assert(instance.personal_best_score == 0)
 	assert(start_best_label.text == "Gridshot / 標準 BEST  0")
 	assert(instance.target_bodies.size() == 3)
@@ -470,12 +507,11 @@ func _ready() -> void:
 		) == 12
 	)
 
-	instance._show_ready_state()
-	mode_select.select(instance.TrainingMode.SINGLE)
-	mode_select.item_selected.emit(instance.TrainingMode.SINGLE)
+	instance._show_home()
+	instance._open_stage("single")
 	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
 	assert(instance.personal_best_score == 12)
-	assert(start_best_label.text == "シングル / 標準 BEST  12")
+	assert(start_best_label.text == "シングルターゲット / 標準 BEST  12")
 	instance.start_training()
 	var visible_single_targets := 0
 	for index in range(instance.target_meshes.size()):
@@ -489,6 +525,19 @@ func _ready() -> void:
 			assert(single_collision.disabled)
 	assert(visible_single_targets == 1)
 	instance._show_ready_state()
+
+	var stage_home_button := instance.get_node(
+		"UI/StartOverlay/Center/Content/HomeButton"
+	) as Button
+	assert(stage_home_button != null)
+	stage_home_button.pressed.emit()
+	await get_tree().process_frame
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(not instance.get_node("UI/StartOverlay").visible)
+	assert(
+		instance.get_node("UI/HomeOverlay/Center/Content/LastStage").text
+		== "前回: シングルターゲット / 標準"
+	)
 
 	var dpi_input := instance.get_node(
 		"UI/SettingsOverlay/Center/Content/Fields/DpiInput"
