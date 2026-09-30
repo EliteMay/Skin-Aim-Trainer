@@ -125,3 +125,12 @@ HubからはGodot Editor起動 / Game起動 / Roadmap確認を使います。
 5. Weapon / VALORANT-style Skin体験を最後に統合
 
 KovaaK'sのコード・Asset・Brand・Community配布Fileを複製するのではなく、Scenarioを成立させる機能・挙動・設定構造をOriginal実装します。
+
+
+## Phase 4 — Scenario Definition v1
+
+Scenario Engine移行の最初の段階として、Scenario定義を`data/scenarios/*.json`へ分離しました。
+
+現在のBrowserは起動時にScenario Definition v1を検証し、正常な定義だけを表示します。必須Field、duration、tags、challenge、参照Profileの存在を検証し、不正Scenarioは一覧から除外してBrowser下部へError件数を表示します。
+
+Current 5 ScenarioはまだLegacy gameplay adapterで実行します。Profile Runtimeが未実装の間も既存Gameplayを壊さないため、`data/stages.json`はScenario directoryが存在しない場合のFallbackとして残しています。
