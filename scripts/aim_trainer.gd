@@ -1043,8 +1043,8 @@ func _open_stage(mode_key: String) -> void:
 	_set_targets_active(false)
 	var save_error := _save_training_settings()
 	_sync_home_selection_ui()
+	_sync_difficulty_ui()
 	_update_sensitivity_labels()
-	_update_best_labels()
 
 	if save_error != OK:
 		difficulty_description.text = (
