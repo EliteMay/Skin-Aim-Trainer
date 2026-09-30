@@ -133,3 +133,20 @@
 - Context: Difficultyの比較確認で、60秒Sessionを最後まで待つかRestartするだけではStartへ戻れず、実機テストの反復Costが高かった。
 - Decision: Pauseから確認DialogなしでMain Menuへ戻れる導線を用意し、途中SessionはRecord更新対象にしない。
 - Prevention: Stage / Difficulty / Skin等を比較する機能を追加するときは、Gameplay中から安全に選択画面へ戻れるRecovery Pathも同時に確認する。
+
+
+## PL-017 — Mode追加で既存Record Keyを不用意にRenameしない
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Gridshot追加前はSingle Trainingだけだったため、既存のDifficulty別BEST KeyにMode名が含まれていなかった。
+- Decision: 既存KeyはSingleのRecordとして維持し、Gridshotだけ新しい`best_gridshot_*_score`を追加する。
+- Prevention: Stage / Mode追加時に既存Save Keyを整理目的だけでRenameせず、互換性を先に固定する。
+
+## PL-018 — Multi-target ModeでもHitしたTargetだけを局所更新する
+
+- Date: 2026-09-30
+- Status: Adopted
+- Context: Gridshotでは3 Targetを同時表示するため、Hitごとに全Targetを再配置するとTarget switchingの連続性が崩れる。
+- Decision: RaycastでHitしたColliderのIndexを特定し、そのTargetだけRespawnする。
+- Prevention: Multi-target Trainingでは全体Resetと1 Target更新を分離し、通常Hitで無関係Targetを動かさない。

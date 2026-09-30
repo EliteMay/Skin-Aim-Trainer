@@ -10,7 +10,7 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 
 ## 起動後にやること
 
-1. **難易度を選ぶ**
+1. **練習モードと難易度を選ぶ**
 2. **60秒の練習を開始** を押す
 3. マウスで赤いTargetを狙って左クリックで撃つ
 
@@ -22,7 +22,7 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - Pause中の「メインメニューへ戻る」: 途中Sessionを破棄して開始画面へ戻る
 - R: 最初からやり直す
 
-移動、武器モデル、Skin、モード選択はまだ入れていません。Phase 2では感度・Crosshair・Difficultyを設定できます。
+移動、武器モデル、Skinはまだ入れていません。Phase 2では感度・Crosshair・Difficultyに加え、シングル / Gridshotを切り替えられます。
 
 ## Phase 1 完了
 
@@ -62,6 +62,9 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 - Difficulty別Personal Best
 - 既存BESTを失わないNormal互換読み込み
 - Pause中からメインメニューへ即時復帰
+- シングル / Gridshotの練習モード選択
+- Gridshotの3 Target同時表示 / Hit TargetだけRespawn
+- GridshotのDifficulty別Personal Best
 
 ## 将来のUI方向
 
@@ -69,7 +72,7 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 
 ## まだ入れていないもの
 - Home / Stage Library
-- Gridshot / Microshot / Hold Angle / Flick / Tracking
+- Microshot / Hold Angle / Flick / Tracking
 - 武器モデル
 - Skin
 - Reload / Inspect

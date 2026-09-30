@@ -102,6 +102,26 @@ Difficulty Profile:
 | 標準 | 0.62 | -5.2〜5.2 | 0.2〜4.6 |
 | むずかしい | 0.46 | -6.2〜6.2 | -0.1〜5.0 |
 
+## Training Modes
+
+### Single
+
+- Active Target Count: 1
+- HitしたTargetをRespawn
+- 既存のDifficulty別Best Keyを使用
+
+### Gridshot
+
+- Active Target Count: 3
+- 3 Targetは同じDistance Plane上へ配置
+- HitしたTargetだけをRespawn
+- Respawn時は他のActive Targetと最低間隔を取る
+- Score ruleはHit +1 / Miss +0
+- Accuracyは既存のHit / Shots計算を再利用
+- Difficulty Profileは3 Targetすべてへ同じRadius / Spawn Rangeを適用
+
+Mode切替はREADY Stateでのみ受け付ける。Training開始後はSession中のModeを固定する。
+
 ## Shooting / Hit Detection
 
 射撃時にCamera中央からCamera forwardへPhysics Rayを飛ばす。
@@ -134,6 +154,7 @@ First Viewで以下だけを強く見せる。
 - Product名
 - 「やることは3つだけ」
 - 3Step操作説明
+- 小さいTraining Mode selector
 - 小さいDifficulty selector
 - 大きい「60秒の練習を開始」
 
@@ -222,12 +243,16 @@ Personal BestはDifficulty別に`user://settings.cfg`へ保存する。
 
 ```text
 [training]
+mode="single|gridshot"
 difficulty="easy|normal|hard"
 
 [training_records]
 best_easy_score=<int>
 best_normal_score=<int>
 best_hard_score=<int>
+best_gridshot_easy_score=<int>
+best_gridshot_normal_score=<int>
+best_gridshot_hard_score=<int>
 ```
 
 旧`training_records/default_best_score`があり、`best_normal_score`が無い場合は旧値をNormal Bestとして読み込む。旧Keyは削除しない。
@@ -290,6 +315,10 @@ Automated:
 - Difficulty target radius / spawn range
 - Difficulty別Best分離
 - Legacy default_best_score → Normal Best compatibility
+- Training Mode selector contract
+- Single 1 Target / Gridshot 3 Target activation
+- Gridshot Target respawn isolation
+- Mode別Personal Best分離
 
 Actual Playtest:
 

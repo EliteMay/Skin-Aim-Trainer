@@ -152,6 +152,45 @@ Current balance:
 | 標準 | 0.62 | -5.2〜5.2 | 0.2〜4.6 |
 | むずかしい | 0.46 | -6.2〜6.2 | -0.1〜5.0 |
 
+## Training Mode Contract
+
+Phase 2ではCurrent Trainingの比較用に、最小のMode切替を追加する。
+
+### シングル
+
+- 1 Targetを表示する
+- Hit後にそのTargetを別位置へRespawnする
+- 既存のPersonal Best保存Keyをそのまま使用する
+
+### Gridshot
+
+- 静止Targetを3個同時表示する
+- HitしたTargetだけを別位置へRespawnする
+- Target同士は極端に重ならないよう最低間隔を取る
+- HitはScore +1
+- MissはScoreを増やさずAccuracyへ反映する
+- Sessionは60秒
+- Sensitivity / DPI / Crosshair / Difficulty Contractはシングルと共有する
+- GridshotのPersonal BestはDifficultyごとに別Recordとして保存する
+
+Mode選択はLocal Settingsへ保存する。既存のシングルBEST Keyは変更せず、Gridshotだけ新しいKeyを追加する。
+
+Current record mapping:
+
+```text
+single:
+  best_easy_score
+  best_normal_score
+  best_hard_score
+
+gridshot:
+  best_gridshot_easy_score
+  best_gridshot_normal_score
+  best_gridshot_hard_score
+```
+
+将来Home / Stage Libraryを導入したら、Current Mode selectorはStage metadata / Stage IDベースへ移行する。
+
 ## Future Home / Stage Library Direction
 
 現在は実装しないが、最終的にAim Lab / Kovaak's系のTraining Platform構成へ拡張する。
