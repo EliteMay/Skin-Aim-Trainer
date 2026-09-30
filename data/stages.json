@@ -58,5 +58,21 @@
       "Clicking",
       "VALORANT"
     ]
+  },
+  {
+    "id": "flick",
+    "mode": "flick",
+    "title": "Flick",
+    "category": "フリック",
+    "description": "離れた静止Targetへ素早く大きくAimし、Target上で止めて撃つclick-timing練習",
+    "duration_seconds": 60,
+    "playable": true,
+    "sort_order": 50,
+    "tags": [
+      "Flick",
+      "Click Timing",
+      "Precision",
+      "VALORANT"
+    ]
   }
 ]

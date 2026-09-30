@@ -651,5 +651,34 @@ After the first scroll-container fix, the Repository was definitely at the lates
 ### Validation state
 
 - Repository implementation: COMPLETE
+- Godot Import / Cold Start / Core Smoke: PASS — GitHub Actions run 36683651456
+- Windows Core Smoke: PASS — GitHub Actions run 36683651456
+- Windows Actual Playtest: NOT_RUN
+
+
+## 2026-09-30 — Microshot Actual Playtest + Phase 3 Flick
+
+### Microshot actual playtest
+
+Game Dev Hub共有PackでMicroshot確認8項目がすべてPASS。確認Commitは0b3956bb、branchはmain、Hub v0.1.32、Godot 4.7.2。Roadmapの「Microshotを実機確認する」を完了へ反映した。
+
+### Flick design
+
+Aimlabsの2026 Aim BasicsではFlickingを主要カテゴリとして扱い、静止Target間を異なる距離で素早く移動するclick-timing系Taskを基礎練習としている。今回のFlickはこの原則だけを参考にし、UI / Asset / exact Scenarioはコピーしない。
+
+### Implemented
+
+- Play LibraryへFlickを追加
+- 初回TargetをCrosshair中央基準から一定距離以上離してspawn
+- Hit後は直前Targetから一定距離以上離れた位置へspawn
+- Minimum displacement: 2.2 / 3.2 / 4.2
+- Target radius: 0.76 / 0.56 / 0.42
+- Existing Difficulty spawn bounds / 60秒Session / Score / Accuracyを再利用
+- Difficulty別Flick BEST
+- Stage Catalog / minimum displacement / save key smoke coverage
+
+### Validation state
+
+- Repository implementation: COMPLETE
 - GitHub Actions: PENDING
 - Windows Actual Playtest: NOT_RUN

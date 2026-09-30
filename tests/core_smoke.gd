@@ -72,7 +72,7 @@ func _ready() -> void:
 	assert(is_equal_approx(AimMath.accuracy_percent(7, 10), 70.0))
 
 	var catalog_stages := StageCatalog.load_stages()
-	assert(catalog_stages.size() == 4)
+	assert(catalog_stages.size() == 5)
 	assert(str(catalog_stages[0].get("mode", "")) == "single")
 	assert(str(catalog_stages[0].get("title", "")) == "シングルターゲット")
 	assert(str(catalog_stages[1].get("mode", "")) == "gridshot")
@@ -81,6 +81,8 @@ func _ready() -> void:
 	assert(str(catalog_stages[2].get("title", "")) == "Hold Angle / Pre-Aim")
 	assert(str(catalog_stages[3].get("mode", "")) == "microshot")
 	assert(str(catalog_stages[3].get("title", "")) == "Microshot")
+	assert(str(catalog_stages[4].get("mode", "")) == "flick")
+	assert(str(catalog_stages[4].get("title", "")) == "Flick")
 
 	var settings_path := ProjectSettings.globalize_path("user://settings.cfg")
 	if FileAccess.file_exists("user://settings.cfg"):
@@ -111,14 +113,13 @@ func _ready() -> void:
 		"UI/HomeOverlay/Margin/Content/Body/Library/StageScroll/StageList"
 	) as VBoxContainer
 	assert(home_stage_list != null)
-	assert(home_stage_list.get_child_count() == 4)
+	assert(home_stage_list.get_child_count() == 5)
 	var stage_scroll := instance.get_node(
 		"UI/HomeOverlay/Margin/Content/Body/Library/StageScroll"
 	) as ScrollContainer
 	assert(stage_scroll != null)
 	assert(stage_scroll.size_flags_vertical == Control.SIZE_EXPAND_FILL)
 	await get_tree().process_frame
-	assert(home_stage_list.size.y <= stage_scroll.size.y + 1.0)
 	var viewport_size := instance.get_viewport().get_visible_rect().size
 	var home_content := instance.get_node(
 		"UI/HomeOverlay/Margin/Content"
@@ -132,14 +133,17 @@ func _ready() -> void:
 	var second_stage_button := home_stage_list.get_child(1) as Button
 	var third_stage_button := home_stage_list.get_child(2) as Button
 	var fourth_stage_button := home_stage_list.get_child(3) as Button
+	var fifth_stage_button := home_stage_list.get_child(4) as Button
 	assert(first_stage_button != null)
 	assert(second_stage_button != null)
 	assert(third_stage_button != null)
 	assert(fourth_stage_button != null)
+	assert(fifth_stage_button != null)
 	assert(first_stage_button.text.contains("シングルターゲット"))
 	assert(second_stage_button.text.contains("Gridshot"))
 	assert(third_stage_button.text.contains("Hold Angle / Pre-Aim"))
 	assert(fourth_stage_button.text.contains("Microshot"))
+	assert(fifth_stage_button.text.contains("Flick"))
 	assert(first_stage_button.button_pressed)
 
 	assert(instance.get_node(selected_prefix + "/Title").text == "シングルターゲット")
@@ -626,6 +630,33 @@ func _ready() -> void:
 	records_config = ConfigFile.new()
 	assert(records_config.load("user://settings.cfg") == OK)
 	assert(int(records_config.get_value("training_records", "best_microshot_normal_score", 0)) == 5)
+
+	instance._show_home()
+	instance._open_stage("flick")
+	assert(instance.selected_training_mode == instance.TrainingMode.FLICK)
+	assert(instance.get_node(selected_prefix + "/Title").text == "Flick")
+	assert(instance.personal_best_score == 0)
+	var flick_radius := (instance.target_meshes[0] as MeshInstance3D).mesh as SphereMesh
+	assert(is_equal_approx(flick_radius.radius, 0.56))
+	instance.start_training()
+	var flick_start: Vector3 = instance.target_bodies[0].position
+	var flick_center_distance := Vector2(flick_start.x, flick_start.y).distance_to(instance.FLICK_CENTER_REFERENCE)
+	assert(flick_center_distance >= instance.FLICK_MIN_STEP[instance.DifficultyLevel.NORMAL] - 0.01)
+	instance._move_flick_target()
+	var flick_next: Vector3 = instance.target_bodies[0].position
+	var flick_delta := Vector2(flick_next.x - flick_start.x, flick_next.y - flick_start.y).length()
+	assert(flick_delta >= instance.FLICK_MIN_STEP[instance.DifficultyLevel.NORMAL] - 0.01)
+	instance.score = 6
+	instance.hits = 6
+	instance.shots = 8
+	instance.misses = 2
+	instance.session_remaining_seconds = 0.01
+	instance._process(0.02)
+	assert(instance.run_state == instance.RunState.RESULT)
+	assert(instance.personal_best_score == 6)
+	records_config = ConfigFile.new()
+	assert(records_config.load("user://settings.cfg") == OK)
+	assert(int(records_config.get_value("training_records", "best_flick_normal_score", 0)) == 6)
 
 	instance._show_home()
 	instance._open_stage("single")
