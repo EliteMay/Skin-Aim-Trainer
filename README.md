@@ -6,7 +6,7 @@ OKIAIMXの「すぐ練習を始められる短い導線」を参考にしつつ�
 
 **Browser / Electron版は終了し、Godot 4.7.2 + GDScriptでWindowsゲームとして開発します。**
 
-Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現在はPhase 2 — Training Foundationへ進みます。引き続き最優先は「マウスAimが素直に動く」「操作が一目で分かる」ことです。
+Phase 1 / Phase 2はWindows実機確認まで完了し、Phase 3 — Training Modes / Scenario Libraryへ進んでいます。Play / Training LibraryとQuick SettingsもWindows実機確認済みです。引き続き最優先は「マウスAimが素直に動く」「操作が一目で分かる」ことです。
 
 ## 起動後にやること
 
