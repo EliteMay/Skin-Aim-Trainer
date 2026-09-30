@@ -96,6 +96,7 @@ DPIは計算・表示・保存に使用する。ApplicationからMouse Hardware 
 - GridshotはActive Target 3個
 - Hold Angle / Pre-AimはActive Target 1個 + 非CollisionのHold Point 1個
 - MicroshotはActive Target 1個
+- FlickはActive Target 1個
 - HitしたTargetだけ次位置へ移動する
 - Multi-target Modeでは極端なTarget重なりを避けるMinimum Separationを持つ
 
@@ -147,6 +148,19 @@ Difficulty Profile:
 - Max step: Easy 0.75 / Normal 1.05 / Hard 1.35
 - Target radius: Easy 0.50 / Normal 0.36 / Hard 0.26
 - Hitごとに直前位置から短距離移動
+- 60秒Session / Score / Accuracyは既存Contractを再利用
+- Personal BestはMode + Difficultyで分離保存
+
+### Flick
+
+- Active Target Count: 1
+- Static click-timing target
+- First target reference: X 0 / Y 2.0
+- Minimum displacement: Easy 2.2 / Normal 3.2 / Hard 4.2
+- Target radius: Easy 0.76 / Normal 0.56 / Hard 0.42
+- Spawn bounds: existing Difficulty X / Y range
+- Hit後は前Targetからminimum displacement以上離れた候補を優先してRespawn
+- 40回の候補抽選でminimumを満たせない場合は最も遠かった候補を使う
 - 60秒Session / Score / Accuracyは既存Contractを再利用
 - Personal BestはMode + Difficultyで分離保存
 
@@ -203,7 +217,7 @@ Right / Selected Training:
 
 Stage選択時は別画面へ遷移せずRight Panelだけ更新する。Sensitivity / Crosshairの詳細Overlayを閉じた場合も同じPlay Libraryへ戻る。
 
-Stage一覧は`data/stages.json`から動的に生成する。Currentは4 StageだけなのでSearch / Filterを置かない。
+Stage一覧は`data/stages.json`から動的に生成する。Currentは5 StageだけなのでSearch / Filterを置かない。
 
 ### Training
 
@@ -288,7 +302,7 @@ Personal BestはDifficulty別に`user://settings.cfg`へ保存する。
 
 ```text
 [training]
-mode="single|gridshot"
+mode="single|gridshot|hold_angle|microshot|flick"
 difficulty="easy|normal|hard"
 
 [training_records]
@@ -298,6 +312,15 @@ best_hard_score=<int>
 best_gridshot_easy_score=<int>
 best_gridshot_normal_score=<int>
 best_gridshot_hard_score=<int>
+best_hold_angle_easy_score=<int>
+best_hold_angle_normal_score=<int>
+best_hold_angle_hard_score=<int>
+best_microshot_easy_score=<int>
+best_microshot_normal_score=<int>
+best_microshot_hard_score=<int>
+best_flick_easy_score=<int>
+best_flick_normal_score=<int>
+best_flick_hard_score=<int>
 ```
 
 旧`training_records/default_best_score`があり、`best_normal_score`が無い場合は旧値をNormal Bestとして読み込む。旧Keyは削除しない。
@@ -347,6 +370,7 @@ Current playable Stage:
 2. Gridshot
 3. Hold Angle / Pre-Aim
 4. Microshot
+5. Flick
 
 新しいStageを追加するとき、Sceneへ固定Buttonを追加しない。Catalog追加とGameplay実装を分離し、Main Sceneの巨大なUI条件分岐を避ける。
 
@@ -393,10 +417,12 @@ Automated:
 - Hold AngleのHold Point → Wait → Peek state transition
 - Hold AngleのTarget visibility / collision gating
 - Microshotの初期位置 / short-step移動 / bounds
+- Flickの初期minimum displacement / Hit後minimum displacement / bounds
 - Gridshot Target respawn isolation
 - Mode別Personal Best分離
 - Hold Angle Difficulty別Personal Best保存
 - Microshot Difficulty別Personal Best保存
+- Flick Difficulty別Personal Best保存
 
 Actual Playtest:
 
