@@ -755,3 +755,30 @@ Current公式Steam説明ではSandboxに多数のScenario / Playlistが存在し
 - Community Scenario fileを権利確認なしでBundleしない
 - 公開されている動作説明やUser提供情報からTraining behaviorをOriginal実装する
 - VALORANT Skinも権利状態を別途確認し、Riot公式Productと誤認するBrandingを行わない
+
+
+## 2026-09-30 — Phase 4 Scenario Definition v1 / Loader / Validator
+
+### Implemented
+
+- `scripts/scenario_catalog.gd`
+- `data/scenarios/*.json`へCurrent 5 Scenarioを分離
+- `data/profiles/`へ初期Player / Weapon / Target / Bot / Movement / Scoring profileを追加
+- schema_version / required strings / duration / tags / bot_profiles / challengeをValidation
+- Player / Weapon / Bot / Scoring Profile referenceの存在をValidation
+- Duplicate Scenario IDを拒否
+- Invalid ScenarioはBrowserへ渡さない
+- BrowserにScenario v1検証済み件数またはError要約を表示
+- 全Scenario invalid時はStartを無効化
+- Scenario directory未存在時のみLegacy `data/stages.json`へFallback
+- Current 5 Scenarioはlegacy_mode adapterで既存Gameplayを維持
+
+### Compatibility
+
+Current Gameplay codeはまだTrainingMode enumを使用する。Scenario Definition v1はBrowser / metadata sourceを先に置き換え、Profile Runtime / Bot Runtimeを段階的に移行できるようにする。
+
+### Validation state
+
+- Repository implementation: COMPLETE
+- Godot CI: PENDING
+- Windows actual playtest: NOT_REQUIRED for metadata-only migration; gameplay regression is covered by existing smoke and later Generic Scenario Engine playtest
