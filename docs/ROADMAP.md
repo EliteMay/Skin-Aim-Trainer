@@ -229,7 +229,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - Difficulty別Personal BestをSingle / Gridshotと分離保存する
   - Stage Catalog / Save / Hold→Peek stateをGodot Smoke Testへ追加
 
-- [ ] Hold Angle / Pre-Aimを実機確認する
+- [x] Hold Angle / Pre-Aimを実機確認する
   - 担当: あなた
   - Play Libraryに「Hold Angle / Pre-Aim」が表示される
   - 開始すると青いHold Pointが表示され、赤いTargetはまだ見えない
@@ -239,8 +239,31 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 60秒後にResultへ移動し、Hold AngleのBESTが保存される
   - Single / Gridshot / Hold AngleのBESTが混ざらない
   - ESC → メインメニュー / 再起動後も選択ModeとBESTが維持される
+  - 2026-09-30 Game Dev Hub共有Packで8/8 PASS
 
 - [ ] Microshot
+  - 担当: ChatGPT
+  - 画面中央付近に小さなTargetを1個表示する
+  - Hit後は前のTarget位置の近くへ短距離だけ移動させる
+  - 大きなFlickではなく、細かいmicro-adjustmentを繰り返す練習にする
+  - DifficultyでTarget sizeと最大移動距離だけを変える
+  - Sensitivity / Crosshair / 60秒Session / Score ruleは既存Contractを再利用する
+  - Single / Gridshot / Hold Angleとは別にDifficulty別BESTを保存する
+  - Stage CatalogへMicroshotを追加する
+  - Mode / spawn distance / save key / Result / restartをGodot Smoke Testへ追加する
+  - 実装完了後、Roadmapのこの項目を[x]へ変更し、次に「Microshotを実機確認する」をCurrent Taskへする
+
+- [ ] Microshotを実機確認する
+  - 担当: あなた
+  - Play Libraryに「Microshot」が表示される
+  - 開始すると小さなTargetが中央付近に1個表示される
+  - Hitすると前の位置の近くへ短距離だけ移動する
+  - Gridshotのような大きなTarget切替にならず、小さい補正を連続して行える
+  - 難易度を変えるとTarget sizeと移動距離が変わる
+  - 60秒後にResultへ移動し、MicroshotのBESTが保存される
+  - Single / Gridshot / Hold Angle / MicroshotのBESTが混ざらない
+  - ESC → メインメニュー / 再起動後も選択ModeとBESTが維持される
+
 - [ ] Flick
 - [ ] Skin Test Range
 
