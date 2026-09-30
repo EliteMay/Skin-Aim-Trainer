@@ -551,3 +551,39 @@ Decision:
 - Future library growth should first add Recents / Favorites / Search without fragmenting Training discovery across more screens.
 
 No gameplay contract or save migration changed in this research-only update.
+
+
+## 2026-09-30 — Phase 3 Hold Angle / Pre-Aim
+
+### Research / Design Boundary
+
+AimlabsのCurrent angle-holding解説では、Crosshair placementを維持しつつ、Target出現時に必要なmicro-adjustmentだけを行う練習が示されている。KovaaK'sにもValorant Angle Hold系Scenarioが存在する。
+
+今回の実装はUI / Asset / exact Scenarioをコピーせず、Current Skin Aim Trainerの静止Camera / click timingへ合わせた独自の簡易Flowにした。
+
+### Implemented
+
+- Play LibraryへHold Angle / Pre-Aim Stageを追加
+- 青いHold Pointを表示するpre-aim waiting phase
+- 0.55〜1.10秒のrandom wait
+- Hold Point左右へのrandom Peek
+- Difficulty別Peek offset
+- Target出現前のCollision無効化
+- Hit後に次Cycleへ即時移行
+- Mode + Difficulty別Personal Best
+- Stage Catalog / persistence / state transition smoke coverage
+
+### Validation State
+
+- Repository implementation: COMPLETE
+- Static / Godot smoke coverage: ADDED
+- Godot Import / Cold Start: PASS — GitHub Actions run 36672055887
+- Linux Core Smoke: PASS — GitHub Actions run 36672055887
+- Windows Direct Smoke: PASS — GitHub Actions run 36672055887
+- Windows Actual Playtest: NOT_RUN
+
+### External References
+
+- Aimlabs — How to Hold Angles in Counter-Strike 2 While Strafing (2026-02-27)
+- Aimlabs — Unlocking the Secrets to Calm Aim (2026)
+- KovaaK's Scenario Library — Valorant Angle Hold系Scenarioが存在

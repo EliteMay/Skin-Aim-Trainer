@@ -22,7 +22,7 @@ Phase 1 / Phase 2はWindows実機確認まで完了し、Phase 3 — Training Mo
 - Pause中の「メインメニューへ戻る」: 途中Sessionを破棄して開始画面へ戻る
 - R: 最初からやり直す
 
-移動、武器モデル、Skinはまだ入れていません。Homeから現在実装済みのシングルターゲット / Gridshotを選べます。
+移動、武器モデル、Skinはまだ入れていません。Homeから現在実装済みのシングルターゲット / Gridshot / Hold Angle / Pre-Aimを選べます。
 
 ## Phase 1 完了
 
@@ -72,17 +72,18 @@ Phase 1 / Phase 2はWindows実機確認まで完了し、Phase 3 — Training Mo
 - Data-driven Stage Library
 - 左側のTraining一覧 + 右側の選択中Training / Quick Settings
 - 別Stage Setup画面を挟まず、選択と設定を1画面へ集約
-- シングルターゲット / GridshotをStage Catalogから動的表示
+- シングルターゲット / Gridshot / Hold Angle / Pre-AimをStage Catalogから動的表示
 - 難易度を選択中Trainingの横で変更
 - 感度 / Crosshair設定を選択中Trainingの横から開く
 - Stage metadataを`data/stages.json`へ分離
 - Stage category / description / duration / mode / tags
 - ESC / ResultからPlay画面へ戻る導線
+- Hold Point待機 → ランダム左右Peek → micro-adjustして撃つHold Angle / Pre-Aim
 
-現在は2 Stageだけなので検索 / Filterは入れていません。Stage数が増えた段階で、category / tagsを使ったBrowse / Searchを追加できる構造にしています。Aimlabs / KovaaK'sのUIやAssetはコピーせず、「Trainingを探す・設定する・開始する」の往復を減らす構造だけを参考にしています。
+現在は3 Stageだけなので検索 / Filterは入れていません。Stage数が増えた段階で、category / tagsを使ったBrowse / Searchを追加できる構造にしています。Aimlabs / KovaaK'sのUIやAssetはコピーせず、「Trainingを探す・設定する・開始する」の往復を減らす構造だけを参考にしています。
 
 ## まだ入れていないもの
-- Microshot / Hold Angle / Flick / Tracking
+- Microshot / Flick / Tracking
 - 武器モデル
 - Skin
 - Reload / Inspect

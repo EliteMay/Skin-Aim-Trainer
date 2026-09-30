@@ -154,7 +154,7 @@ Current balance:
 
 ## Training Mode Contract
 
-Phase 2ではCurrent Trainingの比較用に、Single / Gridshotの2 Modeを提供する。Phase 3以降はModeをStart画面のSelectorで切り替えず、HomeのStage Catalogから選択する。
+Phase 2ではSingle / Gridshotを導入し、Phase 3でHold Angle / Pre-Aimを追加する。ModeはHomeのStage Catalogから選択し、別のMode Selectorを重複させない。
 
 ### シングル
 
@@ -173,7 +173,18 @@ Phase 2ではCurrent Trainingの比較用に、Single / Gridshotの2 Modeを提�
 - Sensitivity / DPI / Crosshair / Difficulty Contractはシングルと共有する
 - GridshotのPersonal BestはDifficultyごとに別Recordとして保存する
 
-最後に選んだStageのModeはLocal Settingsへ保存する。既存のシングルBEST Keyは変更せず、Gridshotだけ新しいKeyを追加する。
+### Hold Angle / Pre-Aim
+
+- 青いHold Pointを先に表示し、PlayerはそこへCrosshairを置いて待つ
+- 0.55〜1.10秒のランダム待機後、Hold Pointの左右どちらかへ赤いTargetを出す
+- Target出現まではTarget Collisionを無効にする
+- Hit後は新しいHold Point / Peek Direction / Wait Timeを作り直す
+- Difficultyは既存Target radiusを共有し、Peek offsetを 1.0 / 1.4 / 1.8 とする
+- Missは既存Accuracyへ反映する
+- Sessionは60秒
+- Personal BestはDifficultyごとに別Recordとして保存する
+
+最後に選んだStageのModeはLocal Settingsへ保存する。既存のシングルBEST Keyは変更せず、新Modeは専用Keyを追加する。
 
 Current record mapping:
 
@@ -187,6 +198,11 @@ gridshot:
   best_gridshot_easy_score
   best_gridshot_normal_score
   best_gridshot_hard_score
+
+hold_angle:
+  best_hold_angle_easy_score
+  best_hold_angle_normal_score
+  best_hold_angle_hard_score
 ```
 
 Mode選択はHomeのStage metadataからRuntime Modeへ変換する。将来StageごとにGameplay Scriptが増える場合も、Home UIへMode固有条件分岐を追加しない。
@@ -204,7 +220,7 @@ Current Flow:
 - Training選択のためだけに別Page / Stage Setupへ遷移しない
 - Stage定義は`data/stages.json`をSource of Truthとする
 - Stage metadataは最低限 `id / mode / title / category / description / duration_seconds / playable / sort_order / tags` を持つ
-- 現在のplayable Stageは「シングルターゲット」「Gridshot」
+- 現在のplayable Stageは「シングルターゲット」「Gridshot」「Hold Angle / Pre-Aim」
 - Training一覧はCatalog Dataから動的に生成する
 - 選択中PanelへTitle / Category / Description / Duration / Personal Bestを表示する
 - Difficultyは選択中Panel内で直接変更できる

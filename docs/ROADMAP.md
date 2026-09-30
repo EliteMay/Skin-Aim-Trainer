@@ -219,7 +219,27 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - Resultの「Homeへ戻る」でPlay画面へ戻れ、再起動後もMode / Difficulty / BESTが残る
   - 2026-09-30 Game Dev Hub共有Packで8/8 PASS
 
-- [ ] Hold Angle / Pre-Aim
+- [x] Hold Angle / Pre-Aim
+  - 担当: ChatGPT
+  - 青いHold Pointへ置きAimする待機Phaseを追加
+  - 0.55〜1.10秒のランダム待機後、左右どちらかへTargetをPeekさせる
+  - Hit後は次のHold Point / Peek Cycleへ進む
+  - DifficultyでTarget sizeとPeek offsetを調整する
+  - 既存Sensitivity / Crosshair / 60秒Session / Score ruleを再利用する
+  - Difficulty別Personal BestをSingle / Gridshotと分離保存する
+  - Stage Catalog / Save / Hold→Peek stateをGodot Smoke Testへ追加
+
+- [ ] Hold Angle / Pre-Aimを実機確認する
+  - 担当: あなた
+  - Play Libraryに「Hold Angle / Pre-Aim」が表示される
+  - 開始すると青いHold Pointが表示され、赤いTargetはまだ見えない
+  - 少し待つとHold Pointの左右どちらかへ赤いTargetが出る
+  - TargetをHitすると次のHold Point待機へ戻る
+  - 難易度を変えるとTarget sizeと補正距離が変わる
+  - 60秒後にResultへ移動し、Hold AngleのBESTが保存される
+  - Single / Gridshot / Hold AngleのBESTが混ざらない
+  - ESC → メインメニュー / 再起動後も選択ModeとBESTが維持される
+
 - [ ] Microshot
 - [ ] Flick
 - [ ] Skin Test Range

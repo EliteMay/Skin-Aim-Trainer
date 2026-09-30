@@ -20,18 +20,25 @@ enum DifficultyLevel {
 enum TrainingMode {
 	SINGLE,
 	GRIDSHOT,
+	HOLD_ANGLE,
 }
 
 const TARGET_DISTANCE := 14.0
-const TRAINING_MODE_KEYS := ["single", "gridshot"]
-const TRAINING_MODE_LABELS := ["シングル", "Gridshot"]
+const TRAINING_MODE_KEYS := ["single", "gridshot", "hold_angle"]
+const TRAINING_MODE_LABELS := ["シングル", "Gridshot", "Hold Angle / Pre-Aim"]
 const TRAINING_MODE_DESCRIPTIONS := [
 	"1 Targetを順番に狙う基本練習",
 	"3 Targetを素早く切り替えて撃つ練習",
+	"置きAimを維持し、Peek後の小さな補正を撃つ練習",
 ]
 const DEFAULT_TRAINING_MODE := TrainingMode.SINGLE
 const GRIDSHOT_TARGET_COUNT := 3
 const GRIDSHOT_MIN_SEPARATION_MULTIPLIER := 2.6
+const HOLD_ANGLE_MIN_WAIT_SECONDS := 0.55
+const HOLD_ANGLE_MAX_WAIT_SECONDS := 1.10
+const HOLD_ANGLE_MARKER_RADIUS := 0.16
+const HOLD_ANGLE_PEEK_OFFSETS := [1.0, 1.4, 1.8]
+const HOLD_ANGLE_HEAD_HEIGHT := 1.8
 const DIFFICULTY_KEYS := ["easy", "normal", "hard"]
 const DIFFICULTY_LABELS := ["かんたん", "標準", "むずかしい"]
 const DIFFICULTY_DESCRIPTIONS := [
@@ -231,6 +238,9 @@ var personal_best_scores: Dictionary = {
 	"gridshot_easy": 0,
 	"gridshot_normal": 0,
 	"gridshot_hard": 0,
+	"hold_angle_easy": 0,
+	"hold_angle_normal": 0,
+	"hold_angle_hard": 0,
 }
 var personal_best_score := 0
 var last_session_new_best := false
@@ -269,6 +279,10 @@ var target_collision: CollisionShape3D
 var target_bodies: Array = []
 var target_meshes: Array = []
 var target_collisions: Array = []
+var hold_angle_marker: MeshInstance3D
+var hold_angle_wait_remaining := 0.0
+var hold_angle_target_visible := false
+var hold_angle_anchor_position := Vector3.ZERO
 var stages: Array = []
 var home_stage_buttons: Dictionary = {}
 var rng := RandomNumberGenerator.new()
@@ -347,6 +361,9 @@ func _process(delta: float) -> void:
 
 	if session_remaining_seconds <= 0.0:
 		_finish_session()
+		return
+
+	_update_hold_angle(delta)
 
 
 func _exit_tree() -> void:
@@ -584,7 +601,10 @@ func _shoot() -> void:
 		score += 1
 		var target_index := target_bodies.find(collider)
 		if target_index >= 0:
-			_move_target_at(target_index)
+			if selected_training_mode == TrainingMode.HOLD_ANGLE:
+				_prepare_hold_angle_cycle()
+			else:
+				_move_target_at(target_index)
 		_show_feedback("HIT +1", Color(0.42, 1.0, 0.64))
 	else:
 		misses += 1
@@ -624,6 +644,22 @@ func _create_targets() -> void:
 	target_body = target_bodies[0]
 	target_mesh = target_meshes[0]
 	target_collision = target_collisions[0]
+
+	hold_angle_marker = MeshInstance3D.new()
+	hold_angle_marker.name = "HoldAngleMarker"
+	var marker_mesh := SphereMesh.new()
+	marker_mesh.radius = HOLD_ANGLE_MARKER_RADIUS
+	marker_mesh.height = HOLD_ANGLE_MARKER_RADIUS * 2.0
+	hold_angle_marker.mesh = marker_mesh
+	var marker_material := StandardMaterial3D.new()
+	marker_material.albedo_color = Color(0.35, 0.72, 1.0, 0.82)
+	marker_material.emission_enabled = true
+	marker_material.emission = Color(0.08, 0.32, 0.72)
+	marker_material.emission_energy_multiplier = 0.8
+	hold_angle_marker.material_override = marker_material
+	target_root.add_child(hold_angle_marker)
+	hold_angle_marker.visible = false
+
 	_apply_difficulty_to_target()
 	_move_active_targets()
 	_set_targets_active(false)
@@ -639,10 +675,19 @@ func _set_targets_active(active: bool) -> void:
 	var active_count := _active_target_count()
 	for index in range(target_bodies.size()):
 		var should_enable := active and index < active_count
+		if selected_training_mode == TrainingMode.HOLD_ANGLE and index == 0:
+			should_enable = should_enable and hold_angle_target_visible
 		var mesh := target_meshes[index] as MeshInstance3D
 		var collision := target_collisions[index] as CollisionShape3D
 		mesh.visible = should_enable
 		collision.disabled = not should_enable
+
+	if hold_angle_marker != null:
+		hold_angle_marker.visible = (
+			active
+			and selected_training_mode == TrainingMode.HOLD_ANGLE
+			and not hold_angle_target_visible
+		)
 
 
 func _move_target() -> void:
@@ -650,8 +695,62 @@ func _move_target() -> void:
 
 
 func _move_active_targets() -> void:
+	if selected_training_mode == TrainingMode.HOLD_ANGLE:
+		_prepare_hold_angle_cycle()
+		return
 	for index in range(_active_target_count()):
 		_move_target_at(index)
+
+
+func _prepare_hold_angle_cycle() -> void:
+	if target_bodies.is_empty():
+		return
+
+	var x_range: Vector2 = DIFFICULTY_X_RANGES[selected_difficulty]
+	var y_range: Vector2 = DIFFICULTY_Y_RANGES[selected_difficulty]
+	var peek_offset: float = HOLD_ANGLE_PEEK_OFFSETS[selected_difficulty]
+	var anchor_min := x_range.x + peek_offset
+	var anchor_max := x_range.y - peek_offset
+	if anchor_min > anchor_max:
+		anchor_min = x_range.x
+		anchor_max = x_range.y
+
+	var anchor_x := rng.randf_range(anchor_min, anchor_max)
+	var anchor_y := clampf(HOLD_ANGLE_HEAD_HEIGHT, y_range.x, y_range.y)
+	hold_angle_anchor_position = Vector3(anchor_x, anchor_y, -TARGET_DISTANCE)
+
+	var direction := -1.0 if rng.randi_range(0, 1) == 0 else 1.0
+	var body := target_bodies[0] as StaticBody3D
+	body.position = hold_angle_anchor_position + Vector3(
+		peek_offset * direction,
+		0.0,
+		0.0
+	)
+
+	if hold_angle_marker != null:
+		hold_angle_marker.position = hold_angle_anchor_position
+
+	hold_angle_wait_remaining = rng.randf_range(
+		HOLD_ANGLE_MIN_WAIT_SECONDS,
+		HOLD_ANGLE_MAX_WAIT_SECONDS
+	)
+	hold_angle_target_visible = false
+	if run_state == RunState.PLAYING:
+		_set_targets_active(true)
+
+
+func _update_hold_angle(delta: float) -> void:
+	if selected_training_mode != TrainingMode.HOLD_ANGLE:
+		return
+	if hold_angle_target_visible:
+		return
+
+	hold_angle_wait_remaining = maxf(hold_angle_wait_remaining - delta, 0.0)
+	if hold_angle_wait_remaining > 0.0:
+		return
+
+	hold_angle_target_visible = true
+	_set_targets_active(true)
 
 
 func _move_target_at(index: int) -> void:
@@ -943,6 +1042,8 @@ func _save_training_settings() -> Error:
 func _current_best_config_key() -> String:
 	if selected_training_mode == TrainingMode.GRIDSHOT:
 		return "best_gridshot_%s_score" % _current_difficulty_key()
+	if selected_training_mode == TrainingMode.HOLD_ANGLE:
+		return "best_hold_angle_%s_score" % _current_difficulty_key()
 	return "best_%s_score" % _current_difficulty_key()
 
 
@@ -1131,6 +1232,18 @@ func _load_settings() -> void:
 	)
 	personal_best_scores["gridshot_hard"] = maxi(
 		int(config.get_value(RECORDS_SECTION, "best_gridshot_hard_score", 0)),
+		0
+	)
+	personal_best_scores["hold_angle_easy"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_hold_angle_easy_score", 0)),
+		0
+	)
+	personal_best_scores["hold_angle_normal"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_hold_angle_normal_score", 0)),
+		0
+	)
+	personal_best_scores["hold_angle_hard"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_hold_angle_hard_score", 0)),
 		0
 	)
 	_sync_current_personal_best()
