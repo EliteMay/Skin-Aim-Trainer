@@ -68,21 +68,21 @@ Phase 1 / Phase 2はWindows実機確認まで完了し、Phase 3 — Training Mo
 
 ## Phase 3で追加済み
 
-- 起動直後のPlay / Training Library
+- 起動直後のSandbox / Scenario Browser
 - Data-driven Stage Library
-- 左側のTraining一覧 + 右側の選択中Training / Quick Settings
-- 別Stage Setup画面を挟まず、選択と設定を1画面へ集約
+- 左側のLOCAL SCENARIOS + 右側のSCENARIO INFO / SETTINGS
+- KovaaK'sのSandbox / Scenario Browserで使われる高密度な一覧→詳細構造を参考にしつつ、選択と設定を1画面へ集約
 - シングルターゲット / Gridshot / Hold Angle / Pre-Aim / Microshot / FlickをStage Catalogから動的表示
 - 難易度を選択中Trainingの横で変更
 - 感度 / Crosshair設定を選択中Trainingの横から開く
 - Stage metadataを`data/stages.json`へ分離
 - Stage category / description / duration / mode / tags
-- ESC / ResultからPlay画面へ戻る導線
+- ESC / ResultからScenario Browserへ戻る導線
 - Hold Point待機 → ランダム左右Peek → micro-adjustして撃つHold Angle / Pre-Aim
 - 中央付近の小Targetを短距離で追うMicroshot
 - 離れた静止Targetへ大きくAimして止めるFlick
 
-現在は5 Stageだけなので検索 / Filterは入れていません。Stage数が増えた段階で、category / tagsを使ったBrowse / Searchを追加できる構造にしています。Aimlabs / KovaaK'sのUIやAssetはコピーせず、「Trainingを探す・設定する・開始する」の往復を減らす構造だけを参考にしています。
+現在は5 Scenarioだけなので検索 / Filterは入れていません。Stage数が増えた段階で、category / tagsを使ったBrowse / Searchを追加できる構造にしています。Aimlabs / KovaaK'sのUIやAssetはコピーせず、「Scenarioを選ぶ・設定する・PLAYする」の往復を減らす構造だけを参考にしています。
 
 ## まだ入れていないもの
 - Tracking
