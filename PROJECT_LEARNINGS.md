@@ -248,3 +248,14 @@
 - Goal: 新しいScenarioの大半をData追加だけで作れるようにする。
 - Exception: Dataだけで表現できない新BehaviorはScenario固有HackではなくReusable Componentとして追加する。
 - Product order: Scenario Engine / Scenario Packを先に完成させ、VALORANT-style Skin layerは後段へ送る。
+
+
+## SAT-ARCH-002 — Data migration and runtime migration should be separate
+
+- Date: 2026-09-30
+- Type: Architecture / Migration
+- Status: Adopted
+- Problem: Scenario schemaとGameplay Runtimeを同時に置換すると、既存5 Scenarioの回帰原因がData / Loader / Runtimeのどこか判別しにくい。
+- Decision: Phase 4 first stepではBrowser metadata sourceだけをScenario Definition v1へ移し、legacy_mode adapterで既存Gameplayを維持する。
+- Safety: Invalid Scenarioはlegacy gameplayへ自動的に抜け道で起動させない。Scenario directoryが存在する場合はValid DefinitionだけをPlay可能にする。
+- Next: Profile Runtimeでreference解決を追加し、その後Bot / Spawn / Lifecycle EngineがResolved ProfileをGameplayへ適用する。
