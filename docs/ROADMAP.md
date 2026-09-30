@@ -283,23 +283,27 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
 
 ## Phase 4 — Generic Scenario Engine
 
-- [ ] Scenario Definition v1 / Loader / Validator
+- [x] Scenario Definition v1 / Loader / Validator
   - 担当: ChatGPT
   - data/scenarios / data/profilesへ分離
   - schema_version / id / aim_type / duration / tags / profile references
   - 不正Scenarioは起動せずBrowserでErrorを表示
-  - Legacy stages.jsonはMigration完了まで読み取り互換を維持
+  - Duplicate ID / missing Profile / invalid challengeを拒否
+  - Current 5 Scenarioをv1定義へ移し、legacy_mode adapterで既存Gameplayを維持
+  - Legacy stages.jsonはScenario directory未導入時のFallbackとして維持
+  - Scenario Catalog / validation / Browser sourceをGodot Smoke Testへ追加
+  - 2026-09-30 Repository実装済み
 
 - [ ] Profile Runtime
   - 担当: ChatGPT
-  - Player Profile
-  - Weapon Profile
-  - Target / Character Profile
-  - Bot Profile
-  - Spawn Profile
-  - Movement / Dodge Profile
-  - Aim Profile
-  - Scoring Profile
+  - Player / Weapon / Target / Bot / Movement / Scoring Profile Loaderを作る
+  - Profileごとにschema_version / id / profile_typeを検証する
+  - Bot ProfileからTarget Profile / Movement Profileを解決する
+  - Scenarioから参照されたProfile一式をResolved Scenarioへまとめる
+  - Missing / wrong type / duplicate ProfileはScenarioを起動不可にする
+  - Current default-player / hitscan-click / default-sphere-target / legacy-target / static / accuracy-click-scoreをRuntime Objectへ変換する
+  - Profile値はまだLegacy Gameplayへ全面適用せず、Resolved値とCurrent hardcoded値をSmoke Testで比較する
+  - Profile Runtime完了後、次のBot / Spawn / Lifecycle EngineがProfile値を実際のGameplayへ適用する
 
 - [ ] Bot / Spawn / Lifecycle Engine
   - 担当: ChatGPT
