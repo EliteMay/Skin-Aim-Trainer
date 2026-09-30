@@ -443,10 +443,10 @@ References:
 
 ### Validation State
 
-- Godot Import / Cold Start: PASS — GitHub Actions run 36657800164
-- Linux Core Smoke: PASS — GitHub Actions run 36657800164
-- Windows Direct Smoke: PASS — GitHub Actions run 36657800164
-- Stage Catalog load / Home routing regression: PASS — GitHub Actions run 36657800164
-- Existing Single / Gridshot gameplay regression: PASS — GitHub Actions run 36657800164
+- Godot Import / Cold Start: PASS — GitHub Actions run 36658238221
+- Linux Core Smoke: PASS — GitHub Actions run 36658238221
+- Windows Direct Smoke: PASS — GitHub Actions run 36658238221
+- Stage Catalog / Home / Result→Home routing regression: PASS — GitHub Actions run 36658238221
+- Existing Single / Gridshot gameplay regression: PASS — GitHub Actions run 36658238221
 - Windows Actual Playtest: NOT_RUN
 - Final visual review: NOT_RUN — Home / Stage SetupはWindows実機確認Taskで確認する
