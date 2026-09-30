@@ -8,7 +8,10 @@
     "duration_seconds": 60,
     "playable": true,
     "sort_order": 10,
-    "tags": ["Precision", "Clicking"]
+    "tags": [
+      "Precision",
+      "Clicking"
+    ]
   },
   {
     "id": "gridshot",
@@ -19,6 +22,25 @@
     "duration_seconds": 60,
     "playable": true,
     "sort_order": 20,
-    "tags": ["Flick", "Target Switching"]
+    "tags": [
+      "Flick",
+      "Target Switching"
+    ]
+  },
+  {
+    "id": "hold-angle-preaim",
+    "mode": "hold_angle",
+    "title": "Hold Angle / Pre-Aim",
+    "category": "クロスヘア配置",
+    "description": "青いHold Pointへ置きAimし、ランダムな間のあと横から出るTargetへ小さく補正して撃つ練習",
+    "duration_seconds": 60,
+    "playable": true,
+    "sort_order": 30,
+    "tags": [
+      "Pre-Aim",
+      "Angle Hold",
+      "Micro Adjustment",
+      "VALORANT"
+    ]
   }
 ]
