@@ -651,7 +651,8 @@ After the first scroll-container fix, the Repository was definitely at the lates
 ### Validation state
 
 - Repository implementation: COMPLETE
-- GitHub Actions: PENDING
+- Godot Import / Cold Start / Core Smoke: PASS — GitHub Actions run 36683651456
+- Windows Core Smoke: PASS — GitHub Actions run 36683651456
 - Windows Actual Playtest: NOT_RUN
 
 
