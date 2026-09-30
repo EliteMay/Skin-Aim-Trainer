@@ -1,7 +1,7 @@
 # REQUIREMENTS — Skin Aim Trainer
 
 Updated: 2026-09-30
-Status: Phase 1 complete / Phase 2 active
+Status: Aim foundation complete / Scenario Engine migration active
 
 ## Product Core
 
@@ -152,6 +152,39 @@ Current balance:
 | 標準 | 0.62 | -5.2〜5.2 | 0.2〜4.6 |
 | むずかしい | 0.46 | -6.2〜6.2 | -0.1〜5.0 |
 
+## Current Product Direction — KovaaK's-style Scenario Platform
+
+2026-09-30のUser指示により、Productの開発順を変更する。
+
+### 開発順
+
+1. Aim TrainerとしてのScenario再現能力を先に完成させる
+2. 個別ScenarioをHardcodeするのではなく、Scenario定義DataからRuntimeを構成する
+3. Clicking / Tracking / Target Switching / Reactive / Strafing / Air / Angle Hold等を同じEngineで表現できるようにする
+4. Built-in Scenario Packを作り、必要なScenarioは後からData追加できるようにする
+5. Weapon / VALORANT-style Skin SystemはScenario基盤完成後に統合する
+
+### 「KovaaK'sを再現」のScope
+
+再現対象:
+
+- Sandbox / Scenario BrowserのScenario-centric workflow
+- Challenge / Freeplayの基本Run model
+- ScenarioごとのPlayer / Weapon / Bot / Spawn / Movement / Aim / Challenge / Scoring / Tagsという構成概念
+- Static Clicking / Dynamic Clicking / Tracking / Target Switching / Reactive Tracking等を作れるRuntime capability
+- ScenarioごとのFOV / Sensitivity / Duration / Target size / movement / health / respawn / scoring parameter
+- Local Scenario / PlaylistをData-drivenに追加できる構造
+
+そのまま複製しないもの:
+
+- KovaaK'sのSource Code
+- Proprietary Asset / Audio / Logo / Branding
+- Community Scenario fileを権利確認なしでBundleすること
+- Online Leaderboard / Workshop / Account infrastructureの完全複製
+- UIをpixel-perfectにコピーすること
+
+特定Scenarioを追加するときは、公開情報・User提供Data・許諾済みDataから**挙動と練習目的を再実装**する。Scenario Engine側が十分に汎用化されていれば、後続追加は原則としてScenario Data追加 + 必要最小の新Behavior Componentで行う。
+
 ## Training Mode Contract
 
 Phase 2ではSingle / Gridshotを導入し、Phase 3でHold Angle / Pre-Aim、Microshot、Flickを追加する。ModeはHomeのStage Catalogから選択し、別のMode Selectorを重複させない。
@@ -237,7 +270,22 @@ flick:
   best_flick_hard_score
 ```
 
-Mode選択はHomeのStage metadataからRuntime Modeへ変換する。将来StageごとにGameplay Scriptが増える場合も、Home UIへMode固有条件分岐を追加しない。
+現在のSingle / Gridshot / Hold Angle / Microshot / FlickはScenario Engine移行前のPrototype Scenarioとして保持する。
+
+Scenario Engine v1以降は`TrainingMode enum`を新Scenario追加の中心にしない。Scenario IDから以下のProfile / Ruleを読み込み、共通Runtime Componentを組み合わせる。
+
+- Player Profile
+- Weapon Profile
+- Target / Character Profile
+- Bot Profile
+- Spawn Profile
+- Movement / Dodge Profile
+- Aim Profile（必要なScenarioのみ）
+- Challenge Rule
+- Scoring Rule
+- Tags / Aim Type
+
+既存Mode + Difficulty BESTはMigration sourceとして読み込み、新RecordはScenario ID単位へ移行する。
 
 ## Play / Stage Library Contract
 
@@ -250,8 +298,9 @@ Current Flow:
 - Scenario Browserには実装済み / playableなStageだけを表示する
 - 左側にTraining一覧、右側に選択中Trainingの詳細と開始前設定を表示する
 - Training選択のためだけに別Page / Stage Setupへ遷移しない
-- Stage定義は`data/stages.json`をSource of Truthとする
-- Stage metadataは最低限 `id / mode / title / category / description / duration_seconds / playable / sort_order / tags` を持つ
+- Current Prototypeでは`data/stages.json`を使用する
+- Scenario Engine v1では`data/scenarios/`以下のScenario definitionをSource of Truthとする
+- Scenario metadataは最低限 `id / title / aim_type / description / duration / tags / player_profile / weapon_profile / bot_profiles / challenge / scoring` を持つ
 - 現在のplayable Stageは「シングルターゲット」「Gridshot」「Hold Angle / Pre-Aim」「Microshot」「Flick」
 - Training一覧はCatalog Dataから動的に生成する
 - 選択中PanelへTitle / Category / Description / Duration / Personal Bestを表示する
@@ -262,12 +311,36 @@ Current Flow:
 - Resultの「Homeへ戻る」はScenario Browserへ戻す
 - 最後に選んだMode / Difficultyは既存Local Settingsへ保存する
 - Stage DurationはmetadataからRuntimeへ渡せるようにする。Current Stageはすべて60秒
-- Stageが2件のCurrent段階ではSearch / Filterを追加しない
-- 将来Stage数が増えたらcategory / tagsを使ってBrowse / Searchを追加できる構造を維持する
+- Scenario Engine移行後はScenario数増加を前提にSearch / Filter / Favorite / Recentを追加する
+- Aim Type / Tags / Difficulty / SourceでBrowseできる構造にする
 - 新Stage追加でSceneへ固定Buttonや巨大な条件分岐を追加しない
-- Aimlabs / KovaaK'sのUI / Asset / Brandingはコピーしない。Current Productの「Trainingを探す・設定する・開始する往復を減らす」構造だけをProject Contextへ変換する
+- KovaaK'sのScenario-centric workflow / configurable profile modelは参考にするが、Source Code / Asset / Branding / Community配布Fileはコピーしない
 
-Current Recordは既存互換のためMode + Difficulty Keyを維持する。StageがModeと1対1でなくなる段階でStage ID + Difficulty RecordへMigrationする。
+Current Recordは既存互換のためMode + Difficulty Keyを読み込める状態を維持する。Scenario Engine v1でScenario ID + Variant / Difficulty単位へMigrationする。
+
+## Scenario Engine Completion Contract
+
+Skin実装へ進む前に、最低限次を満たす。
+
+- Static Clicking
+- Dynamic Clicking
+- Smooth Tracking
+- Reactive Tracking
+- Target Switching
+- Angle Hold / Peek
+- Strafe / movement target
+- Multi-target spawn / despawn
+- Target health / kill / respawn
+- Hitscan single-shot / automatic fire
+- Challenge timer / Freeplay
+- Configurable scoring / accuracy
+- Scenario ID別Personal Best
+- Scenario Browser search / filter
+- Local Playlist
+- JSON定義だけで複数Scenarioを追加できる
+- 新Scenario追加でMain Sceneの巨大なmode分岐を増やさない
+
+Editor / Online Workshop / Global LeaderboardはScenario Engine v1の必須条件ではない。
 
 ## Skin Contract
 
@@ -285,6 +358,7 @@ Skin変更で以下を変更しない:
 
 - OKIAIMXのコード・画像・音声・Asset・UIをコピーしない
 - Aim Labをコピーしない
+- KovaaK'sのSource Code / Asset / Brand / Community Scenario fileを権利確認なしでコピーしない
 - VALORANT Assetの権利状態を無視しない
 - Riot公式Productと誤認するBrandingをしない
 - 初期はPlaceholder / Original / Permission確認済みAssetだけを使う
