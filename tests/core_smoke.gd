@@ -145,9 +145,33 @@ func _ready() -> void:
 	assert(fourth_stage_button.text.contains("Microshot"))
 	assert(fifth_stage_button.text.contains("Flick"))
 	assert(first_stage_button.button_pressed)
+	assert(
+		instance.get_node("UI/HomeOverlay/Margin/Content/Body/Library/Kicker").text
+		== "SANDBOX"
+	)
+	assert(
+		instance.get_node("UI/HomeOverlay/Margin/Content/Body/Library/SectionTitle").text
+		== "SCENARIO BROWSER"
+	)
+	assert(
+		instance.get_node(selected_prefix + "/Kicker").text
+		== "SCENARIO INFO"
+	)
+	assert(
+		instance.get_node(selected_prefix + "/DifficultyLabel").text
+		== "DIFFICULTY / 難易度"
+	)
+	assert(
+		instance.get_node(selected_prefix + "/QuickSettingsLabel").text
+		== "SETTINGS / クイック設定"
+	)
 
 	assert(instance.get_node(selected_prefix + "/Title").text == "シングルターゲット")
-	assert(instance.get_node(selected_prefix + "/Meta").text == "基礎  ·  60秒")
+	assert(instance.get_node(selected_prefix + "/Meta").text == "Clicking  ·  60s")
+	assert(
+		instance.get_node(selected_prefix + "/Tags").text
+		== "TAGS  ·  PRECISION  /  CLICKING"
+	)
 	assert(
 		instance.get_node(selected_prefix + "/Description").text
 		== "1つのTargetへ正確にAimして撃つ基本練習"
@@ -553,7 +577,7 @@ func _ready() -> void:
 		"UI/ResultOverlay/Center/Content/BackButton"
 	) as Button
 	assert(result_home_button != null)
-	assert(result_home_button.text == "Homeへ戻る")
+	assert(result_home_button.text == "SCENARIO BROWSERへ戻る")
 	result_home_button.pressed.emit()
 	await get_tree().process_frame
 	assert(instance.get_node("UI/HomeOverlay").visible)
@@ -563,6 +587,7 @@ func _ready() -> void:
 	assert(instance.selected_training_mode == instance.TrainingMode.HOLD_ANGLE)
 	assert(instance.get_node(selected_prefix + "/Title").text == "Hold Angle / Pre-Aim")
 	assert(instance.personal_best_score == 0)
+	assert(instance.get_node(selected_prefix + "/DifficultyDescription").text.contains("Peek"))
 	assert(instance.hold_angle_marker != null)
 	assert(not instance.hold_angle_marker.visible)
 
@@ -608,6 +633,7 @@ func _ready() -> void:
 	assert(instance.selected_training_mode == instance.TrainingMode.MICROSHOT)
 	assert(instance.get_node(selected_prefix + "/Title").text == "Microshot")
 	assert(instance.personal_best_score == 0)
+	assert(instance.get_node(selected_prefix + "/DifficultyDescription").text.contains("最大移動"))
 	var micro_radius := (instance.target_meshes[0] as MeshInstance3D).mesh as SphereMesh
 	assert(is_equal_approx(micro_radius.radius, 0.36))
 	instance.start_training()
@@ -636,6 +662,7 @@ func _ready() -> void:
 	assert(instance.selected_training_mode == instance.TrainingMode.FLICK)
 	assert(instance.get_node(selected_prefix + "/Title").text == "Flick")
 	assert(instance.personal_best_score == 0)
+	assert(instance.get_node(selected_prefix + "/DifficultyDescription").text.contains("最低移動"))
 	var flick_radius := (instance.target_meshes[0] as MeshInstance3D).mesh as SphereMesh
 	assert(is_equal_approx(flick_radius.radius, 0.56))
 	instance.start_training()
