@@ -310,8 +310,8 @@ Sensitivity / Crosshair / Hit Detection rule / Score rule / 60秒SessionはDiffi
 - Linux Core Smoke: PASS — GitHub Actions run 36599258512
 - Windows Direct Smoke: PASS — GitHub Actions run 36599258512
 - Legacy Best compatibility: PASS — GitHub Actions run 36599258512
-- Windows Actual Playtest: NOT_RUN
-- Final visual review: NOT_RUN — Start画面の追加Selectorは実機確認Taskで確認する
+- Windows Actual Playtest: PASS — Game Dev Hub共有Pack 2026-09-30 / 9 of 9
+- Final visual review: PASS — Difficulty selector / ESC Main Menu flowをUser実機確認
 
 
 ## 2026-09-30 — Pauseからメインメニューへ戻る導線
@@ -334,4 +334,47 @@ Difficulty等のWindows実機確認中、60秒Sessionの途中からStartへ戻�
 
 - Linux Godot CI: PASS — GitHub Actions run 36609240253
 - Windows Direct Smoke: PASS — GitHub Actions run 36609240253
-- Windows Actual Playtest: NOT_RUN
+- Windows Actual Playtest: PASS — Game Dev Hub共有Pack 2026-09-30
+
+
+## 2026-09-30 — Phase 2 Gridshot
+
+### Previous Task Closure
+
+Game Dev Hub共有PackでDifficultyのWindows実機確認9/9 PASSを確認し、RoadmapのDifficulty実機確認Taskを完了へ更新した。
+
+確認済み:
+
+- 3段階Difficulty
+- Easy / Normal / HardのTarget size / spawn range
+- ESC → Main Menu
+- 途中SessionでBEST非更新
+- Sensitivity / Crosshair / 60秒 / Score ruleの非破壊
+- Difficulty別BEST
+- 再起動後Persistence
+
+### Reference Boundary
+
+Aimlabs公式のCurrent materialでGridshotがCore Taskとして継続していることを確認した。今回の3 Target / Respawn / Score仕様はProject固有の独自実装で、AimlabsのUI / Asset / Code / exact scoringをコピーしない。
+
+### Implemented
+
+- Start画面Training Mode selector
+- シングル / Gridshot
+- Gridshot 3 Target同時表示
+- Hit TargetだけRespawn
+- Target間Minimum separation
+- Difficultyを3 Targetすべてへ適用
+- Mode persistence
+- Mode + Difficulty別Personal Best
+- 既存Single BEST Keyを維持
+- Gridshot専用BEST Key追加
+- Mode / Target count / record separation regression coverage
+
+### Validation State
+
+- Godot Import / Cold Start: pending CI
+- Linux Core Smoke: pending CI
+- Windows Direct Smoke: pending CI
+- Existing Single BEST compatibility: pending CI
+- Gridshot Windows Actual Playtest: NOT_RUN
