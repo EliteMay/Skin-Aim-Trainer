@@ -10,8 +10,8 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 
 ## 起動後にやること
 
-1. **Homeでステージを選ぶ**
-2. Stage Setupで**難易度 / 感度 / クロスヘア**を確認する
+1. **Play画面でトレーニングを選ぶ**
+2. 同じ画面の右側で**難易度 / 感度 / クロスヘア**を確認する
 3. **60秒の練習を開始** を押して、赤いTargetを狙って左クリックで撃つ
 
 操作:
@@ -68,15 +68,18 @@ Phase 1のCore Aim PrototypeはWindows実機確認まで完了しました。現
 
 ## Phase 3で追加済み
 
-- 起動直後のHome
+- 起動直後のPlay / Training Library
 - Data-driven Stage Library
-- Home → Stage Setup → Play → Result → Home
+- 左側のTraining一覧 + 右側の選択中Training / Quick Settings
+- 別Stage Setup画面を挟まず、選択と設定を1画面へ集約
 - シングルターゲット / GridshotをStage Catalogから動的表示
+- 難易度を選択中Trainingの横で変更
+- 感度 / Crosshair設定を選択中Trainingの横から開く
 - Stage metadataを`data/stages.json`へ分離
 - Stage category / description / duration / mode / tags
-- ESC / ResultからHomeへ戻る導線
+- ESC / ResultからPlay画面へ戻る導線
 
-現在は2 Stageだけなので検索 / Filterは入れていません。Stage数が増えた段階で、category / tagsを使ったBrowse / Searchを追加できる構造にしています。
+現在は2 Stageだけなので検索 / Filterは入れていません。Stage数が増えた段階で、category / tagsを使ったBrowse / Searchを追加できる構造にしています。Aimlabs / KovaaK'sのUIやAssetはコピーせず、「Trainingを探す・設定する・開始する」の往復を減らす構造だけを参考にしています。
 
 ## まだ入れていないもの
 - Microshot / Hold Angle / Flick / Tracking
