@@ -522,8 +522,8 @@ Current 2-Stage規模では、Training selectionと開始前設定を別Surface�
 
 ### Validation State
 
-- Godot Linux import / cold start / core smoke: PASS — PR #11 CI
-- Windows Godot direct smoke: PASS — PR #11 CI
+- Godot Linux import / cold start / core smoke: PASS — GitHub Actions run 36667623918
+- Windows Godot direct smoke: PASS — GitHub Actions run 36667623918
 - Separate Stage Setup removal contract: PASS — Core Smoke
 - Training selection stays on same Surface: PASS — Core Smoke
 - Difficulty / Sensitivity / Crosshair entry points colocated: PASS — Core Smoke
