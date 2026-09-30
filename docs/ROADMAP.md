@@ -241,7 +241,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - ESC → メインメニュー / 再起動後も選択ModeとBESTが維持される
   - 2026-09-30 Game Dev Hub共有Packで8/8 PASS
 
-- [ ] Microshot
+- [x] Microshot
   - 担当: ChatGPT
   - 画面中央付近に小さなTargetを1個表示する
   - Hit後は前のTarget位置の近くへ短距離だけ移動させる
@@ -252,6 +252,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - Stage CatalogへMicroshotを追加する
   - Mode / spawn distance / save key / Result / restartをGodot Smoke Testへ追加する
   - 実装完了後、Roadmapのこの項目を[x]へ変更し、次に「Microshotを実機確認する」をCurrent Taskへする
+  - 2026-09-30 Repository実装・Godot Smoke Test追加済み
 
 - [ ] Microshotを実機確認する
   - 担当: あなた
