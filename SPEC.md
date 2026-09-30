@@ -95,6 +95,7 @@ DPIは計算・表示・保存に使用する。ApplicationからMouse Hardware 
 - SingleはActive Target 1個
 - GridshotはActive Target 3個
 - Hold Angle / Pre-AimはActive Target 1個 + 非CollisionのHold Point 1個
+- MicroshotはActive Target 1個
 - HitしたTargetだけ次位置へ移動する
 - Multi-target Modeでは極端なTarget重なりを避けるMinimum Separationを持つ
 
@@ -137,6 +138,17 @@ Difficulty Profile:
 - Hit後はHold Point / Peek Direction / Waitを再抽選する
 - Score / Accuracy / 60秒Sessionは既存Contractを再利用する
 - Personal BestはMode + Difficultyで分離する
+
+### Microshot
+
+- Active Target Count: 1
+- Initial position: X -0.55〜0.55 / Y 1.65〜2.35
+- Movement bounds: X -2.4〜2.4 / Y 0.9〜3.7
+- Max step: Easy 0.75 / Normal 1.05 / Hard 1.35
+- Target radius: Easy 0.50 / Normal 0.36 / Hard 0.26
+- Hitごとに直前位置から短距離移動
+- 60秒Session / Score / Accuracyは既存Contractを再利用
+- Personal BestはMode + Difficultyで分離保存
 
 ModeはPlay Libraryで選んだStage metadataから決定する。Training開始後はSession中のModeを固定する。別Stage Setup画面や重複Mode Selectorは置かない。
 
@@ -191,7 +203,7 @@ Right / Selected Training:
 
 Stage選択時は別画面へ遷移せずRight Panelだけ更新する。Sensitivity / Crosshairの詳細Overlayを閉じた場合も同じPlay Libraryへ戻る。
 
-Stage一覧は`data/stages.json`から動的に生成する。Currentは3 StageだけなのでSearch / Filterを置かない。
+Stage一覧は`data/stages.json`から動的に生成する。Currentは4 StageだけなのでSearch / Filterを置かない。
 
 ### Training
 
@@ -334,6 +346,7 @@ Current playable Stage:
 1. シングルターゲット
 2. Gridshot
 3. Hold Angle / Pre-Aim
+4. Microshot
 
 新しいStageを追加するとき、Sceneへ固定Buttonを追加しない。Catalog追加とGameplay実装を分離し、Main Sceneの巨大なUI条件分岐を避ける。
 
@@ -379,9 +392,11 @@ Automated:
 - Single 1 Target / Gridshot 3 Target activation
 - Hold AngleのHold Point → Wait → Peek state transition
 - Hold AngleのTarget visibility / collision gating
+- Microshotの初期位置 / short-step移動 / bounds
 - Gridshot Target respawn isolation
 - Mode別Personal Best分離
 - Hold Angle Difficulty別Personal Best保存
+- Microshot Difficulty別Personal Best保存
 
 Actual Playtest:
 

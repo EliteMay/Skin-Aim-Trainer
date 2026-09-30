@@ -204,3 +204,13 @@
 - Problem: Making a list scrollable prevents clipping, but a newly added primary Training can still appear missing if scrolling is required and no strong scrollbar affordance is visible.
 - Decision: Keep overflow scrolling for future growth, while ensuring the current primary Training set fits in the default visible viewport.
 - Validation: Test both total item count and current-list fit inside the visible scroll viewport.
+
+
+## SAT-GAME-003 — Micro-adjustment mode must constrain displacement, not only target size
+
+- Date: 2026-09-30
+- Type: Gameplay / Aim Training
+- Status: Adopted
+- Problem: A small target alone can still become a large-flick scenario if respawn uses the full arena.
+- Decision: Microshot uses both a smaller target radius and a bounded relative step from the previous target position.
+- Validation: Smoke coverage checks the initial center-biased position and that the next target stays within the configured maximum step.

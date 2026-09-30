@@ -42,5 +42,21 @@
       "Micro Adjustment",
       "VALORANT"
     ]
+  },
+  {
+    "id": "microshot",
+    "mode": "microshot",
+    "title": "Microshot",
+    "category": "マイクロ補正",
+    "description": "中央付近の小さなTargetを、短い距離だけ追い続けて細かいAim補正を反復する練習",
+    "duration_seconds": 60,
+    "playable": true,
+    "sort_order": 40,
+    "tags": [
+      "Micro Adjustment",
+      "Precision",
+      "Clicking",
+      "VALORANT"
+    ]
   }
 ]

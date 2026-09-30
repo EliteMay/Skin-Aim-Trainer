@@ -21,15 +21,17 @@ enum TrainingMode {
 	SINGLE,
 	GRIDSHOT,
 	HOLD_ANGLE,
+	MICROSHOT,
 }
 
 const TARGET_DISTANCE := 14.0
-const TRAINING_MODE_KEYS := ["single", "gridshot", "hold_angle"]
-const TRAINING_MODE_LABELS := ["シングル", "Gridshot", "Hold Angle / Pre-Aim"]
+const TRAINING_MODE_KEYS := ["single", "gridshot", "hold_angle", "microshot"]
+const TRAINING_MODE_LABELS := ["シングル", "Gridshot", "Hold Angle / Pre-Aim", "Microshot"]
 const TRAINING_MODE_DESCRIPTIONS := [
 	"1 Targetを順番に狙う基本練習",
 	"3 Targetを素早く切り替えて撃つ練習",
 	"置きAimを維持し、Peek後の小さな補正を撃つ練習",
+	"小さなTargetへ細かいmicro-adjustmentを繰り返す練習",
 ]
 const DEFAULT_TRAINING_MODE := TrainingMode.SINGLE
 const GRIDSHOT_TARGET_COUNT := 3
@@ -39,6 +41,10 @@ const HOLD_ANGLE_MAX_WAIT_SECONDS := 1.10
 const HOLD_ANGLE_MARKER_RADIUS := 0.16
 const HOLD_ANGLE_PEEK_OFFSETS := [1.0, 1.4, 1.8]
 const HOLD_ANGLE_HEAD_HEIGHT := 1.8
+const MICROSHOT_TARGET_RADII := [0.50, 0.36, 0.26]
+const MICROSHOT_MAX_STEP := [0.75, 1.05, 1.35]
+const MICROSHOT_CENTER_X_RANGE := Vector2(-2.4, 2.4)
+const MICROSHOT_CENTER_Y_RANGE := Vector2(0.9, 3.7)
 const DIFFICULTY_KEYS := ["easy", "normal", "hard"]
 const DIFFICULTY_LABELS := ["かんたん", "標準", "むずかしい"]
 const DIFFICULTY_DESCRIPTIONS := [
@@ -241,6 +247,9 @@ var personal_best_scores: Dictionary = {
 	"hold_angle_easy": 0,
 	"hold_angle_normal": 0,
 	"hold_angle_hard": 0,
+	"microshot_easy": 0,
+	"microshot_normal": 0,
+	"microshot_hard": 0,
 }
 var personal_best_score := 0
 var last_session_new_best := false
@@ -603,6 +612,8 @@ func _shoot() -> void:
 		if target_index >= 0:
 			if selected_training_mode == TrainingMode.HOLD_ANGLE:
 				_prepare_hold_angle_cycle()
+			elif selected_training_mode == TrainingMode.MICROSHOT:
+				_move_microshot_target()
 			else:
 				_move_target_at(target_index)
 		_show_feedback("HIT +1", Color(0.42, 1.0, 0.64))
@@ -698,8 +709,45 @@ func _move_active_targets() -> void:
 	if selected_training_mode == TrainingMode.HOLD_ANGLE:
 		_prepare_hold_angle_cycle()
 		return
+	if selected_training_mode == TrainingMode.MICROSHOT:
+		_place_microshot_start()
+		return
 	for index in range(_active_target_count()):
 		_move_target_at(index)
+
+
+func _place_microshot_start() -> void:
+	if target_bodies.is_empty():
+		return
+	var body := target_bodies[0] as StaticBody3D
+	body.position = Vector3(
+		rng.randf_range(-0.55, 0.55),
+		rng.randf_range(1.65, 2.35),
+		-TARGET_DISTANCE
+	)
+
+
+func _move_microshot_target() -> void:
+	if target_bodies.is_empty():
+		return
+
+	var body := target_bodies[0] as StaticBody3D
+	var current := body.position
+	var max_step: float = MICROSHOT_MAX_STEP[selected_difficulty]
+	var candidate := current
+
+	for attempt in range(20):
+		var angle := rng.randf_range(0.0, TAU)
+		var distance := rng.randf_range(max_step * 0.45, max_step)
+		candidate = Vector3(
+			clampf(current.x + cos(angle) * distance, MICROSHOT_CENTER_X_RANGE.x, MICROSHOT_CENTER_X_RANGE.y),
+			clampf(current.y + sin(angle) * distance, MICROSHOT_CENTER_Y_RANGE.x, MICROSHOT_CENTER_Y_RANGE.y),
+			-TARGET_DISTANCE
+		)
+		if Vector2(candidate.x, candidate.y).distance_to(Vector2(current.x, current.y)) >= max_step * 0.35:
+			break
+
+	body.position = candidate
 
 
 func _prepare_hold_angle_cycle() -> void:
@@ -792,7 +840,11 @@ func _move_target_at(index: int) -> void:
 
 
 func _apply_difficulty_to_target() -> void:
-	var radius: float = DIFFICULTY_TARGET_RADII[selected_difficulty]
+	var radius: float = (
+		MICROSHOT_TARGET_RADII[selected_difficulty]
+		if selected_training_mode == TrainingMode.MICROSHOT
+		else DIFFICULTY_TARGET_RADII[selected_difficulty]
+	)
 	for index in range(target_meshes.size()):
 		var mesh := target_meshes[index] as MeshInstance3D
 		var sphere := mesh.mesh as SphereMesh
@@ -1044,6 +1096,8 @@ func _current_best_config_key() -> String:
 		return "best_gridshot_%s_score" % _current_difficulty_key()
 	if selected_training_mode == TrainingMode.HOLD_ANGLE:
 		return "best_hold_angle_%s_score" % _current_difficulty_key()
+	if selected_training_mode == TrainingMode.MICROSHOT:
+		return "best_microshot_%s_score" % _current_difficulty_key()
 	return "best_%s_score" % _current_difficulty_key()
 
 
@@ -1244,6 +1298,18 @@ func _load_settings() -> void:
 	)
 	personal_best_scores["hold_angle_hard"] = maxi(
 		int(config.get_value(RECORDS_SECTION, "best_hold_angle_hard_score", 0)),
+		0
+	)
+	personal_best_scores["microshot_easy"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_microshot_easy_score", 0)),
+		0
+	)
+	personal_best_scores["microshot_normal"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_microshot_normal_score", 0)),
+		0
+	)
+	personal_best_scores["microshot_hard"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_microshot_hard_score", 0)),
 		0
 	)
 	_sync_current_personal_best()
