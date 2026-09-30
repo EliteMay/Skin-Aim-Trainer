@@ -181,186 +181,193 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.018, 0.024, 0.035, 0.98)
+color = Color(0.018, 0.024, 0.035, 0.99)
 mouse_filter = 2
 
-[node name="Center" type="CenterContainer" parent="UI/HomeOverlay"]
+[node name="Margin" type="MarginContainer" parent="UI/HomeOverlay"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 52
+theme_override_constants/margin_top = 38
+theme_override_constants/margin_right = 52
+theme_override_constants/margin_bottom = 38
 
-[node name="Content" type="VBoxContainer" parent="UI/HomeOverlay/Center"]
-custom_minimum_size = Vector2(760, 0)
+[node name="Content" type="VBoxContainer" parent="UI/HomeOverlay/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 16
-alignment = 1
+theme_override_constants/separation = 24
 
-[node name="Title" type="Label" parent="UI/HomeOverlay/Center/Content"]
+[node name="Header" type="HBoxContainer" parent="UI/HomeOverlay/Margin/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 46
+theme_override_constants/separation = 18
+
+[node name="Brand" type="VBoxContainer" parent="UI/HomeOverlay/Margin/Content/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="UI/HomeOverlay/Margin/Content/Header/Brand"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 38
 text = "SKIN AIM TRAINER"
-horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="UI/HomeOverlay/Center/Content"]
+[node name="Subtitle" type="Label" parent="UI/HomeOverlay/Margin/Content/Header/Brand"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.8, 0.88, 1)
-theme_override_font_sizes/font_size = 21
-text = "ステージを選んで練習"
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.68, 0.74, 0.82, 1)
+theme_override_font_sizes/font_size = 17
+text = "トレーニングを選んで、同じ画面ですぐ設定して開始"
 
-[node name="LastStage" type="Label" parent="UI/HomeOverlay/Center/Content"]
+[node name="Body" type="HBoxContainer" parent="UI/HomeOverlay/Margin/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.68, 0.76, 1)
-theme_override_font_sizes/font_size = 16
-text = "前回: シングルターゲット / 標準"
-horizontal_alignment = 1
+size_flags_vertical = 3
+theme_override_constants/separation = 24
 
-[node name="SectionTitle" type="Label" parent="UI/HomeOverlay/Center/Content"]
+[node name="Library" type="VBoxContainer" parent="UI/HomeOverlay/Margin/Content/Body"]
+custom_minimum_size = Vector2(650, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Kicker" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/Library"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.78, 0.96, 1)
+theme_override_font_sizes/font_size = 14
+text = "PLAY"
+
+[node name="SectionTitle" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/Library"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
 text = "トレーニング"
-horizontal_alignment = 0
 
-[node name="StageList" type="VBoxContainer" parent="UI/HomeOverlay/Center/Content"]
-custom_minimum_size = Vector2(0, 218)
+[node name="SectionHint" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/Library"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_colors/font_color = Color(0.58, 0.64, 0.72, 1)
+theme_override_font_sizes/font_size = 14
+text = "練習したいモードを選択"
 
-[node name="Hint" type="Label" parent="UI/HomeOverlay/Center/Content"]
+[node name="StageList" type="VBoxContainer" parent="UI/HomeOverlay/Margin/Content/Body/Library"]
+custom_minimum_size = Vector2(0, 230)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.56, 0.62, 0.7, 1)
-theme_override_font_sizes/font_size = 15
-text = "実装済みステージだけを表示します。今後ここへ新しい練習を追加します。"
-horizontal_alignment = 1
+theme_override_constants/separation = 12
 
-[node name="StartOverlay" type="Control" parent="UI"]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Background" type="ColorRect" parent="UI/StartOverlay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.025, 0.032, 0.045, 0.96)
-mouse_filter = 2
-
-[node name="Center" type="CenterContainer" parent="UI/StartOverlay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Content" type="VBoxContainer" parent="UI/StartOverlay/Center"]
-custom_minimum_size = Vector2(620, 0)
+[node name="LibraryHint" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/Library"]
 layout_mode = 2
-theme_override_constants/separation = 16
-alignment = 1
-
-[node name="Title" type="Label" parent="UI/StartOverlay/Center/Content"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "シングルターゲット"
-horizontal_alignment = 1
-
-[node name="Subtitle" type="Label" parent="UI/StartOverlay/Center/Content"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.78, 0.84, 1)
-theme_override_font_sizes/font_size = 18
-text = "基礎  ·  60秒"
-horizontal_alignment = 1
-
-[node name="StageDescription" type="Label" parent="UI/StartOverlay/Center/Content"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.68, 0.73, 0.8, 1)
-theme_override_font_sizes/font_size = 16
-text = "1つのTargetへ正確にAimして撃つ基本練習"
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.5, 0.56, 0.64, 1)
+theme_override_font_sizes/font_size = 13
+text = "現在は実装済みモードだけ表示。モードが増えたらカテゴリ・検索を追加します。"
 autowrap_mode = 2
 
-[node name="HowTo" type="Label" parent="UI/StartOverlay/Center/Content"]
+[node name="SelectedPanel" type="PanelContainer" parent="UI/HomeOverlay/Margin/Content/Body"]
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "1. 難易度を選ぶ\n2. マウスで赤いTargetを狙う\n3. 左クリックで撃つ"
-horizontal_alignment = 1
 
-[node name="DifficultyRow" type="HBoxContainer" parent="UI/StartOverlay/Center/Content"]
+[node name="PanelMargin" type="MarginContainer" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel"]
 layout_mode = 2
-theme_override_constants/separation = 14
-alignment = 1
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 22
 
-[node name="DifficultyLabel" type="Label" parent="UI/StartOverlay/Center/Content/DifficultyRow"]
+[node name="Selected" type="VBoxContainer" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
-text = "難易度"
+theme_override_constants/separation = 12
 
-[node name="DifficultySelect" type="OptionButton" parent="UI/StartOverlay/Center/Content/DifficultyRow"]
-custom_minimum_size = Vector2(260, 48)
+[node name="Kicker" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.42, 0.78, 0.96, 1)
+theme_override_font_sizes/font_size = 13
+text = "選択中"
 
-[node name="DifficultyDescription" type="Label" parent="UI/StartOverlay/Center/Content"]
+[node name="Title" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
+theme_override_font_sizes/font_size = 30
+text = "シングルターゲット"
+
+[node name="Meta" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.76, 0.84, 1)
 theme_override_font_sizes/font_size = 15
-text = "Target: 標準  /  出現範囲: 標準"
-horizontal_alignment = 1
+text = "基礎  ·  60秒"
 
-[node name="StartButton" type="Button" parent="UI/StartOverlay/Center/Content"]
-custom_minimum_size = Vector2(0, 64)
+[node name="Description" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 25
-text = "60秒の練習を開始"
+theme_override_colors/font_color = Color(0.72, 0.76, 0.82, 1)
+theme_override_font_sizes/font_size = 15
+text = "1つのTargetへ正確にAimして撃つ基本練習"
+autowrap_mode = 2
 
-[node name="BestScore" type="Label" parent="UI/StartOverlay/Center/Content"]
+[node name="BestScore" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.82, 0.46, 1)
-theme_override_font_sizes/font_size = 20
-text = "シングル / 標準 BEST  0"
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 19
+text = "シングルターゲット / 標準 BEST  0"
 
-[node name="CurrentSensitivity" type="Label" parent="UI/StartOverlay/Center/Content"]
+[node name="Divider1" type="HSeparator" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+layout_mode = 2
+
+[node name="DifficultyLabel" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "難易度"
+
+[node name="DifficultySelect" type="OptionButton" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+
+[node name="DifficultyDescription" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.64, 0.7, 0.78, 1)
+theme_override_font_sizes/font_size = 13
+text = "Target: 標準  /  出現範囲: 標準"
+
+[node name="Divider2" type="HSeparator" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+layout_mode = 2
+
+[node name="QuickSettingsLabel" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "クイック設定"
+
+[node name="CurrentSensitivity" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 14
 text = "1600 DPI  /  VALORANT 0.100  /  160 eDPI"
-horizontal_alignment = 1
+autowrap_mode = 2
 
-[node name="SettingsButton" type="Button" parent="UI/StartOverlay/Center/Content"]
-custom_minimum_size = Vector2(0, 48)
+[node name="SettingsActions" type="HBoxContainer" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "感度を設定"
+theme_override_constants/separation = 10
 
-[node name="CrosshairButton" type="Button" parent="UI/StartOverlay/Center/Content"]
-custom_minimum_size = Vector2(0, 48)
+[node name="SettingsButton" type="Button" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/SettingsActions"]
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "クロスヘアを設定"
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "感度設定"
 
-[node name="HomeButton" type="Button" parent="UI/StartOverlay/Center/Content"]
-custom_minimum_size = Vector2(0, 44)
+[node name="CrosshairButton" type="Button" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/SettingsActions"]
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "Homeへ戻る"
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "クロスヘア"
 
-[node name="Keys" type="Label" parent="UI/StartOverlay/Center/Content"]
+[node name="StartButton" type="Button" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+custom_minimum_size = Vector2(0, 62)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.66, 0.72, 1)
-theme_override_font_sizes/font_size = 16
-text = "ESC: メニュー　　R: やり直し\nDPIはマウス本体と同じ値を入力してください"
+theme_override_font_sizes/font_size = 23
+text = "60秒の練習を開始"
+
+[node name="Keys" type="Label" parent="UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.58, 0.66, 1)
+theme_override_font_sizes/font_size = 13
+text = "練習中: ESC メニュー  /  R やり直し\nDPIはマウス本体と同じ値を入力"
 horizontal_alignment = 1
 
 [node name="PauseOverlay" type="Control" parent="UI"]

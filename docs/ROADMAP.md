@@ -193,28 +193,30 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
 
 ## Phase 3 — Training Modes / Scenario Library
 
-- [x] Home / Stage Library基盤
+- [x] Play / Stage Library基盤
   - 担当: ChatGPT
-  - 起動直後をHomeに変更
-  - Homeから実装済みStageを選んでStage Setupへ進む
+  - 起動直後をPlay / Training Libraryにする
+  - 左に実装済みTraining一覧、右に選択中Training / Quick Settingsを表示
+  - Training選択だけで別Stage Setup画面へ遷移しない
   - Stage定義をdata/stages.jsonへ分離
   - category / description / duration / mode / tagsをData-driven化
-  - シングル / GridshotをCatalogから動的にHomeへ表示
-  - Stage SetupではDifficulty / Sensitivity / Crosshairだけを設定
-  - ESC Pauseの「メインメニューへ戻る」とResultの「Homeへ戻る」はHomeへ戻す
+  - シングル / GridshotをCatalogから動的表示
+  - Difficultyを選択中Training Panel内で変更
+  - Sensitivity / Crosshairの入口を選択中Training Panel内へ配置
+  - ESC Pauseの「メインメニューへ戻る」とResultの「Homeへ戻る」はPlay Libraryへ戻す
   - 既存Single / Gridshot gameplayとSave Keyは維持
-  - Home / Stage Catalog / Stage FlowをGodot Smoke Testへ追加
+  - Play Library / Stage Catalog / Quick Settings FlowをGodot Smoke Testへ追加
 
-- [ ] Home / Stage Libraryを実機確認する
+- [ ] Play Library / Quick Settingsを実機確認する
   - 担当: あなた
-  - 起動すると最初にHomeが表示される
-  - Homeに「シングルターゲット」と「Gridshot」が表示される
-  - シングルターゲットを押すと専用のStage Setupへ進める
-  - Gridshotを押すと専用のStage Setupへ進める
-  - Stage SetupからDifficulty / 感度 / Crosshairを設定して開始できる
-  - Training途中でESC →「メインメニューへ戻る」でHomeへ戻れる
-  - Resultの「Homeへ戻る」でHomeへ戻れる
-  - Gameを再起動しても前回Stage / Difficulty表示と既存BESTが壊れない
+  - 起動すると「シングルターゲット」「Gridshot」と右側の設定Panelが同じ画面に表示される
+  - シングル / Gridshotを押しても別画面へ移動せず、右側の選択内容だけ変わる
+  - 難易度を同じ画面で選べる
+  - 「感度設定」を開いて戻ると同じPlay画面へ戻る
+  - 「クロスヘア」を開いて戻ると同じPlay画面へ戻る
+  - 選択中Trainingの「練習を開始」から正しいModeが始まる
+  - Training途中でESC →「メインメニューへ戻る」でPlay画面へ戻れる
+  - Resultの「Homeへ戻る」でPlay画面へ戻れ、再起動後もMode / Difficulty / BESTが残る
 
 - [ ] Hold Angle / Pre-Aim
 - [ ] Microshot
