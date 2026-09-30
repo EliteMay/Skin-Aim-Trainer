@@ -632,3 +632,24 @@ After the first scroll-container fix, the Repository was definitely at the lates
 
 - Automated CI: PENDING
 - Windows Actual Playtest: NOT_RUN
+
+
+## 2026-09-30 — Phase 3 Microshot
+
+### Implemented
+
+- Play LibraryへMicroshot Stageを追加
+- 中央付近から開始する1 Target
+- Hitごとに直前位置から短距離だけ移動
+- 中央寄りのboundsで大きなFlick化を防止
+- Difficulty別Target radius: 0.50 / 0.36 / 0.26
+- Difficulty別Max step: 0.75 / 1.05 / 1.35
+- Existing 60秒Session / Score / Accuracy / Sensitivity / Crosshairを再利用
+- Microshot専用Difficulty別BEST
+- Stage Catalog / movement / result / save key smoke coverage
+
+### Validation state
+
+- Repository implementation: COMPLETE
+- GitHub Actions: PENDING
+- Windows Actual Playtest: NOT_RUN
