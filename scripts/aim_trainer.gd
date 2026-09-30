@@ -16,7 +16,21 @@ enum DifficultyLevel {
 	HARD,
 }
 
+enum TrainingMode {
+	SINGLE,
+	GRIDSHOT,
+}
+
 const TARGET_DISTANCE := 14.0
+const TRAINING_MODE_KEYS := ["single", "gridshot"]
+const TRAINING_MODE_LABELS := ["シングル", "Gridshot"]
+const TRAINING_MODE_DESCRIPTIONS := [
+	"1 Targetを順番に狙う基本練習",
+	"3 Targetを素早く切り替えて撃つ練習",
+]
+const DEFAULT_TRAINING_MODE := TrainingMode.SINGLE
+const GRIDSHOT_TARGET_COUNT := 3
+const GRIDSHOT_MIN_SEPARATION_MULTIPLIER := 2.6
 const DIFFICULTY_KEYS := ["easy", "normal", "hard"]
 const DIFFICULTY_LABELS := ["かんたん", "標準", "むずかしい"]
 const DIFFICULTY_DESCRIPTIONS := [
@@ -85,6 +99,12 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 	$UI/StartOverlay/Center/Content/CrosshairButton
 )
 @onready var start_best_label: Label = $UI/StartOverlay/Center/Content/BestScore
+@onready var mode_select: OptionButton = (
+	$UI/StartOverlay/Center/Content/ModeRow/ModeSelect
+)
+@onready var mode_description: Label = (
+	$UI/StartOverlay/Center/Content/ModeDescription
+)
 @onready var difficulty_select: OptionButton = (
 	$UI/StartOverlay/Center/Content/DifficultyRow/DifficultySelect
 )
@@ -191,11 +211,15 @@ var shots := 0
 var hits := 0
 var misses := 0
 var session_remaining_seconds := SESSION_DURATION_SECONDS
+var selected_training_mode := DEFAULT_TRAINING_MODE
 var selected_difficulty := DEFAULT_DIFFICULTY
 var personal_best_scores: Dictionary = {
-	"easy": 0,
-	"normal": 0,
-	"hard": 0,
+	"single_easy": 0,
+	"single_normal": 0,
+	"single_hard": 0,
+	"gridshot_easy": 0,
+	"gridshot_normal": 0,
+	"gridshot_hard": 0,
 }
 var personal_best_score := 0
 var last_session_new_best := false
@@ -231,6 +255,9 @@ var previous_accumulated_input := true
 var target_body: StaticBody3D
 var target_mesh: MeshInstance3D
 var target_collision: CollisionShape3D
+var target_bodies: Array = []
+var target_meshes: Array = []
+var target_collisions: Array = []
 var rng := RandomNumberGenerator.new()
 
 
@@ -240,6 +267,8 @@ func _ready() -> void:
 	previous_accumulated_input = Input.use_accumulated_input
 	Input.use_accumulated_input = false
 
+	_populate_mode_options()
+	mode_select.item_selected.connect(_on_mode_selected)
 	_populate_difficulty_options()
 	difficulty_select.item_selected.connect(_on_difficulty_selected)
 
@@ -285,7 +314,8 @@ func _ready() -> void:
 	_load_settings()
 	_sync_settings_controls()
 	_sync_crosshair_controls()
-	_create_target()
+	_create_targets()
+	_sync_mode_ui()
 	_sync_difficulty_ui()
 	_show_ready_state()
 	_update_hud()
@@ -383,7 +413,7 @@ func start_training() -> void:
 	hud.visible = true
 	crosshair.visible = true
 	controls_hint.visible = true
-	target_mesh.visible = true
+	_set_targets_active(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
@@ -428,7 +458,7 @@ func restart_training() -> void:
 	hud.visible = true
 	crosshair.visible = true
 	controls_hint.visible = true
-	target_mesh.visible = true
+	_set_targets_active(true)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	_show_feedback("RESTART", Color(0.82, 0.9, 1.0))
 
@@ -450,7 +480,7 @@ func _show_ready_state() -> void:
 	crosshair.visible = false
 	controls_hint.visible = false
 	feedback_label.visible = false
-	target_mesh.visible = false
+	_set_targets_active(false)
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	_update_sensitivity_labels()
 	_update_best_labels()
@@ -467,7 +497,7 @@ func _reset_round() -> void:
 	yaw_degrees = 0.0
 	pitch_degrees = 0.0
 	camera.rotation_degrees = Vector3.ZERO
-	_move_target()
+	_move_active_targets()
 	_update_hud()
 	_update_timer_label()
 
@@ -483,14 +513,14 @@ func _finish_session() -> void:
 	last_session_new_best = score > personal_best_score
 	if last_session_new_best:
 		personal_best_score = score
-		personal_best_scores[_current_difficulty_key()] = personal_best_score
+		personal_best_scores[_current_record_id()] = personal_best_score
 		_save_personal_best()
 
 	hud.visible = false
 	crosshair.visible = false
 	controls_hint.visible = false
 	feedback_label.visible = false
-	target_mesh.visible = false
+	_set_targets_active(false)
 	pause_overlay.visible = false
 	settings_overlay.visible = false
 	crosshair_settings_overlay.visible = false
@@ -503,10 +533,10 @@ func _finish_session() -> void:
 	result_accuracy_label.text = "命中率  %d%%" % int(round(accuracy))
 	result_hits_misses_label.text = "HIT  %d    MISS  %d" % [hits, misses]
 	result_best_label.text = "%s BEST  %d" % [
-		_current_difficulty_label(),
+		_current_training_label(),
 		personal_best_score,
 	]
-	result_mode_label.text = "%s / 60秒 Session" % _current_difficulty_label()
+	result_mode_label.text = "%s / 60秒 Session" % _current_training_label()
 	_update_best_labels()
 	retry_button.grab_focus()
 
@@ -523,7 +553,9 @@ func _shoot() -> void:
 	if collider is Node and collider.is_in_group("aim_target"):
 		hits += 1
 		score += 1
-		_move_target()
+		var target_index := target_bodies.find(collider)
+		if target_index >= 0:
+			_move_target_at(target_index)
 		_show_feedback("HIT +1", Color(0.42, 1.0, 0.64))
 	else:
 		misses += 1
@@ -532,61 +564,118 @@ func _shoot() -> void:
 	_update_hud()
 
 
-func _create_target() -> void:
-	target_body = StaticBody3D.new()
-	target_body.name = "AimTarget"
-	target_body.add_to_group("aim_target")
-	target_root.add_child(target_body)
+func _create_targets() -> void:
+	for index in range(GRIDSHOT_TARGET_COUNT):
+		var body := StaticBody3D.new()
+		body.name = "AimTarget%d" % (index + 1)
+		body.add_to_group("aim_target")
+		target_root.add_child(body)
 
-	target_mesh = MeshInstance3D.new()
-	target_mesh.name = "Mesh"
-	var sphere := SphereMesh.new()
-	target_mesh.mesh = sphere
+		var mesh := MeshInstance3D.new()
+		mesh.name = "Mesh"
+		mesh.mesh = SphereMesh.new()
 
-	var target_material := StandardMaterial3D.new()
-	target_material.albedo_color = Color(1.0, 0.34, 0.32)
-	target_material.emission_enabled = true
-	target_material.emission = Color(0.7, 0.08, 0.07)
-	target_material.emission_energy_multiplier = 1.25
-	target_mesh.material_override = target_material
-	target_body.add_child(target_mesh)
+		var target_material := StandardMaterial3D.new()
+		target_material.albedo_color = Color(1.0, 0.34, 0.32)
+		target_material.emission_enabled = true
+		target_material.emission = Color(0.7, 0.08, 0.07)
+		target_material.emission_energy_multiplier = 1.25
+		mesh.material_override = target_material
+		body.add_child(mesh)
 
-	target_collision = CollisionShape3D.new()
-	target_collision.name = "Collision"
-	var shape := SphereShape3D.new()
-	target_collision.shape = shape
-	target_body.add_child(target_collision)
+		var collision := CollisionShape3D.new()
+		collision.name = "Collision"
+		collision.shape = SphereShape3D.new()
+		body.add_child(collision)
 
+		target_bodies.append(body)
+		target_meshes.append(mesh)
+		target_collisions.append(collision)
+
+	target_body = target_bodies[0]
+	target_mesh = target_meshes[0]
+	target_collision = target_collisions[0]
 	_apply_difficulty_to_target()
-	_move_target()
+	_move_active_targets()
+	_set_targets_active(false)
+
+
+func _active_target_count() -> int:
+	if selected_training_mode == TrainingMode.GRIDSHOT:
+		return GRIDSHOT_TARGET_COUNT
+	return 1
+
+
+func _set_targets_active(active: bool) -> void:
+	var active_count := _active_target_count()
+	for index in range(target_bodies.size()):
+		var should_enable := active and index < active_count
+		var mesh := target_meshes[index] as MeshInstance3D
+		var collision := target_collisions[index] as CollisionShape3D
+		mesh.visible = should_enable
+		collision.disabled = not should_enable
 
 
 func _move_target() -> void:
-	if target_body == null:
+	_move_target_at(0)
+
+
+func _move_active_targets() -> void:
+	for index in range(_active_target_count()):
+		_move_target_at(index)
+
+
+func _move_target_at(index: int) -> void:
+	if index < 0 or index >= target_bodies.size():
 		return
 
 	var x_range: Vector2 = DIFFICULTY_X_RANGES[selected_difficulty]
 	var y_range: Vector2 = DIFFICULTY_Y_RANGES[selected_difficulty]
-	target_body.position = Vector3(
-		rng.randf_range(x_range.x, x_range.y),
-		rng.randf_range(y_range.x, y_range.y),
-		-TARGET_DISTANCE
-	)
+	var radius: float = DIFFICULTY_TARGET_RADII[selected_difficulty]
+	var minimum_separation := radius * GRIDSHOT_MIN_SEPARATION_MULTIPLIER
+	var candidate := Vector3.ZERO
+
+	for attempt in range(20):
+		candidate = Vector3(
+			rng.randf_range(x_range.x, x_range.y),
+			rng.randf_range(y_range.x, y_range.y),
+			-TARGET_DISTANCE
+		)
+		var overlaps := false
+		for other_index in range(_active_target_count()):
+			if other_index == index:
+				continue
+			var other_body := target_bodies[other_index] as StaticBody3D
+			if other_body.position.z > -TARGET_DISTANCE * 0.5:
+				continue
+			var candidate_xy := Vector2(candidate.x, candidate.y)
+			var other_xy := Vector2(
+				other_body.position.x,
+				other_body.position.y
+			)
+			if candidate_xy.distance_to(other_xy) < minimum_separation:
+				overlaps = true
+				break
+		if not overlaps:
+			break
+
+	var body := target_bodies[index] as StaticBody3D
+	body.position = candidate
 
 
 func _apply_difficulty_to_target() -> void:
-	if target_mesh == null or target_collision == null:
-		return
-
 	var radius: float = DIFFICULTY_TARGET_RADII[selected_difficulty]
-	var sphere := target_mesh.mesh as SphereMesh
-	if sphere != null:
-		sphere.radius = radius
-		sphere.height = radius * 2.0
+	for index in range(target_meshes.size()):
+		var mesh := target_meshes[index] as MeshInstance3D
+		var sphere := mesh.mesh as SphereMesh
+		if sphere != null:
+			sphere.radius = radius
+			sphere.height = radius * 2.0
 
-	var shape := target_collision.shape as SphereShape3D
-	if shape != null:
-		shape.radius = radius
+		var collision := target_collisions[index] as CollisionShape3D
+		var shape := collision.shape as SphereShape3D
+		if shape != null:
+			shape.radius = radius
 
 
 func _update_hud() -> void:
@@ -602,6 +691,35 @@ func _update_timer_label() -> void:
 	var minutes := int(total_seconds / 60)
 	var seconds := total_seconds % 60
 	timer_label.text = "%02d:%02d" % [minutes, seconds]
+
+
+func _populate_mode_options() -> void:
+	mode_select.clear()
+	for label in TRAINING_MODE_LABELS:
+		mode_select.add_item(label)
+
+
+func _current_mode_key() -> String:
+	return TRAINING_MODE_KEYS[selected_training_mode]
+
+
+func _current_mode_label() -> String:
+	return TRAINING_MODE_LABELS[selected_training_mode]
+
+
+func _mode_from_key(key: String) -> int:
+	var index := TRAINING_MODE_KEYS.find(key)
+	if index < 0:
+		return DEFAULT_TRAINING_MODE
+	return index
+
+
+func _current_record_id() -> String:
+	return "%s_%s" % [_current_mode_key(), _current_difficulty_key()]
+
+
+func _current_training_label() -> String:
+	return "%s / %s" % [_current_mode_label(), _current_difficulty_label()]
 
 
 func _populate_difficulty_options() -> void:
@@ -627,9 +745,38 @@ func _difficulty_from_key(key: String) -> int:
 
 func _sync_current_personal_best() -> void:
 	personal_best_score = maxi(
-		int(personal_best_scores.get(_current_difficulty_key(), 0)),
+		int(personal_best_scores.get(_current_record_id(), 0)),
 		0
 	)
+
+
+func _sync_mode_ui() -> void:
+	mode_select.select(selected_training_mode)
+	mode_description.text = TRAINING_MODE_DESCRIPTIONS[selected_training_mode]
+	_sync_current_personal_best()
+	_update_best_labels()
+
+
+func _on_mode_selected(index: int) -> void:
+	if index < 0 or index >= TRAINING_MODE_KEYS.size():
+		return
+	if run_state != RunState.READY:
+		_sync_mode_ui()
+		return
+
+	selected_training_mode = index
+	_sync_current_personal_best()
+	_apply_difficulty_to_target()
+	_move_active_targets()
+	_set_targets_active(false)
+	_update_best_labels()
+	mode_description.text = TRAINING_MODE_DESCRIPTIONS[selected_training_mode]
+
+	var save_error := _save_training_settings()
+	if save_error != OK:
+		mode_description.text = (
+			"練習モードを保存できませんでした。Error: %d" % save_error
+		)
 
 
 func _sync_difficulty_ui() -> void:
@@ -649,7 +796,8 @@ func _on_difficulty_selected(index: int) -> void:
 	selected_difficulty = index
 	_sync_current_personal_best()
 	_apply_difficulty_to_target()
-	_move_target()
+	_move_active_targets()
+	_set_targets_active(false)
 	_update_best_labels()
 	difficulty_description.text = DIFFICULTY_DESCRIPTIONS[selected_difficulty]
 
@@ -662,7 +810,7 @@ func _on_difficulty_selected(index: int) -> void:
 
 func _update_best_labels() -> void:
 	start_best_label.text = "%s BEST  %d" % [
-		_current_difficulty_label(),
+		_current_training_label(),
 		personal_best_score,
 	]
 
@@ -675,7 +823,18 @@ func _save_training_settings() -> Error:
 		"difficulty",
 		_current_difficulty_key()
 	)
+	config.set_value(
+		TRAINING_SETTINGS_SECTION,
+		"mode",
+		_current_mode_key()
+	)
 	return config.save(SETTINGS_PATH)
+
+
+func _current_best_config_key() -> String:
+	if selected_training_mode == TrainingMode.GRIDSHOT:
+		return "best_gridshot_%s_score" % _current_difficulty_key()
+	return "best_%s_score" % _current_difficulty_key()
 
 
 func _save_personal_best() -> Error:
@@ -683,7 +842,7 @@ func _save_personal_best() -> Error:
 	config.load(SETTINGS_PATH)
 	config.set_value(
 		RECORDS_SECTION,
-		"best_%s_score" % _current_difficulty_key(),
+		_current_best_config_key(),
 		personal_best_score
 	)
 	return config.save(SETTINGS_PATH)
@@ -705,6 +864,7 @@ func _load_settings() -> void:
 		crosshair_dot_size = DEFAULT_CROSSHAIR_DOT_SIZE
 		crosshair_imported_code = ""
 		crosshair_profile = _manual_crosshair_profile()
+		selected_training_mode = DEFAULT_TRAINING_MODE
 		selected_difficulty = DEFAULT_DIFFICULTY
 		_sync_current_personal_best()
 		return
@@ -811,6 +971,15 @@ func _load_settings() -> void:
 	else:
 		crosshair_profile = _manual_crosshair_profile()
 
+	selected_training_mode = _mode_from_key(
+		str(
+			config.get_value(
+				TRAINING_SETTINGS_SECTION,
+				"mode",
+				TRAINING_MODE_KEYS[DEFAULT_TRAINING_MODE]
+			)
+		)
+	)
 	selected_difficulty = _difficulty_from_key(
 		str(
 			config.get_value(
@@ -825,11 +994,11 @@ func _load_settings() -> void:
 		int(config.get_value(RECORDS_SECTION, "default_best_score", 0)),
 		0
 	)
-	personal_best_scores["easy"] = maxi(
+	personal_best_scores["single_easy"] = maxi(
 		int(config.get_value(RECORDS_SECTION, "best_easy_score", 0)),
 		0
 	)
-	personal_best_scores["normal"] = maxi(
+	personal_best_scores["single_normal"] = maxi(
 		int(
 			config.get_value(
 				RECORDS_SECTION,
@@ -839,8 +1008,20 @@ func _load_settings() -> void:
 		),
 		0
 	)
-	personal_best_scores["hard"] = maxi(
+	personal_best_scores["single_hard"] = maxi(
 		int(config.get_value(RECORDS_SECTION, "best_hard_score", 0)),
+		0
+	)
+	personal_best_scores["gridshot_easy"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_gridshot_easy_score", 0)),
+		0
+	)
+	personal_best_scores["gridshot_normal"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_gridshot_normal_score", 0)),
+		0
+	)
+	personal_best_scores["gridshot_hard"] = maxi(
+		int(config.get_value(RECORDS_SECTION, "best_gridshot_hard_score", 0)),
 		0
 	)
 	_sync_current_personal_best()
