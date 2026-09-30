@@ -214,3 +214,14 @@
 - Problem: A small target alone can still become a large-flick scenario if respawn uses the full arena.
 - Decision: Microshot uses both a smaller target radius and a bounded relative step from the previous target position.
 - Validation: Smoke coverage checks the initial center-biased position and that the next target stays within the configured maximum step.
+
+
+## SAT-GAME-004 — Flick mode needs an explicit minimum displacement
+
+- Date: 2026-09-30
+- Type: Gameplay / Aim Training
+- Status: Adopted
+- Problem: Full-range random respawn alone can still repeatedly place targets close together and accidentally behave like Microshot.
+- Decision: Flick requires a Difficulty-specific minimum 2D displacement from the previous target, with the first target measured from the center-reference point.
+- Fallback: If random sampling cannot satisfy the minimum within the bounded attempts, use the farthest candidate sampled instead of looping indefinitely.
+- Validation: Smoke tests verify the normal-difficulty first target and subsequent target meet the configured minimum displacement.
