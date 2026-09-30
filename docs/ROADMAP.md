@@ -207,7 +207,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 既存Single / Gridshot gameplayとSave Keyは維持
   - Play Library / Stage Catalog / Quick Settings FlowをGodot Smoke Testへ追加
 
-- [ ] Play Library / Quick Settingsを実機確認する
+- [x] Play Library / Quick Settingsを実機確認する
   - 担当: あなた
   - 起動すると「シングルターゲット」「Gridshot」と右側の設定Panelが同じ画面に表示される
   - シングル / Gridshotを押しても別画面へ移動せず、右側の選択内容だけ変わる
@@ -217,6 +217,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 選択中Trainingの「練習を開始」から正しいModeが始まる
   - Training途中でESC →「メインメニューへ戻る」でPlay画面へ戻れる
   - Resultの「Homeへ戻る」でPlay画面へ戻れ、再起動後もMode / Difficulty / BESTが残る
+  - 2026-09-30 Game Dev Hub共有Packで8/8 PASS
 
 - [ ] Hold Angle / Pre-Aim
 - [ ] Microshot
