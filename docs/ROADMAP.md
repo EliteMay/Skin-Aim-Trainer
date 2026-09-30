@@ -179,7 +179,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 既存シングルBESTの保存Keyは維持
   - Mode / Target数 / Record分離をGodot Smoke Testへ追加
 
-- [ ] Gridshotを実機確認する
+- [x] Gridshotを実機確認する
   - 担当: あなた
   - Start画面で「Gridshot」を選べる
   - 開始すると赤いTargetが3個同時に表示される
@@ -189,14 +189,32 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 60秒後にResultへ移動し、GridshotのBESTが保存される
   - シングルへ戻してもシングルのBESTがGridshotと混ざらない
   - Gameを閉じて再起動しても選択ModeとGridshot BESTが残る
+  - 2026-09-30 Game Dev Hub共有Packで8/8 PASS
 
 ## Phase 3 — Training Modes / Scenario Library
 
-- [ ] Home / Stage Library基盤
-  - 将来要件。現在は実装しない
-  - Aim Lab / Kovaak's系の「Home → Stage選択 → Play → Result」を参考にする
-  - Training Modeを追加してもMain Sceneへ条件分岐を詰め込まない
-  - Stage metadata / category / difficulty / best scoreをData-driven化する
+- [x] Home / Stage Library基盤
+  - 担当: ChatGPT
+  - 起動直後をHomeに変更
+  - Homeから実装済みStageを選んでStage Setupへ進む
+  - Stage定義をdata/stages.jsonへ分離
+  - category / description / duration / mode / tagsをData-driven化
+  - シングル / GridshotをCatalogから動的にHomeへ表示
+  - Stage SetupではDifficulty / Sensitivity / Crosshairだけを設定
+  - ESC Pauseの「メインメニューへ戻る」とResultの「Homeへ戻る」はHomeへ戻す
+  - 既存Single / Gridshot gameplayとSave Keyは維持
+  - Home / Stage Catalog / Stage FlowをGodot Smoke Testへ追加
+
+- [ ] Home / Stage Libraryを実機確認する
+  - 担当: あなた
+  - 起動すると最初にHomeが表示される
+  - Homeに「シングルターゲット」と「Gridshot」が表示される
+  - シングルターゲットを押すと専用のStage Setupへ進める
+  - Gridshotを押すと専用のStage Setupへ進める
+  - Stage SetupからDifficulty / 感度 / Crosshairを設定して開始できる
+  - Training途中でESC →「メインメニューへ戻る」でHomeへ戻れる
+  - Resultの「Homeへ戻る」でHomeへ戻れる
+  - Gameを再起動しても前回Stage / Difficulty表示と既存BESTが壊れない
 
 - [ ] Hold Angle / Pre-Aim
 - [ ] Microshot
