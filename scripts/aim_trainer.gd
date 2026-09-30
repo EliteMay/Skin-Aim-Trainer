@@ -97,7 +97,7 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 
 @onready var home_overlay: Control = $UI/HomeOverlay
 @onready var home_stage_list: VBoxContainer = (
-	$UI/HomeOverlay/Margin/Content/Body/Library/StageList
+	$UI/HomeOverlay/Margin/Content/Body/Library/StageScroll/StageList
 )
 @onready var stage_title_label: Label = (
 	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/Title
@@ -879,7 +879,7 @@ func _build_home_stage_list() -> void:
 
 		var button := Button.new()
 		button.name = "Stage_%s" % str(stage.get("id", mode_key))
-		button.custom_minimum_size = Vector2(0, 92)
+		button.custom_minimum_size = Vector2(0, 82)
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.toggle_mode = true
 		button.add_theme_font_size_override("font_size", 18)
