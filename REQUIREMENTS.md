@@ -137,7 +137,7 @@ Phase 2のCurrent Trainingでは、DifficultyをAim課題のTarget presentation�
 - `かんたん / 標準 / むずかしい` の3段階
 - DifficultyはTarget radiusとspawn rangeだけを変更する
 - Sensitivity / DPI / Crosshair / Hit Detection rule / Score rule / Session durationは変更しない
-- Play / Training Libraryの選択中Training Panelで変更し、Session開始後はそのSession中のDifficultyを固定する
+- Sandbox / Scenario BrowserのSCENARIO INFO Panelで変更し、Session開始後はそのSession中のDifficultyを固定する
 - 選択DifficultyはLocal Settingsへ保存する
 - Personal BestはDifficultyごとに別Recordとして保存する
 - 旧`training_records/default_best_score`は`標準`のBestとして読み込み、既存User Dataを捨てない
@@ -241,13 +241,13 @@ Mode選択はHomeのStage metadataからRuntime Modeへ変換する。将来Stag
 
 ## Play / Stage Library Contract
 
-Phase 3のPrimary Surfaceは、Training選択と開始前設定を同じ場所で完了できるPlay / Training Libraryとする。
+Phase 3のPrimary Surfaceは、Training選択と開始前設定を同じ場所で完了できるSandbox / Scenario Browserとする。
 
 Current Flow:
 
-`Play Library → Training選択 + Quick Settings → Play → Result → Retry / Play Library`
+`Scenario Browser → Training選択 + Quick Settings → Play → Result → Retry / Scenario Browser`
 
-- Play Libraryには実装済み / playableなStageだけを表示する
+- Scenario Browserには実装済み / playableなStageだけを表示する
 - 左側にTraining一覧、右側に選択中Trainingの詳細と開始前設定を表示する
 - Training選択のためだけに別Page / Stage Setupへ遷移しない
 - Stage定義は`data/stages.json`をSource of Truthとする
@@ -256,10 +256,10 @@ Current Flow:
 - Training一覧はCatalog Dataから動的に生成する
 - 選択中PanelへTitle / Category / Description / Duration / Personal Bestを表示する
 - Difficultyは選択中Panel内で直接変更できる
-- Sensitivity / Crosshairは選択中Panel内に入口を置き、詳細Overlayを閉じると同じPlay Libraryへ戻る
+- Sensitivity / Crosshairは選択中Panel内に入口を置き、詳細Overlayを閉じると同じScenario Browserへ戻る
 - Primary Actionの「練習を開始」は選択中Panel内に置く
-- Training途中のPause →「メインメニューへ戻る」はPlay Libraryへ戻す
-- Resultの「Homeへ戻る」はPlay Libraryへ戻す
+- Training途中のPause →「メインメニューへ戻る」はScenario Browserへ戻す
+- Resultの「Homeへ戻る」はScenario Browserへ戻す
 - 最後に選んだMode / Difficultyは既存Local Settingsへ保存する
 - Stage DurationはmetadataからRuntimeへ渡せるようにする。Current Stageはすべて60秒
 - Stageが2件のCurrent段階ではSearch / Filterを追加しない
