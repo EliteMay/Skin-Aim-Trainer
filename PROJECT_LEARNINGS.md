@@ -225,3 +225,14 @@
 - Decision: Flick requires a Difficulty-specific minimum 2D displacement from the previous target, with the first target measured from the center-reference point.
 - Fallback: If random sampling cannot satisfy the minimum within the bounded attempts, use the farthest candidate sampled instead of looping indefinitely.
 - Validation: Smoke tests verify the normal-difficulty first target and subsequent target meet the configured minimum displacement.
+
+
+## SAT-UI-003 — Aim Trainer library terminology should match the scenario mental model
+
+- Date: 2026-09-30
+- Type: UI / Information Architecture
+- Status: Adopted
+- Problem: 「トレーニング」「モード」「Stage」が同じsurfaceで混在すると、Aim TrainerのScenario browsingとして情報の役割が曖昧になる。
+- Decision: User-facing browse surfaceはSANDBOX / SCENARIO BROWSER / LOCAL SCENARIOS / SCENARIO INFOへ整理し、内部mode / stage識別子は変更しない。
+- Content rule: listはTitle / Category / Duration / PB、detailはTags / Description / Difficulty parameter / Settings / Playを担当する。
+- Reference boundary: KovaaK'sからはscenario-centric browse / settingsの構造原理だけをtransferし、Brand / Asset / exact layout / online機能はcopyしない。
