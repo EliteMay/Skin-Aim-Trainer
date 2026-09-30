@@ -373,8 +373,8 @@ Aimlabs公式のCurrent materialでGridshotがCore Taskとして継続してい�
 
 ### Validation State
 
-- Godot Import / Cold Start: pending CI
-- Linux Core Smoke: pending CI
-- Windows Direct Smoke: pending CI
-- Existing Single BEST compatibility: pending CI
+- Godot Import / Cold Start: PASS — GitHub Actions run 36656512823
+- Linux Core Smoke: PASS — GitHub Actions run 36656512823
+- Windows Direct Smoke: PASS — GitHub Actions run 36656512823
+- Existing Single BEST compatibility: PASS — GitHub Actions run 36656512823
 - Gridshot Windows Actual Playtest: NOT_RUN
