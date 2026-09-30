@@ -137,7 +137,7 @@ Phase 2のCurrent Trainingでは、DifficultyをAim課題のTarget presentation�
 - `かんたん / 標準 / むずかしい` の3段階
 - DifficultyはTarget radiusとspawn rangeだけを変更する
 - Sensitivity / DPI / Crosshair / Hit Detection rule / Score rule / Session durationは変更しない
-- Start画面で選択し、Session開始後はそのSession中のDifficultyを固定する
+- Play / Training Libraryの選択中Training Panelで変更し、Session開始後はそのSession中のDifficultyを固定する
 - 選択DifficultyはLocal Settingsへ保存する
 - Personal BestはDifficultyごとに別Recordとして保存する
 - 旧`training_records/default_best_score`は`標準`のBestとして読み込み、既存User Dataを捨てない
@@ -191,28 +191,33 @@ gridshot:
 
 Mode選択はHomeのStage metadataからRuntime Modeへ変換する。将来StageごとにGameplay Scriptが増える場合も、Home UIへMode固有条件分岐を追加しない。
 
-## Home / Stage Library Contract
+## Play / Stage Library Contract
 
-Phase 3のFoundationとして、起動直後のPrimary SurfaceをHomeへ変更する。
+Phase 3のPrimary Surfaceは、Training選択と開始前設定を同じ場所で完了できるPlay / Training Libraryとする。
 
 Current Flow:
 
-`Home → Stage Setup → Play → Result → Retry / Home`
+`Play Library → Training選択 + Quick Settings → Play → Result → Retry / Play Library`
 
-- Homeには実装済み / playableなStageだけを表示する
+- Play Libraryには実装済み / playableなStageだけを表示する
+- 左側にTraining一覧、右側に選択中Trainingの詳細と開始前設定を表示する
+- Training選択のためだけに別Page / Stage Setupへ遷移しない
 - Stage定義は`data/stages.json`をSource of Truthとする
 - Stage metadataは最低限 `id / mode / title / category / description / duration_seconds / playable / sort_order / tags` を持つ
 - 現在のplayable Stageは「シングルターゲット」「Gridshot」
-- HomeのStage一覧はCatalog Dataから動的に生成する
-- Stage Setupは選択済みStageのTitle / Category / Description / Durationを表示する
-- Stage SetupではDifficulty / Sensitivity / Crosshairを調整できる
-- Training途中のPause →「メインメニューへ戻る」はHomeへ戻す
-- Resultの「Homeへ戻る」はHomeへ戻す
+- Training一覧はCatalog Dataから動的に生成する
+- 選択中PanelへTitle / Category / Description / Duration / Personal Bestを表示する
+- Difficultyは選択中Panel内で直接変更できる
+- Sensitivity / Crosshairは選択中Panel内に入口を置き、詳細Overlayを閉じると同じPlay Libraryへ戻る
+- Primary Actionの「練習を開始」は選択中Panel内に置く
+- Training途中のPause →「メインメニューへ戻る」はPlay Libraryへ戻す
+- Resultの「Homeへ戻る」はPlay Libraryへ戻す
 - 最後に選んだMode / Difficultyは既存Local Settingsへ保存する
 - Stage DurationはmetadataからRuntimeへ渡せるようにする。Current Stageはすべて60秒
 - Stageが2件のCurrent段階ではSearch / Filterを追加しない
 - 将来Stage数が増えたらcategory / tagsを使ってBrowse / Searchを追加できる構造を維持する
-- 新Stage追加でHome Sceneへ固定Buttonや巨大な条件分岐を追加しない
+- 新Stage追加でSceneへ固定Buttonや巨大な条件分岐を追加しない
+- Aimlabs / KovaaK'sのUI / Asset / Brandingはコピーしない。Current Productの「Trainingを探す・設定する・開始する往復を減らす」構造だけをProject Contextへ変換する
 
 Current Recordは既存互換のためMode + Difficulty Keyを維持する。StageがModeと1対1でなくなる段階でStage ID + Difficulty RecordへMigrationする。
 
