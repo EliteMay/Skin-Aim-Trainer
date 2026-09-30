@@ -154,7 +154,7 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 旧default_best_scoreはNormalのBestとして読み込み互換を維持
   - Difficulty / migration / Best分離をGodot Smoke Testへ追加
 
-- [ ] Difficultyを実機確認する
+- [x] Difficultyを実機確認する
   - 担当: あなた
   - Start画面で3段階の難易度を選べる
   - 「かんたん」はTargetが大きく、出現範囲が狭い
@@ -165,8 +165,30 @@ Phase 1はWindows実機確認まで完了。次のCurrent TaskはPhase 2のSensi
   - 難易度を変えてもSensitivity / Crosshair / 60秒 / Score ruleは変わらない
   - BESTが難易度ごとに別々に保存される
   - Gameを閉じて再起動しても選択DifficultyとBESTが残る
+  - 2026-09-30 Game Dev Hub共有Packで9/9 PASS
 
-- [ ] Gridshot
+- [x] Gridshot
+  - 担当: ChatGPT
+  - Start画面へ「シングル / Gridshot」の練習モード選択を追加
+  - Gridshotは静止Targetを3個同時表示
+  - HitしたTargetだけを別位置へRespawn
+  - MissはScoreを増やさずAccuracyへ反映
+  - Difficulty / Sensitivity / Crosshair / 60秒Sessionは既存Contractを再利用
+  - 選択Modeをuser://settings.cfgへ保存
+  - GridshotのPersonal BestをDifficulty別に保存
+  - 既存シングルBESTの保存Keyは維持
+  - Mode / Target数 / Record分離をGodot Smoke Testへ追加
+
+- [ ] Gridshotを実機確認する
+  - 担当: あなた
+  - Start画面で「Gridshot」を選べる
+  - 開始すると赤いTargetが3個同時に表示される
+  - 1個Hitすると、そのTargetだけ別位置へ移動する
+  - MissではScoreが増えず、命中率へ反映される
+  - Difficultyを変えるとGridshot Targetの大きさ / 出現範囲も変わる
+  - 60秒後にResultへ移動し、GridshotのBESTが保存される
+  - シングルへ戻してもシングルのBESTがGridshotと混ざらない
+  - Gameを閉じて再起動しても選択ModeとGridshot BESTが残る
 
 ## Phase 3 — Training Modes / Scenario Library
 
