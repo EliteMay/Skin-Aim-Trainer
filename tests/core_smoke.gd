@@ -72,11 +72,13 @@ func _ready() -> void:
 	assert(is_equal_approx(AimMath.accuracy_percent(7, 10), 70.0))
 
 	var catalog_stages := StageCatalog.load_stages()
-	assert(catalog_stages.size() == 2)
+	assert(catalog_stages.size() == 3)
 	assert(str(catalog_stages[0].get("mode", "")) == "single")
 	assert(str(catalog_stages[0].get("title", "")) == "シングルターゲット")
 	assert(str(catalog_stages[1].get("mode", "")) == "gridshot")
 	assert(int(catalog_stages[1].get("duration_seconds", 0)) == 60)
+	assert(str(catalog_stages[2].get("mode", "")) == "hold_angle")
+	assert(str(catalog_stages[2].get("title", "")) == "Hold Angle / Pre-Aim")
 
 	var settings_path := ProjectSettings.globalize_path("user://settings.cfg")
 	if FileAccess.file_exists("user://settings.cfg"):
@@ -107,7 +109,7 @@ func _ready() -> void:
 		"UI/HomeOverlay/Margin/Content/Body/Library/StageList"
 	) as VBoxContainer
 	assert(home_stage_list != null)
-	assert(home_stage_list.get_child_count() == 2)
+	assert(home_stage_list.get_child_count() == 3)
 	var viewport_size := instance.get_viewport().get_visible_rect().size
 	var home_content := instance.get_node(
 		"UI/HomeOverlay/Margin/Content"
@@ -119,10 +121,13 @@ func _ready() -> void:
 	)
 	var first_stage_button := home_stage_list.get_child(0) as Button
 	var second_stage_button := home_stage_list.get_child(1) as Button
+	var third_stage_button := home_stage_list.get_child(2) as Button
 	assert(first_stage_button != null)
 	assert(second_stage_button != null)
+	assert(third_stage_button != null)
 	assert(first_stage_button.text.contains("シングルターゲット"))
 	assert(second_stage_button.text.contains("Gridshot"))
+	assert(third_stage_button.text.contains("Hold Angle / Pre-Aim"))
 	assert(first_stage_button.button_pressed)
 
 	assert(instance.get_node(selected_prefix + "/Title").text == "シングルターゲット")
@@ -157,6 +162,13 @@ func _ready() -> void:
 	assert(instance.selected_training_mode == instance.TrainingMode.GRIDSHOT)
 	assert(instance.get_node(selected_prefix + "/Title").text == "Gridshot")
 	assert(second_stage_button.button_pressed)
+
+	third_stage_button.pressed.emit()
+	await get_tree().process_frame
+	assert(instance.get_node("UI/HomeOverlay").visible)
+	assert(instance.selected_training_mode == instance.TrainingMode.HOLD_ANGLE)
+	assert(instance.get_node(selected_prefix + "/Title").text == "Hold Angle / Pre-Aim")
+	assert(third_stage_button.button_pressed)
 
 	first_stage_button.pressed.emit()
 	await get_tree().process_frame
@@ -531,6 +543,51 @@ func _ready() -> void:
 	assert(instance.get_node("UI/HomeOverlay").visible)
 	assert(not instance.get_node("UI/ResultOverlay").visible)
 
+	instance._open_stage("hold_angle")
+	assert(instance.selected_training_mode == instance.TrainingMode.HOLD_ANGLE)
+	assert(instance.get_node(selected_prefix + "/Title").text == "Hold Angle / Pre-Aim")
+	assert(instance.personal_best_score == 0)
+	assert(instance.hold_angle_marker != null)
+	assert(not instance.hold_angle_marker.visible)
+
+	instance.start_training()
+	assert(instance.run_state == instance.RunState.PLAYING)
+	assert(instance.hold_angle_marker.visible)
+	assert(not (instance.target_meshes[0] as MeshInstance3D).visible)
+	assert((instance.target_collisions[0] as CollisionShape3D).disabled)
+	var hold_anchor: Vector3 = instance.hold_angle_anchor_position
+	var hold_target: Vector3 = instance.target_bodies[0].position
+	assert(is_equal_approx(hold_anchor.y, hold_target.y))
+	assert(absf(hold_target.x - hold_anchor.x) > 0.0)
+
+	instance.hold_angle_wait_remaining = 0.0
+	instance._process(0.01)
+	assert(instance.hold_angle_target_visible)
+	assert(not instance.hold_angle_marker.visible)
+	assert((instance.target_meshes[0] as MeshInstance3D).visible)
+	assert(not (instance.target_collisions[0] as CollisionShape3D).disabled)
+
+	instance.score = 4
+	instance.hits = 4
+	instance.shots = 5
+	instance.misses = 1
+	instance.session_remaining_seconds = 0.01
+	instance._process(0.02)
+	assert(instance.run_state == instance.RunState.RESULT)
+	assert(instance.personal_best_score == 4)
+	records_config = ConfigFile.new()
+	assert(records_config.load("user://settings.cfg") == OK)
+	assert(
+		int(
+			records_config.get_value(
+				"training_records",
+				"best_hold_angle_normal_score",
+				0
+			)
+		) == 4
+	)
+
+	instance._show_home()
 	instance._open_stage("single")
 	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
 	assert(instance.personal_best_score == 12)
