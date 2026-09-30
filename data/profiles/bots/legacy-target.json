@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "id": "legacy-target",
+  "profile_type": "bot",
+  "description": "Migration profile for the five legacy prototype scenarios.",
+  "target_profile": "default-sphere-target",
+  "movement_profile": "static"
+}

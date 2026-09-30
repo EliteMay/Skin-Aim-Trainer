@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "id": "default-player",
+  "profile_type": "player",
+  "description": "Legacy aim foundation player profile. Profile Runtime will apply these values in the next phase.",
+  "fov_degrees": 75,
+  "pitch_limit_degrees": 72
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "player_profile": "default-player",
+  "weapon_profile": "hitscan-click",
+  "bot_profiles": [
+    "legacy-target"
+  ],
+  "scoring": "accuracy-click-score",
+  "runtime_adapter": "legacy_mode",
+  "playable": true,
+  "id": "single-target",
+  "title": "シングルターゲット",
+  "aim_type": "clicking",
+  "category": "Clicking",
+  "description": "1つのTargetへ正確にAimして撃つ基本練習",
+  "duration_seconds": 60,
+  "tags": [
+    "Precision",
+    "Clicking"
+  ],
+  "challenge": {
+    "max_active_bots": 1,
+    "respawn": "on_kill"
+  },
+  "legacy_mode": "single",
+  "sort_order": 10
+}

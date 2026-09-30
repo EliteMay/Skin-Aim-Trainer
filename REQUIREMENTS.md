@@ -185,6 +185,37 @@ Current balance:
 
 特定Scenarioを追加するときは、公開情報・User提供Data・許諾済みDataから**挙動と練習目的を再実装**する。Scenario Engine側が十分に汎用化されていれば、後続追加は原則としてScenario Data追加 + 必要最小の新Behavior Componentで行う。
 
+## Scenario Definition v1 Contract
+
+Scenario Engine v1のSourceは`data/scenarios/*.json`とする。
+
+必須:
+
+- `schema_version = 1`
+- `id`
+- `title`
+- `aim_type`
+- `duration_seconds > 0`
+- `tags[]`
+- `player_profile`
+- `weapon_profile`
+- `bot_profiles[]`
+- `challenge.max_active_bots > 0`
+- `challenge.respawn`
+- `scoring`
+
+Loader / Validator:
+
+- FileごとにJSON ObjectとしてParseする
+- Duplicate Scenario IDを拒否する
+- 参照するPlayer / Weapon / Bot / Scoring Profile fileが存在することを確認する
+- Validation ErrorがあるScenarioはplayable listへ入れない
+- BrowserにError件数と要約を表示する
+- Scenario directoryが存在しない旧Repository状態では`data/stages.json`へFallbackする
+- Scenario directoryが存在するのに全定義がInvalidの場合はLegacyへ黙ってFallbackせず、Startを無効化する
+
+Migration中のCurrent 5 Scenarioだけは`runtime_adapter = "legacy_mode"`と`legacy_mode`を持ち、既存Gameplayへ接続する。これは一時的互換層であり、新規Scenarioの最終Architectureではない。
+
 ## Training Mode Contract
 
 Phase 2ではSingle / Gridshotを導入し、Phase 3でHold Angle / Pre-Aim、Microshot、Flickを追加する。ModeはHomeのStage Catalogから選択し、別のMode Selectorを重複させない。

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "player_profile": "default-player",
+  "weapon_profile": "hitscan-click",
+  "bot_profiles": [
+    "legacy-target"
+  ],
+  "scoring": "accuracy-click-score",
+  "runtime_adapter": "legacy_mode",
+  "playable": true,
+  "id": "flick",
+  "title": "Flick",
+  "aim_type": "clicking",
+  "category": "Flick / Click Timing",
+  "description": "離れた静止Targetへ素早く大きくAimし、Target上で止めて撃つclick-timing練習",
+  "duration_seconds": 60,
+  "tags": [
+    "Flick",
+    "Click Timing",
+    "Precision",
+    "VALORANT"
+  ],
+  "challenge": {
+    "max_active_bots": 1,
+    "respawn": "on_kill"
+  },
+  "legacy_mode": "flick",
+  "sort_order": 50
+}

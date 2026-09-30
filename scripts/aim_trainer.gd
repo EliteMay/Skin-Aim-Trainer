@@ -2,6 +2,7 @@ extends Node3D
 
 const AimMath = preload("res://scripts/aim_math.gd")
 const StageCatalog = preload("res://scripts/stage_catalog.gd")
+const ScenarioCatalog = preload("res://scripts/scenario_catalog.gd")
 const ValorantCrosshairCode = preload("res://scripts/valorant_crosshair_code.gd")
 
 enum RunState {
@@ -109,6 +110,9 @@ const DEFAULT_CROSSHAIR_DOT_SIZE := 2.0
 @onready var home_overlay: Control = $UI/HomeOverlay
 @onready var home_stage_list: VBoxContainer = (
 	$UI/HomeOverlay/Margin/Content/Body/Library/StageScroll/StageList
+)
+@onready var scenario_catalog_status: Label = (
+	$UI/HomeOverlay/Margin/Content/Body/Library/LibraryHint
 )
 @onready var stage_title_label: Label = (
 	$UI/HomeOverlay/Margin/Content/Body/SelectedPanel/PanelMargin/Selected/Title
@@ -304,6 +308,9 @@ var hold_angle_wait_remaining := 0.0
 var hold_angle_target_visible := false
 var hold_angle_anchor_position := Vector3.ZERO
 var stages: Array = []
+var scenario_catalog_errors: Array = []
+var scenario_catalog_source_found := false
+var scenario_catalog_using_v1 := false
 var home_stage_buttons: Dictionary = {}
 var rng := RandomNumberGenerator.new()
 
@@ -357,8 +364,9 @@ func _ready() -> void:
 	feedback_timer.timeout.connect(_hide_feedback)
 
 	_load_settings()
-	stages = StageCatalog.load_stages()
+	_load_scenario_catalog()
 	_build_home_stage_list()
+	_sync_scenario_catalog_status()
 	_sync_settings_controls()
 	_sync_crosshair_controls()
 	_create_targets()
@@ -971,6 +979,50 @@ func _best_for_mode(mode_key: String) -> int:
 	return maxi(int(personal_best_scores.get(record_id, 0)), 0)
 
 
+func _load_scenario_catalog() -> void:
+	var catalog := ScenarioCatalog.load_catalog()
+	scenario_catalog_errors = catalog.get("errors", [])
+	scenario_catalog_source_found = bool(catalog.get("source_found", false))
+
+	if scenario_catalog_source_found:
+		var valid_scenarios: Array = catalog.get("scenarios", [])
+		stages = ScenarioCatalog.to_legacy_stages(valid_scenarios)
+		scenario_catalog_using_v1 = true
+	else:
+		stages = StageCatalog.load_stages()
+		scenario_catalog_using_v1 = false
+
+	if not stages.is_empty() and _current_stage().is_empty():
+		selected_training_mode = _mode_from_key(str(stages[0].get("mode", "single")))
+		_sync_current_personal_best()
+
+
+func _sync_scenario_catalog_status() -> void:
+	if scenario_catalog_using_v1:
+		if scenario_catalog_errors.is_empty():
+			scenario_catalog_status.text = "%d SCENARIOS  /  Scenario Definition v1 検証済み" % stages.size()
+			scenario_catalog_status.add_theme_color_override(
+				"font_color",
+				Color(0.5, 0.66, 0.74, 1.0)
+			)
+		else:
+			scenario_catalog_status.text = "SCENARIO ERROR %d件  /  不正定義は除外: %s" % [
+				scenario_catalog_errors.size(),
+				ScenarioCatalog.error_summary(scenario_catalog_errors, 1),
+			]
+			scenario_catalog_status.add_theme_color_override(
+				"font_color",
+				Color(0.95, 0.55, 0.35, 1.0)
+			)
+		return
+
+	scenario_catalog_status.text = "LEGACY CATALOG  /  data/stages.json 互換モード"
+	scenario_catalog_status.add_theme_color_override(
+		"font_color",
+		Color(0.62, 0.66, 0.72, 1.0)
+	)
+
+
 func _build_home_stage_list() -> void:
 	home_stage_buttons.clear()
 	for child in home_stage_list.get_children():
@@ -1001,6 +1053,7 @@ func _build_home_stage_list() -> void:
 		empty_button.custom_minimum_size = Vector2(0, 70)
 		home_stage_list.add_child(empty_button)
 
+	start_button.disabled = home_stage_buttons.is_empty()
 	_refresh_home_stage_buttons()
 
 

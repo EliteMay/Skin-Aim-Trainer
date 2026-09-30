@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "player_profile": "default-player",
+  "weapon_profile": "hitscan-click",
+  "bot_profiles": [
+    "legacy-target"
+  ],
+  "scoring": "accuracy-click-score",
+  "runtime_adapter": "legacy_mode",
+  "playable": true,
+  "id": "gridshot",
+  "title": "Gridshot",
+  "aim_type": "target_switching",
+  "category": "Target Switching",
+  "description": "3つのTargetを素早く切り替えながら撃つ練習",
+  "duration_seconds": 60,
+  "tags": [
+    "Flick",
+    "Target Switching"
+  ],
+  "challenge": {
+    "max_active_bots": 3,
+    "respawn": "on_kill"
+  },
+  "legacy_mode": "gridshot",
+  "sort_order": 20
+}

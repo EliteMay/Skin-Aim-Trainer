@@ -2,6 +2,7 @@ extends Node
 
 const AimMath = preload("res://scripts/aim_math.gd")
 const StageCatalog = preload("res://scripts/stage_catalog.gd")
+const ScenarioCatalog = preload("res://scripts/scenario_catalog.gd")
 const ValorantCrosshairCode = preload("res://scripts/valorant_crosshair_code.gd")
 
 
@@ -84,6 +85,32 @@ func _ready() -> void:
 	assert(str(catalog_stages[4].get("mode", "")) == "flick")
 	assert(str(catalog_stages[4].get("title", "")) == "Flick")
 
+	var scenario_catalog := ScenarioCatalog.load_catalog()
+	assert(bool(scenario_catalog.get("source_found", false)))
+	var scenario_errors: Array = scenario_catalog.get("errors", [])
+	assert(scenario_errors.is_empty())
+	var scenario_definitions: Array = scenario_catalog.get("scenarios", [])
+	assert(scenario_definitions.size() == 5)
+	assert(str(scenario_definitions[0].get("id", "")) == "single-target")
+	assert(str(scenario_definitions[0].get("player_profile", "")) == "default-player")
+	assert(str(scenario_definitions[0].get("weapon_profile", "")) == "hitscan-click")
+	assert(str(scenario_definitions[1].get("aim_type", "")) == "target_switching")
+	assert(int(scenario_definitions[1].get("duration_seconds", 0)) == 60)
+
+	var scenario_stages := ScenarioCatalog.to_legacy_stages(scenario_definitions)
+	assert(scenario_stages.size() == 5)
+	assert(str(scenario_stages[0].get("mode", "")) == "single")
+	assert(str(scenario_stages[4].get("mode", "")) == "flick")
+
+	var invalid_scenario: Dictionary = scenario_definitions[0].duplicate(true)
+	invalid_scenario["title"] = ""
+	invalid_scenario["player_profile"] = "missing-player"
+	var invalid_errors := ScenarioCatalog.validate_definition(invalid_scenario)
+	assert(invalid_errors.size() >= 2)
+	var invalid_summary := ScenarioCatalog.error_summary(invalid_errors, 5)
+	assert(invalid_summary.contains("title"))
+	assert(invalid_summary.contains("player_profile"))
+
 	var settings_path := ProjectSettings.globalize_path("user://settings.cfg")
 	if FileAccess.file_exists("user://settings.cfg"):
 		assert(DirAccess.remove_absolute(settings_path) == OK)
@@ -108,6 +135,9 @@ func _ready() -> void:
 	assert(not instance.get_node("UI/HUD").visible)
 	assert(not instance.get_node("UI/SettingsOverlay").visible)
 	assert(instance.selected_training_mode == instance.TrainingMode.SINGLE)
+	assert(instance.scenario_catalog_using_v1)
+	assert(instance.scenario_catalog_source_found)
+	assert(instance.scenario_catalog_errors.is_empty())
 
 	var home_stage_list := instance.get_node(
 		"UI/HomeOverlay/Margin/Content/Body/Library/StageScroll/StageList"
@@ -119,6 +149,12 @@ func _ready() -> void:
 	) as ScrollContainer
 	assert(stage_scroll != null)
 	assert(stage_scroll.size_flags_vertical == Control.SIZE_EXPAND_FILL)
+	var catalog_status := instance.get_node(
+		"UI/HomeOverlay/Margin/Content/Body/Library/LibraryHint"
+	) as Label
+	assert(catalog_status != null)
+	assert(catalog_status.text.contains("5 SCENARIOS"))
+	assert(catalog_status.text.contains("Scenario Definition v1"))
 	await get_tree().process_frame
 	var viewport_size := instance.get_viewport().get_visible_rect().size
 	var home_content := instance.get_node(
