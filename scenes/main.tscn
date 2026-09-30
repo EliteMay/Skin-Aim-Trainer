@@ -166,7 +166,78 @@ horizontal_alignment = 1
 vertical_alignment = 1
 mouse_filter = 2
 
+[node name="HomeOverlay" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="UI/HomeOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.018, 0.024, 0.035, 0.98)
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="UI/HomeOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="UI/HomeOverlay/Center"]
+custom_minimum_size = Vector2(760, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/HomeOverlay/Center/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 46
+text = "SKIN AIM TRAINER"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="UI/HomeOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.8, 0.88, 1)
+theme_override_font_sizes/font_size = 21
+text = "ステージを選んで練習"
+horizontal_alignment = 1
+
+[node name="LastStage" type="Label" parent="UI/HomeOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.68, 0.76, 1)
+theme_override_font_sizes/font_size = 16
+text = "前回: シングルターゲット / 標準"
+horizontal_alignment = 1
+
+[node name="SectionTitle" type="Label" parent="UI/HomeOverlay/Center/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "トレーニング"
+horizontal_alignment = 0
+
+[node name="StageList" type="VBoxContainer" parent="UI/HomeOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 218)
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Hint" type="Label" parent="UI/HomeOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.62, 0.7, 1)
+theme_override_font_sizes/font_size = 15
+text = "実装済みステージだけを表示します。今後ここへ新しい練習を追加します。"
+horizontal_alignment = 1
+
 [node name="StartOverlay" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -200,43 +271,29 @@ alignment = 1
 
 [node name="Title" type="Label" parent="UI/StartOverlay/Center/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 44
-text = "SKIN AIM TRAINER"
+theme_override_font_sizes/font_size = 40
+text = "シングルターゲット"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="UI/StartOverlay/Center/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.75, 0.78, 0.84, 1)
-theme_override_font_sizes/font_size = 20
-text = "やることは3つだけです。"
+theme_override_font_sizes/font_size = 18
+text = "基礎  ·  60秒"
 horizontal_alignment = 1
+
+[node name="StageDescription" type="Label" parent="UI/StartOverlay/Center/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.73, 0.8, 1)
+theme_override_font_sizes/font_size = 16
+text = "1つのTargetへ正確にAimして撃つ基本練習"
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="HowTo" type="Label" parent="UI/StartOverlay/Center/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "1. 練習モードと難易度を選ぶ\n2. マウスで赤いTargetを狙う\n3. 左クリックで撃つ"
-horizontal_alignment = 1
-
-[node name="ModeRow" type="HBoxContainer" parent="UI/StartOverlay/Center/Content"]
-layout_mode = 2
-theme_override_constants/separation = 14
-alignment = 1
-
-[node name="ModeLabel" type="Label" parent="UI/StartOverlay/Center/Content/ModeRow"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 19
-text = "練習モード"
-
-[node name="ModeSelect" type="OptionButton" parent="UI/StartOverlay/Center/Content/ModeRow"]
-custom_minimum_size = Vector2(260, 48)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-
-[node name="ModeDescription" type="Label" parent="UI/StartOverlay/Center/Content"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
-theme_override_font_sizes/font_size = 15
-text = "1 Targetを順番に狙う基本練習"
+theme_override_font_sizes/font_size = 22
+text = "1. 難易度を選ぶ\n2. マウスで赤いTargetを狙う\n3. 左クリックで撃つ"
 horizontal_alignment = 1
 
 [node name="DifficultyRow" type="HBoxContainer" parent="UI/StartOverlay/Center/Content"]
@@ -292,6 +349,12 @@ custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "クロスヘアを設定"
+
+[node name="HomeButton" type="Button" parent="UI/StartOverlay/Center/Content"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Homeへ戻る"
 
 [node name="Keys" type="Label" parent="UI/StartOverlay/Center/Content"]
 layout_mode = 2
@@ -763,4 +826,4 @@ text = "もう一度"
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "開始画面へ戻る"
+text = "Homeへ戻る"
