@@ -194,3 +194,13 @@
 - Problem: A fixed VBoxContainer worked with two Training cards but a third data-driven Stage could exist correctly in memory while being visually clipped.
 - Decision: Any data-driven Training list that can grow must live inside a ScrollContainer or equivalent bounded overflow surface.
 - Prevention: Smoke tests must verify both item count and the presence of a bounded scrolling container; item existence alone is not enough to prove visibility.
+
+
+## SAT-UI-002 — Current primary options should not require undisclosed scrolling
+
+- Date: 2026-09-30
+- Type: UI / Discoverability
+- Status: Adopted
+- Problem: Making a list scrollable prevents clipping, but a newly added primary Training can still appear missing if scrolling is required and no strong scrollbar affordance is visible.
+- Decision: Keep overflow scrolling for future growth, while ensuring the current primary Training set fits in the default visible viewport.
+- Validation: Test both total item count and current-list fit inside the visible scroll viewport.
